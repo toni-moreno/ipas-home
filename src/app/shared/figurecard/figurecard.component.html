@@ -1,12 +1,19 @@
 <div class="figure-card card">
-  <div class="card-header" [ngStyle]="{ 'background': linearColor, 'box-shadow': boxShadow }">
+  <div class="card-header" [ngStyle]="{ 'background': linearColor}">
     <i class="material-icons">{{ headerIcon }}</i>
   </div>
+  <div *ngIf="status" class="card-header3" [ngStyle]="status  === 'OK' ?  { 'background': 'green'} : { 'background' : 'red'} ">
+      <span class="status">{{ status }}</span>
+  </div>
+  <div *ngIf="!status" class="card-header4">
+    <mat-spinner diameter=30> </mat-spinner>
+  </div>
   <div class="card-content">
-    <p class="category">{{ category }}</p>
+    <!--p class="category">{{ title }}</p-->
     <h3 class="title">{{ title }}</h3>
+    <p class="category">{{ description }}</p>     
   </div>
   <div class="card-footer">
-      <i class="material-icons text-danger">{{ footerIcon }}</i> {{ footContent }}
+      <i class="material-icons text-danger">{{ footerIcon }}</i> <a [href]="footContent">{{ footContent }}</a>
   </div>
 </div>
