@@ -68,6 +68,7 @@ import { PanelsComponent } from './dashboard/component/panels/panels.component';
 import { AppCardComponent } from './shared/appcard/appcard.component'
 import { SettingsService } from './services/settings.service';
 import { WizardComponent } from './dashboard/products/wizard/wizard.component';
+import { WizardService } from  './dashboard/products/wizard/wizard.service';
 
 @NgModule({
   declarations: [
@@ -136,7 +137,7 @@ import { WizardComponent } from './dashboard/products/wizard/wizard.component';
     MatTooltipModule,
     ReactiveFormsModule,
   ],
-  providers: [SettingsService],
+  providers: [SettingsService, WizardService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

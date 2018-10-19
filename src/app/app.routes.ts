@@ -20,7 +20,7 @@ import { LockComponent } from './page/lock/lock.component';
 import { RegisterComponent } from './page/register/register.component';
 
 const routes: Routes = [
-  { path: '', component: LoginComponent },
+  { path: '', redirectTo: '/dashboard',  pathMatch: 'full' },
   { path: 'lock', component: LockComponent },
   { path: 'register', component: RegisterComponent },
   {
