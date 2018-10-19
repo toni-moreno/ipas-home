@@ -1,8 +1,8 @@
 export const HomeItems: ServiceSection[] =
   [
     {
-      'name': 'Services',
-      'description': 'My service section',
+      'name': 'IPAS Services',
+      'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vulputate erat velit, vel sagittis mi dapibus at. Mauris tincidunt lorem est, at faucibus purus placerat sit amet.',
       'content': [
         {
           'title': "InfluxDB",
@@ -45,11 +45,39 @@ export const HomeItems: ServiceSection[] =
           'footContent': "http://localhost:8889",
           'footerIcon': "public",
           'link': ''
+        },
+        {
+          'title': "Resistor",
+          'description': "Resistor instance",
+          'headerIcon': "devices",
+          'status': {
+            'mode': 'ping',
+            'url': 'https://webhook.siteeee',
+            'valid': null
+          },
+          'linearColor': "#236B8E",
+          'footContent': "http://localhost:8889",
+          'footerIcon': "public",
+          'link': ''
+        },
+        {
+          'title': "Chronograf",
+          'description': "Chronograf instance",
+          'headerIcon': "devices",
+          'status': {
+            'mode': 'ping',
+            'url': 'https://webhook.siteeee',
+            'valid': null
+          },
+          'linearColor': "#236B8E",
+          'footContent': "http://localhost:8889",
+          'footerIcon': "public",
+          'link': ''
         }
       ]
     },
     {
-      'name': 'Platform',
+      'name': 'IPAS Platform',
       'description': 'My platform section',
       'content': [
         {
