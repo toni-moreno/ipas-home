@@ -1,0 +1,282 @@
+<div class="container">
+  <!--INIT - stepper-->
+  <mat-vertical-stepper [linear]="isLinear" #stepper>
+    <!--INIT - stepper - firstStep -->
+    <mat-step [stepControl]="productFormGroup">
+      <form [formGroup]="productFormGroup">
+        <ng-template matStepLabel>
+          <h4>Product properties</h4>
+          <p>Fill product properties</p>
+        </ng-template>
+        <mat-form-field>
+          <input matInput placeholder="Product Name" formControlName="product" required>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput placeholder="Models" formControlName="models" required>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput placeholder="Description" formControlName="description" required>
+        </mat-form-field>
+        <div>
+          <button mat-icon-button mat-button matStepperPrevious color="primary">
+            <mat-icon aria-label="Example icon-button with a heart icon">arrow_back_ios</mat-icon>
+          </button>
+          <button mat-icon-button mat-button matStepperNext color="primary">
+            <mat-icon aria-label="Example icon-button with a heart icon">arrow_forward_ios</mat-icon>
+          </button>
+        </div>
+      </form>
+    </mat-step>
+    <!--INIT - stepper - GATHER -->
+    <mat-step [stepControl]="productFormGroup">
+      <form [formGroup]="productFormGroup">
+        <ng-template matStepLabel>
+          <h4>Gather</h4>
+          <p>Create new gather configs</p>
+        </ng-template>
+        <!--INIT - Engine selector to load all related params"-->
+        <div class="col-md-3">
+          <mat-form-field>
+            <mat-select #gather_engine placeholder="Engine" name="engine">
+              <mat-option *ngFor="let engine of gather_engines" [value]="engine.type">
+                {{engine.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button mat-fab color="primary" (click)="addEngine('gather',gather_engine.value)">Add new Engine</button>
+        </div>
+        <!--INIT - Start the generation of the Gather section. Each engine can have multiple configs-->
+        <div class="col-md-9">
+          <ng-container *ngIf="gather">
+            <div formArrayName="gather">
+              <div class="col-md-12">
+                <!--Iterate over gather controls and creates an row for each engine, declaring iengine as index -->
+                <div *ngFor="let sgather of gather.controls; index as iengine">
+                  <mat-accordion>
+                    <div class="row">
+                      <div class="col-md-10">
+                        <h3>{{gather.controls[iengine].value.engine}}</h3>
+                      </div>
+                      <!-- Actions available on engine section - create new config and delete engine config-->
+                      <div class="col-md-2">
+                        <!--Add new config engine based on step, engine index and engine name -->
+                        <button mat-mini-fab color="primary" (click)="addConfigEngine('gather',iengine, gather.controls[iengine].value.engine)">
+                          <mat-icon aria-label="Example icon-button with a heart icon">note_add</mat-icon>
+                        </button>
+                        <button mat-mini-fab color="primary" (click)="deleteEngine('gather',iengine)">
+                          <mat-icon aria-label="Example icon-button with a heart icon">delete_forever</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- Enter on the engine form using iengine -->
+                    <div [formArrayName]="iengine" class="row">
+                      <!-- Enter on the config form for config control-->
+                      <div formArrayName="config">
+                        <!-- Iterates over each  configuration. Declares iconfig as index-->
+                        <div *ngFor="let sgatherconfig of gather.controls[iengine].controls.config.controls; index as iconfig">
+                          <!-- Enter on each config using iconfig"-->
+                          <div class="col-md-9" [formArrayName]="iconfig">
+                            <!--Form to complete 'Config Parameters' -->
+                            <mat-expansion-panel>
+                              <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                  <h5>{{iconfig}} - {{sgatherconfig.value.name || 'Name'}}</h5>
+                                </mat-panel-title>
+                              </mat-expansion-panel-header>
+                              <mat-form-field appearance="outline">
+                                <mat-label>Name:</mat-label>
+                                <input matInput formControlName="name">
+                              </mat-form-field>
+                              <mat-form-field appearance="outline">
+                                <mat-label>Models:</mat-label>
+                                <input matInput formControlName="models">
+                              </mat-form-field>
+                              <mat-form-field appearance="outline">
+                                <mat-label>Description:</mat-label>
+                                <input matInput formControlName="description">
+                              </mat-form-field>
+                              <mat-form-field appearance="outline">
+                                <mat-label>Directory:</mat-label>
+                                <input matInput formControlName="dir">
+                              </mat-form-field>
+                              <mat-form-field appearance="outline">
+                                <mat-label>Configuration:</mat-label>
+                                <input matInput formControlName="config">
+                              </mat-form-field>
+
+                              <!--Form to complete 'Params' -->
+                              <div formGroupName="params">
+                                <h4> Params:</h4>
+                                <!--Form to complete 'Product Params' -->
+                                <div formArrayName="product_params" *ngIf="gather.controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params">
+                                  <h5> Product Params:</h5>
+                                  <br>
+                                  <!-- Iterates over each param. Declares ipp as index-->
+                                  <ng-container *ngFor="let kk of gather.controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params.controls; index as l">
+                                    <!-- Enter on each product_params using ipp"-->
+                                    <ng-container [formArrayName]="l">
+                                      <mat-form-field appearance="outline">
+                                        <mat-label>{{gather.controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params.controls[l].value.key}}
+                                        </mat-label>
+                                        <input matInput formControlName="value">
+                                        <mat-icon matSuffix mat-mini-fab [matTooltip]="gather.controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params.controls[l].value.description">help</mat-icon>
+                                      </mat-form-field>
+                                    </ng-container>
+                                  </ng-container>
+                                </div>
+                                <mat-divider></mat-divider>
+                                <br>
+                                <!--Form to complete 'Product Params' -->                                  
+                                <div formArrayName="platform_params" *ngIf="gather.controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params">
+                                  <h5> Platform Params:</h5>
+                                  <br>
+                                  <ng-container *ngFor="let kk of gather.controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params.controls; index as l">
+                                    <ng-container [formArrayName]="l">
+                                      <mat-form-field appearance="outline">
+                                        <mat-label>{{gather.controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params.controls[l].value.key}}
+                                        </mat-label>
+                                        <input matInput formControlName="value">
+                                        <mat-icon matSuffix mat-mini-fab [matTooltip]="gather.controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params.controls[l].value.description">help</mat-icon>
+                                      </mat-form-field>
+                                    </ng-container>
+                                  </ng-container>
+                                </div>
+                                <mat-divider></mat-divider>
+                                <br>
+                                <div formArrayName="device_params" *ngIf="gather.controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params">
+                                  <h5> Device Params:</h5>
+                                  <br>
+                                  <ng-container *ngFor="let kk of gather.controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls; index as l">
+                                    <ng-container [formArrayName]="l">
+                                      <mat-form-field appearance="outline">
+                                        <mat-label>{{gather.controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value.key}}
+                                        </mat-label>
+                                        <input matInput formControlName="value">
+                                        <mat-icon matSuffix mat-mini-fab [matTooltip]="gather.controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value.description">help</mat-icon>
+                                      </mat-form-field>
+                                    </ng-container>
+                                  </ng-container>
+                                </div>
+                              </div>
+                              <!-- end of Params Part-->
+                            </mat-expansion-panel>
+
+                          </div>
+
+                          <div class="col-md-3">
+                            <button mat-mini-fab (click)="deleteConfigEngine('gather',iengine, iconfig)">
+                              <mat-icon aria-label="Example icon-button with a heart icon">delete</mat-icon>
+                            </button>
+                            <!--button mat-raised-button color="primary" (click)="addConfigEngine('gather',i, gather.controls[iengine].value.engine)">Add new Config</button-->
+                            <!--button mat-raised-button color="primary" (click)="deleteEngine('gather',i)">Delete Engine</button-->
+                          </div>
+
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </mat-accordion>
+                  <br>
+                  <mat-divider> </mat-divider>
+                  <br>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <div class="row">
+          <button mat-raised-button color="primary" matStepperNext *ngIf="gather.controls.length > 0">Finish Gather</button>
+          <button mat-raised-button color="primary" matStepperNext *ngIf="gather.controls.length == 0">Skip configuration</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!--VISUAL-->
+    <mat-step [stepControl]="productFormGroup">
+      <form [formGroup]="productFormGroup">
+        <ng-template matStepLabel>
+          <h4>Visual</h4>
+          <p>Create new visual configs</p>
+        </ng-template>
+        <div class="col-md-6">
+          <mat-form-field>
+            <mat-select #visual_engine placeholder="Engine" name="engine">
+              <mat-option *ngFor="let engine of visual_engines" [value]="engine.type">
+                {{engine.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          {{visual_engine.value}}
+          <button mat-fab color="primary" (click)="addEngine('visual',visual_engine.value)">Add new Engine</button>
+        </div>
+        <div class="col-md-6">
+          <ng-container *ngIf="visual">
+            <div formArrayName="visual">
+              <div *ngFor="let city of visual.controls; index as i">
+                <div [formArrayName]="i">
+                  <input formControlName="engine" [placeholder]="visual.controls[i].value.engine">
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <div>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+      <div class="row">
+        <button mat-raised-button color="primary" matStepperNext *ngIf="visual.controls.length > 0">Finish Gather</button>
+        <button mat-raised-button color="primary" matStepperNext *ngIf="visual.controls.length == 0">Skip configuration</button>
+      </div>
+    </mat-step>
+
+    <!--ALERT-->
+    <mat-step [stepControl]="productFormGroup">
+      <form [formGroup]="productFormGroup">
+        <ng-template matStepLabel>
+          <h4>Alert</h4>
+          <p>Create new alert configs</p>
+        </ng-template>
+        <div class="col-md-6">
+          <mat-form-field>
+            <mat-select #alert_engine placeholder="Engine" name="engine">
+              <mat-option *ngFor="let engine of alert_engines" [value]="engine.type">
+                {{engine.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button mat-fab color="primary" (click)="addEngine('alert',alert_engine.value)">Add new Engine</button>
+        </div>
+        <div class="col-md-3">
+          <ng-container *ngIf="alert">
+            <div formArrayName="alert">
+              <div *ngFor="let city of alert.controls; index as i">
+                <div [formArrayName]="i">
+                  <input formControlName="engine" [placeholder]="alert.controls[i].value.engine">
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <div>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+
+
+    <mat-step>
+      <ng-template matStepLabel>Create new configuration</ng-template>
+      You are now done. Review your definition:
+
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button (click)="stepper.reset()">Reset</button>
+        <button mat-button (click)="createNewProduct()">FINISHHHH CLICK MEEEEEEEE</button>
+
+      </div>
+    </mat-step>
+  </mat-vertical-stepper>
+  <pre>{{productFormGroup.value | json}}</pre>
+</div>

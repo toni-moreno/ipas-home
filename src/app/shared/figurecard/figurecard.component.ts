@@ -7,8 +7,9 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class FigurecardComponent implements OnInit {
   @Input() headerIcon: string;
-  @Input() category: string;
+  @Input() status: string;
   @Input() title: string;
+  @Input() description: string;
   @Input() footerIcon: string;
   @Input() footContent: string;
   @Input() linearColor: string;
@@ -16,6 +17,7 @@ export class FigurecardComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    
   }
 
 }

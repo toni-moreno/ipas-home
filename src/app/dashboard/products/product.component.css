@@ -1,0 +1,40 @@
+.row{
+  margin-top: 10px;
+}
+
+.card{
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  position: relative;
+  margin-top: 40px;
+}
+
+.text-test {
+  color: #003F87;
+}
+
+.text-empty {
+  color: #88BAC2;
+}
+
+
+.cell-header {
+  font-size: 20px
+}
+
+.card-header i {
+  font-size: 24px;
+  width: 33px;
+  height: 33px;
+  line-height: 33px;
+  color: #fff;
+}
+
+.card-content{
+  position: relative;
+}
+
+.card-title{
+  padding-left: 80px;
+}
