@@ -1,5 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 
+import * as _ from 'yamljs';
+
+
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
