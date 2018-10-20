@@ -17,12 +17,12 @@ export interface ProductProperties {
  * @title Stepper overview
  */
 @Component({
-  selector: 'app-wizard',
+  selector: 'app-engine-wizard',
   templateUrl: './wizard-engine.component.html',
   styleUrls: ['./wizard-engine.component.css']
 })
 
-export class WizardComponent implements OnInit {
+export class WizardEngineComponent implements OnInit {
   isLinear = true;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;

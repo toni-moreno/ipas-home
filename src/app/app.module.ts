@@ -52,6 +52,7 @@ import { FigurecardComponent } from './shared/figurecard/figurecard.component';
 import { ImagecardComponent } from './shared/imagecard/imagecard.component';
 import { ProductComponent } from './dashboard/products/product.component';
 import { EngineComponent } from './dashboard/engines/engine.component';
+import { WizardEngineComponent } from './dashboard/engines/wizard-engines/wizard-engine.component'
 
 import { NotificationComponent } from './dashboard/notification/notification.component';
 import { MsgIconBtnComponent } from './shared/msgiconbtn/msgiconbtn.component';
@@ -94,6 +95,7 @@ import { WizardService } from  './dashboard/products/wizard/wizard.service';
     PriceTableComponent,
     PanelsComponent,
     WizardComponent,
+    WizardEngineComponent,
     AppCardComponent
   ],
   imports: [
