@@ -18,8 +18,8 @@ export interface ProductProperties {
  */
 @Component({
   selector: 'app-wizard',
-  templateUrl: './wizard.component.html',
-  styleUrls: ['./wizard.component.css']
+  templateUrl: './wizard-engine.component.html',
+  styleUrls: ['./wizard-engine.component.css']
 })
 
 export class WizardComponent implements OnInit {
