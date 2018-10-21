@@ -6,6 +6,7 @@ import { HomeComponent } from './dashboard/home/home.component';
 import { ProfileComponent } from './dashboard/profile/profile.component';
 import { ProductComponent } from './dashboard/products/product.component';
 import { EngineComponent } from './dashboard/engines/engine.component';
+import { DeviceComponent } from './dashboard/devices/device.component';
 
 import { NotificationComponent } from './dashboard/notification/notification.component';
 import { SweetAlertComponent } from './dashboard/sweetalert/sweetalert.component';
@@ -31,8 +32,7 @@ const routes: Routes = [
       { path: 'products/list', component: ProductComponent },
       { path: 'products/wizard', component: WizardComponent },
       { path: 'engines',component: EngineComponent },
-      { path: 'engines/wizard', component: WizardComponent },
-
+      { path: 'devices',component: DeviceComponent },
       { path: 'notification', component: NotificationComponent },
       { path: 'alert', component: SweetAlertComponent },
       { path: 'settings', component: SettingsComponent },

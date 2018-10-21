@@ -1,7 +1,8 @@
 export const ROUTES = [
     { path: '/dashboard', title: 'Platform State', icon: 'dashboard', children: null },
-    { path: 'products', id: 'products', title: 'Poduct Management', icon: 'content_paste', children: null},
-    { path: 'engines', id: 'engines', title: 'Engine Management', icon: 'content_paste', children: null},
+    { path: 'engines', id: 'engines', title: 'Engines Management', icon: 'build', children: null},
+    { path: 'products', id: 'products', title: 'Poducts Management', icon: 'content_paste', children: null},
+    { path: 'devices', id: 'devices', title: 'Devices Management', icon: 'dns', children: null}
     /**{ path: '#component', id: 'component', title: 'Management', icon: 'apps', children: [
         {path: 'components/price-table', title: 'Price Table', icon: 'PT'},
         {path: 'components/panels', title: 'Panels', icon: 'P'},

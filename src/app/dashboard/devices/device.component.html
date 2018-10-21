@@ -1,0 +1,85 @@
+<div class="container">
+  <app-navbar title="Device Management > {{viewMode | uppercase}}"> 
+  </app-navbar>
+
+  <div class="row">
+  <br><mat-divider></mat-divider><br>
+  <mat-card>
+      <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="viewMode = 'list'"> <mat-icon>playlist_play</mat-icon> List Devices</button>
+      <!--button mat-raised-button [color]="viewMode === 'new' ? 'accent' : 'primary'" (click)="viewMode = 'new'"> <mat-icon>playlist_add</mat-icon> New Product</button-->
+  </mat-card>
+  </div>
+  <ng-container [ngSwitch]="viewMode">
+    <ng-template ngSwitchCase="list">
+      <div class="container">
+        <div class="example-header">
+          <mat-form-field>
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter Prduct">
+          </mat-form-field>
+        </div>
+        <mat-table #table [dataSource]="dataSource" matSort>
+          <!-- Table Actions Column -->
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef class="cell-header text-test">Actions</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <button mat-icon-button mat-button color="primary">
+                <mat-icon>note_add</mat-icon>
+              </button>
+              <button mat-icon-button mat-button color="primary">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button mat-button color="primary">
+                <mat-icon>highlight_off</mat-icon>
+              </button>
+            </mat-cell>
+            {{element | json}}
+          </ng-container>
+
+          <!-- ID Column -->
+          <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> ID</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+          </ng-container>
+
+          <!-- Host Column -->
+          <ng-container matColumnDef="host">
+            <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>Host
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.host}} </mat-cell>
+          </ng-container>
+
+          <!-- Tags Column -->
+          <ng-container matColumnDef="tags">
+              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>Tags
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element"> 
+                <ng-container *ngFor="let tt of element.tags; let ls = last">
+                    {{tt}}<mat-divider *ngIf="!ls" style="width: 80%;"></mat-divider>
+                </ng-container> 
+              </mat-cell>
+            </ng-container>
+
+        
+          <!-- Deployed Column -->
+          <ng-container matColumnDef="products">
+            <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Products </mat-header-cell>
+            <mat-cell *matCellDef="let element" class="cell-bordered"> 
+                <ng-container *ngFor="let product of element.products; let ls = last">
+                    <mat-icon class="material-icons product-deployed" [ngClass]="product.deployed === true ? 'text-test' : 'text-empty'">{{product.deployed === true ? 'check' : 'clear' }}</mat-icon>
+                    {{product.name }}
+                    <mat-divider *ngIf="!ls" style="width: 80%;"></mat-divider>
+                </ng-container> 
+              </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+        <mat-paginator [pageSize]="10" [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
+      </div>
+    </ng-template>
+    <ng-template ngSwitchDefault>
+      <app-wizard></app-wizard>
+    </ng-template>
+  </ng-container>
+</div>
