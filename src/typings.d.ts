@@ -49,5 +49,9 @@ interface ProductFull {
 }
 
 
-
-
+interface DeviceList {
+  id: string,
+  host: string,
+  tags: any,
+  products: any
+}

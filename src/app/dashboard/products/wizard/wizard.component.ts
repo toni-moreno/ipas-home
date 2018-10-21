@@ -5,8 +5,6 @@ import { WizardService } from './wizard.service';
 
 import * as _ from 'yamljs';
 
-
-
 export interface Engine {
   name: string;
   type: string;
@@ -62,14 +60,14 @@ export const EngineSNMPParams = {
       {
         key: "PRODUCT_DEVICE_TAGVALUE",
         agent_key: "DeviceTagValue",
-        description: "Could be one of these: \n        -id: will send as device tag the configured ID for this measurement \n        -host: will send as device tag data configured in the Host configuration (name or IP)",
+        description: "Could be one of these: id: will send as device tag the configured ID for this measurement | host: will send as device tag data configured in the Host configuration (name or IP)",
         type: "string",
         value: "id"
       },
       {
         key: "PRODUCT_DISABLEBULK",
         agent_key: "DisableBulk",
-        description: "Iftruethebulkfeaturewon'tbeused",
+        description: "If true the bulk feature won't be used",
         type: "boolean",
         value: true
       },
@@ -250,16 +248,12 @@ export const EngineSNMPParams = {
     ]
 }
 
-
 export interface ProductProperties {
   gather: string;
   visual: string;
   alert: string;
 }
 
-/**
- * @title Stepper overview
- */
 @Component({
   selector: 'app-wizard',
   templateUrl: './wizard.component.html',
@@ -399,21 +393,6 @@ export class WizardComponent implements OnInit {
     return test
   }
 
-
-  testYAML() {
-    let nativeObject = _.parse('hola: e');
-    console.log("NATIVE", nativeObject);
-
-    this.wizardService.retrieveYAML('https://gist.githubusercontent.com/chriscowley/8598119/raw/8f671464f914320281e5e75bb8dcbe11285d21e6/nfs.example.lan.yml').subscribe(
-      data => {
-        let nativeObject = _.parse(data);
-        console.log(nativeObject);
-      },
-      err => console.error(err),
-      () => console.log("DON")
-    )
-  }
-
   createNewProduct() {
     let yamlString = _.stringify(this.productFormGroup.value, 999)
     console.log(yamlString);
@@ -424,7 +403,6 @@ export class WizardComponent implements OnInit {
       () => console.log("OK, DONE")
       )
   }
-
 
 }
 
