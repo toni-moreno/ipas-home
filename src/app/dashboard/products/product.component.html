@@ -1,16 +1,24 @@
 <div class="container">
-  <app-navbar title="Product Management > {{viewMode | uppercase}}">
+  <app-navbar title="Products Management > {{viewMode | uppercase}}">
   </app-navbar>
-  <div>
-    <a (click)="viewMode = 'list'">List product</a>
-    <a (click)="viewMode = 'new'">New product</a>
+
+  <div class="row">
+    <br>
+    <mat-divider></mat-divider>
+    <br>
+    <mat-card>
+      <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="viewMode = 'list'">
+        <mat-icon>playlist_play</mat-icon> List Product</button>
+      <button mat-raised-button [color]="viewMode === 'new' ? 'accent' : 'primary'" (click)="viewMode = 'new'">
+        <mat-icon>playlist_add</mat-icon> New Product</button>
+    </mat-card>
   </div>
   <ng-container [ngSwitch]="viewMode">
     <ng-template ngSwitchCase="list">
       <div class="container">
         <div class="example-header">
           <mat-form-field>
-            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter Prduct">
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter Product">
           </mat-form-field>
         </div>
         <mat-table #table [dataSource]="dataSource" matSort>

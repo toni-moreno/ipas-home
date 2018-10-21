@@ -18,12 +18,7 @@
           <input matInput placeholder="Description" formControlName="description" required>
         </mat-form-field>
         <div>
-          <button mat-icon-button mat-button matStepperPrevious color="primary">
-            <mat-icon aria-label="Example icon-button with a heart icon">arrow_back_ios</mat-icon>
-          </button>
-          <button mat-icon-button mat-button matStepperNext color="primary">
-            <mat-icon aria-label="Example icon-button with a heart icon">arrow_forward_ios</mat-icon>
-          </button>
+          <button mat-raised-button color="accent" matStepperNext type="button">Next</button>
         </div>
       </form>
     </mat-step>
@@ -37,16 +32,18 @@
         <!--INIT - Engine selector to load all related params"-->
         <div class="col-md-3">
           <mat-form-field>
-            <mat-select #gather_engine placeholder="Engine" name="engine">
+            <mat-select #gather_engine placeholder="Available engines" name="engine">
               <mat-option *ngFor="let engine of gather_engines" [value]="engine.type">
                 {{engine.name}}
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <button mat-fab color="primary" (click)="addEngine('gather',gather_engine.value)">Add new Engine</button>
+          <button mat-mini-fab color="primary" (click)="addEngine('gather',gather_engine.value)">
+            <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
+          </button>
         </div>
         <!--INIT - Start the generation of the Gather section. Each engine can have multiple configs-->
-        <div class="col-md-9">
+        <div class="col-md-9" *ngIf="gather_engine !== 'external'">
           <ng-container *ngIf="gather">
             <div formArrayName="gather">
               <div class="col-md-12">
@@ -126,7 +123,7 @@
                                 </div>
                                 <mat-divider></mat-divider>
                                 <br>
-                                <!--Form to complete 'Product Params' -->                                  
+                                <!--Form to complete 'Product Params' -->
                                 <div formArrayName="platform_params" *ngIf="gather.controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params">
                                   <h5> Platform Params:</h5>
                                   <br>
@@ -167,15 +164,10 @@
                             <button mat-mini-fab (click)="deleteConfigEngine('gather',iengine, iconfig)">
                               <mat-icon aria-label="Example icon-button with a heart icon">delete</mat-icon>
                             </button>
-                            <!--button mat-raised-button color="primary" (click)="addConfigEngine('gather',i, gather.controls[iengine].value.engine)">Add new Config</button-->
-                            <!--button mat-raised-button color="primary" (click)="deleteEngine('gather',i)">Delete Engine</button-->
                           </div>
-
                         </div>
                       </div>
-
                     </div>
-
                   </mat-accordion>
                   <br>
                   <mat-divider> </mat-divider>
@@ -185,13 +177,12 @@
             </div>
           </ng-container>
         </div>
-        <div class="row">
-          <button mat-raised-button color="primary" matStepperNext *ngIf="gather.controls.length > 0">Finish Gather</button>
-          <button mat-raised-button color="primary" matStepperNext *ngIf="gather.controls.length == 0">Skip configuration</button>
+        <div class="col-md-12">
+          <button mat-raised-button color="accent" matStepperNext *ngIf="gather.controls.length > 0">Finish Gather</button>
+          <button mat-raised-button color="accent" matStepperNext *ngIf="gather.controls.length == 0">Skip Gather</button>
         </div>
       </form>
     </mat-step>
-
     <!--VISUAL-->
     <mat-step [stepControl]="productFormGroup">
       <form [formGroup]="productFormGroup">
@@ -199,84 +190,125 @@
           <h4>Visual</h4>
           <p>Create new visual configs</p>
         </ng-template>
-        <div class="col-md-6">
+        <!--INIT - Engine selector to load all related params"-->
+        <div class="col-md-3">
           <mat-form-field>
-            <mat-select #visual_engine placeholder="Engine" name="engine">
+            <mat-select #visual_engine placeholder="Available engines" name="engine">
               <mat-option *ngFor="let engine of visual_engines" [value]="engine.type">
                 {{engine.name}}
               </mat-option>
             </mat-select>
           </mat-form-field>
-          {{visual_engine.value}}
-          <button mat-fab color="primary" (click)="addEngine('visual',visual_engine.value)">Add new Engine</button>
+          <button mat-mini-fab color="primary" (click)="addEngine('visual',visual_engine.value)">
+            <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
+          </button>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-9" *ngIf="visual_engine !== 'external'">
           <ng-container *ngIf="visual">
+
+
             <div formArrayName="visual">
-              <div *ngFor="let city of visual.controls; index as i">
-                <div [formArrayName]="i">
-                  <input formControlName="engine" [placeholder]="visual.controls[i].value.engine">
+              <div class="col-md-12">
+                <!--Iterate over gather controls and creates an row for each engine, declaring iengine as index -->
+                <div *ngFor="let svisual of visual.controls; index as iengine">
+                  <mat-accordion>
+                    <div class="row">
+                      <div class="col-md-10">
+                        <h3>{{visual.controls[iengine].value.engine}}</h3>
+                      </div>
+                      <!-- Actions available on engine section - create new config and delete engine config-->
+                      <div class="col-md-2">
+                        <!--Add new config engine based on step, engine index and engine name -->
+                        <button mat-mini-fab color="primary" (click)="addConfigEngine('visual',iengine, visual.controls[iengine].value.engine)">
+                          <mat-icon aria-label="Example icon-button with a heart icon">note_add</mat-icon>
+                        </button>
+                        <button mat-mini-fab color="primary" (click)="deleteEngine('visual',iengine)">
+                          <mat-icon aria-label="Example icon-button with a heart icon">delete_forever</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                  </mat-accordion>
                 </div>
               </div>
             </div>
           </ng-container>
         </div>
-        <div>
-          <button mat-button matStepperNext>Next</button>
+        <div class="col-md-12">
+          <button mat-raised-button color="accent" matStepperNext *ngIf="visual.controls.length > 0">Finish Visual</button>
+          <button mat-raised-button color="accent" matStepperNext *ngIf="visual.controls.length == 0">Skip Visual</button>
         </div>
       </form>
-      <div class="row">
-        <button mat-raised-button color="primary" matStepperNext *ngIf="visual.controls.length > 0">Finish Gather</button>
-        <button mat-raised-button color="primary" matStepperNext *ngIf="visual.controls.length == 0">Skip configuration</button>
-      </div>
     </mat-step>
-
     <!--ALERT-->
     <mat-step [stepControl]="productFormGroup">
       <form [formGroup]="productFormGroup">
         <ng-template matStepLabel>
-          <h4>Alert</h4>
+          <h4>Visual</h4>
           <p>Create new alert configs</p>
         </ng-template>
-        <div class="col-md-6">
+        <!--INIT - Engine selector to load all related params"-->
+        <div class="col-md-3">
           <mat-form-field>
-            <mat-select #alert_engine placeholder="Engine" name="engine">
+            <mat-select #alert_engine placeholder="Available engines" name="engine">
               <mat-option *ngFor="let engine of alert_engines" [value]="engine.type">
                 {{engine.name}}
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <button mat-fab color="primary" (click)="addEngine('alert',alert_engine.value)">Add new Engine</button>
+          <button mat-mini-fab color="primary" (click)="addEngine('alert',alert_engine.value)">
+            <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
+          </button>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-9" *ngIf="alert_engine !== 'external'">
           <ng-container *ngIf="alert">
             <div formArrayName="alert">
-              <div *ngFor="let city of alert.controls; index as i">
-                <div [formArrayName]="i">
-                  <input formControlName="engine" [placeholder]="alert.controls[i].value.engine">
+              <div class="col-md-12">
+                <!--Iterate over gather controls and creates an row for each engine, declaring iengine as index -->
+                <div *ngFor="let salert of alert.controls; index as iengine">
+                  <mat-accordion>
+                    <div class="row">
+                      <div class="col-md-10">
+                        <h3>{{alert.controls[iengine].value.engine}}</h3>
+                      </div>
+                      <!-- Actions available on engine section - create new config and delete engine config-->
+                      <div class="col-md-2">
+                        <!--Add new config engine based on step, engine index and engine name -->
+                        <button mat-mini-fab color="primary" (click)="addConfigEngine('alert',iengine, alert.controls[iengine].value.engine)">
+                          <mat-icon aria-label="Example icon-button with a heart icon">note_add</mat-icon>
+                        </button>
+                        <button mat-mini-fab color="primary" (click)="deleteEngine('alert',iengine)">
+                          <mat-icon aria-label="Example icon-button with a heart icon">delete_forever</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                  </mat-accordion>
                 </div>
               </div>
             </div>
           </ng-container>
         </div>
-        <div>
-          <button mat-button matStepperNext>Next</button>
+        <div class="col-md-12">
+          <button mat-raised-button color="accent" matStepperNext *ngIf="alert.controls.length > 0">Finish Visual</button>
+          <button mat-raised-button color="accent" matStepperNext *ngIf="alert.controls.length == 0">Skip Visual</button>
         </div>
       </form>
     </mat-step>
-
-
     <mat-step>
-      <ng-template matStepLabel>Create new configuration</ng-template>
+      <ng-template matStepLabel>
+        <h4>Finish configuration</h4>
+        <p>Finish and submit a new product</p>
+      </ng-template>
       You are now done. Review your definition:
-
       <div>
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button (click)="stepper.reset()">Reset</button>
-        <button mat-button (click)="createNewProduct()">FINISHHHH CLICK MEEEEEEEE</button>
-
+        <button mat-raised-button color="accent" matStepperPrevious>Back</button>
+        <button mat-raised-button color="accent">Cancel</button>
+        <button mat-raised-button color="accent" (click)="createNewProduct()">Finish</button>
       </div>
     </mat-step>
   </mat-vertical-stepper>
+  <br>
+  <mat-divider></mat-divider>
+  <br>
+  <h4>Debug - Preview</h4>
   <pre>{{productFormGroup.value | json}}</pre>
 </div>
