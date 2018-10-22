@@ -11,7 +11,9 @@ export const HomeItems: ServiceSection[] =
           'status': {
             'mode': 'ping',
             'url': 'http://localhost:8086/ping',
-            'valid': null
+            'content_type': 'json',
+            'valid_mode': 'status',
+            'valid_value': 204
           },
           'linearColor': "#0BB5FF",
           'footContent': "http://localhost:8086",
@@ -24,8 +26,10 @@ export const HomeItems: ServiceSection[] =
           'headerIcon': "devices",
           'status': {
             'mode': 'ping',
-            'url': 'http://localhost:4201/api/rt/agent/info/version/',
-            'valid': null
+            'url': 'http://localhost:4201/',
+            'content_type': 'text',
+            'valid_mode': 'response',
+            'valid_value': null
           },
           'linearColor': "#236B8E",
           'footContent': "http://localhost:4201",
@@ -33,13 +37,16 @@ export const HomeItems: ServiceSection[] =
           'link': ''
         },
         {
-          'title': "Chronograf",
-          'description': "Chronograf instance",
+          'title': "Grafana",
+          'description': "Grafana instance",
           'headerIcon': "devices",
           'status': {
             'mode': 'ping',
-            'url': 'https://webhook.siteeee',
-            'valid': null
+            'url': 'http://localhost:3000/login',
+            'content_type': 'text',
+            'valid_mode': 'response',
+            'valid_value': null
+
           },
           'linearColor': "#236B8E",
           'footContent': "http://localhost:8889",
@@ -53,7 +60,10 @@ export const HomeItems: ServiceSection[] =
           'status': {
             'mode': 'ping',
             'url': 'https://webhook.siteeee',
-            'valid': null
+            'content_type': 'text',
+            'valid_mode': 'response',
+            'valid_value': null
+
           },
           'linearColor': "#236B8E",
           'footContent': "http://localhost:8889",
@@ -67,7 +77,9 @@ export const HomeItems: ServiceSection[] =
           'status': {
             'mode': 'ping',
             'url': 'https://webhook.siteeee',
-            'valid': null
+            'content_type': 'text',
+            'valid_mode': 'response',
+            'valid_value': null
           },
           'linearColor': "#236B8E",
           'footContent': "http://localhost:8889",
@@ -87,7 +99,9 @@ export const HomeItems: ServiceSection[] =
           'status': {
             'mode': 'ping',
             'url': 'http://localhost:38135',
-            'valid': null
+            'content_type': 'text',
+            'valid_mode': 'response',
+            'valid_value': null
           },
           'linearColor': "#0BB5FF",
           'footContent': "http://localhost:38135",
@@ -101,7 +115,9 @@ export const HomeItems: ServiceSection[] =
           'status': {
             'mode': 'ping',
             'url': 'http://localhost:4201/api/rt/agent/info/version/',
-            'valid': null
+            'content_type': 'json',
+            'valid_mode': 'response',
+            'valid_value': null
           },
           'linearColor': "#236B8E",
           'footContent': "http://localhost:4201",

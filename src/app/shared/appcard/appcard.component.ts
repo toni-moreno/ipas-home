@@ -9,7 +9,7 @@ import { AppCardService } from './appcard.service';
 })
 export class AppCardComponent implements OnInit {
   @Input() figurecard: ServiceElement;
-  serviceCard : ServiceElement; 
+  serviceCard: ServiceElement;
 
   constructor(public appCardService: AppCardService) { }
 
@@ -20,64 +20,32 @@ export class AppCardComponent implements OnInit {
   }
 
 
-  checkStatus() { 
+  checkStatus() {
     if (this.serviceCard.status.mode === 'ping') {
-      this.appCardService.getStatus(this.serviceCard.status.url).subscribe(
+      this.appCardService.getStatus(this.serviceCard.status.url, this.serviceCard.status.content_type).subscribe(
         data => {
-            if (this.serviceCard.status.valid === null) { 
-              this.serviceCard.status.result = "OK"
-            }
+          //TODO: Do something with data?...
+          this.serviceCard.status.result = this.validateStatus(this.serviceCard.status.valid_mode, data)
         },
-        err => {console.log(err); this.serviceCard.status.result = "NOOK"},
-        ()=> console.log("OK")   
-      ) 
-    }
-    if (this.serviceCard.status.mode === 'authping') {
-        console.log("IN")
-        this.appCardService.getStatus(this.serviceCard.status.url).subscribe(
-          data => {
-              if (this.serviceCard.status.valid === null) { 
-                this.serviceCard.status.resultt = "OK"
-              }
-          },
-          err => {console.log(err)},
-          ()=> console.log("OK")   
-        ) 
+        err => { 
+          //TODO: error responses doesn't have the status code... 
+          console.log("Error on request: ", err);
+          this.serviceCard.status.result = "NOOK" 
+        },
+        () => console.log("OK")
+      )
     }
   }
 
-  
-  
- /*   checkStatus(t : any, i: any) { 
-      let p=this.myComponents[i]['content'][t].status
-      console.log(p);
-      if (p.mode === 'ping') {
-        this.myservice.getStatus(this.myComponents[i]['content'][t].status.url).subscribe(
-          data => {
-              if (p.valid === null) { 
-                this.myComponents[i]['content'][t].status.result = "OK"
-                console.log(this.myComponents[i]['content'][t].status);
-              }
-          },
-          err => {console.log(err); this.myComponents[i]['content'][t].status.result = "NOOK"},
-          ()=> console.log("OK")   
-        ) 
-      }
-      if (p.mode === 'authping') {
-          console.log("IN")
-          this.myservice.getStatus(this.myComponents[i]['content'][t].status.url).subscribe(
-            data => {
-                if (p.valid === null) { 
-                console.log("PEPE",this.myComponents[i]['content'][t])
-                this.myComponents[i]['content'][t].status.result = "OK"
-                console.log(this.myComponents[i]['content'][t].status);
-                }
-            },
-            err => {console.log(err)},
-            ()=> console.log("OK")   
-          ) 
-      }
+  validateStatus(valid_mode, data) {
+    switch (valid_mode) {
+      case 'status':
+        if (data['status'] === this.serviceCard.status.valid_value) return "OK"
+        else return "NOOK"
+      case 'response':
+        if (data['response'] !== null) return "OK"
+        else return "NOOK"
     }
+  }
 
-    */
 }
