@@ -38,7 +38,7 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <button mat-mini-fab color="primary" (click)="addEngine('gather',gather_engine.value)">
+          <button mat-mini-fab color="primary" [disabled]="gather_engine.value == null" (click)="addEngine('gather',gather_engine.value)">
             <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
           </button>
         </div>
@@ -199,7 +199,7 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <button mat-mini-fab color="primary" (click)="addEngine('visual',visual_engine.value)">
+          <button mat-mini-fab color="primary" [disabled]="visual_engine.value == null" (click)="addEngine('visual',visual_engine.value)">
             <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
           </button>
         </div>
@@ -255,7 +255,7 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <button mat-mini-fab color="primary" (click)="addEngine('alert',alert_engine.value)">
+          <button mat-mini-fab color="primary" [disabled]="alert_engine.value == null" (click)="addEngine('alert',alert_engine.value)">
             <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
           </button>
         </div>
