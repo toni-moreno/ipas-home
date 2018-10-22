@@ -1,28 +1,27 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Headers } from '@angular/http';
 import { Injectable, } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Observable';
 
-declare var _:any;
-
 @Injectable()
 export class AppCardService {
 
-    constructor(public httpAPI: HttpClient) {
-        console.log('Task Service created.', httpAPI);
-    }
+  defaultHttpOptions = {
+    headers: new HttpHeaders({
+      'Accept': 'text/html, application/xhtml+xml, */*',
+      'Content-Type': 'application/x-www-form-urlencoded, application/json'
+    }),
+    responseType: 'text',
+    observe: 'response' as 'body',
+  };
+  constructor(public httpAPI: HttpClient) { }
 
-    parseJSON(key,value) {
-        if ( key == 'IndexAsValue' ) return ( value === "true" || value === true);
-        return value;
-    }
-
-    getStatus(url: string) {
-      console.log(url)
-        // return an observable
-        return this.httpAPI.get(url)
-        .map((responseData) =>
-            responseData
-        )
-    };
+  getStatus(url: string, content_type: string = 'text') {
+    console.log(url)
+    // return an observable
+    let options: any = this.defaultHttpOptions
+    options.responseType = content_type;
+    return this.httpAPI.get(url, options)
+  };
 }
