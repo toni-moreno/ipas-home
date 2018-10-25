@@ -1,14 +1,19 @@
 {
-  "name": "angular2-material-dashboard-pro",
-  "version": "0.0.0",
+  "name": "ipas-home",
+  "version": "0.1.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "clean": "rm -rf public",
+    "start": "concurrently \"bra run > ./log/braout.log 2>&1\" \"ng serve --proxy-config proxy.conf.json\" ",
+    "build:dev": "go run build.go build && ng build",
+    "build:prod": "go run build.go build && ng build --prod",
+    "build": "npm run clean && npm run build:prod",
+    "build:static": "go run build.go build-static && ng build --prod",
+    "postbuild": "go run build.go latest"
   },
   "private": true,
   "dependencies": {
@@ -36,6 +41,7 @@
     "@types/node": "~9.4.6",
     "@types/yamljs": "^0.2.30",
     "codelyzer": "~4.1.0",
+    "concurrently": "^3.0.0",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~2.0.0",

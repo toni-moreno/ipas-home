@@ -1,0 +1,24 @@
+#!/bin/sh
+#/etc/init.d/ipashome
+
+APPDIR=/opt/ipashome
+PID=/var/run/ipashome.pid
+
+case "$1" in
+   start)
+     echo "Starting ipashome"
+	   export PWD=$APPDIR
+     start-stop-daemon --start --quiet --make-pidfile --pidfile $PID --chdir $APPDIR --background --exec ./ipashome -- -config $APPDIR/conf/ipashome.toml -logs $APPDIR/log
+     ;;
+   stop)
+     echo "Stopping ipashome"
+     start-stop-daemon --stop --pidfile $PID
+	 rm -f $PID
+     ;;
+   *)
+     echo "Usage: /etc/init.d/ipashome {start|stop}"
+     exit 1
+     ;;
+esac
+
+exit 0

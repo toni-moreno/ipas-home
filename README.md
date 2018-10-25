@@ -1,64 +1,64 @@
-# Angular2 Material Dashboard Pro
+# IPAS-home
 
-Material-design Dashboard
+Main HOME page for administration of the IPAS platform
 
-## How to run it
+If you wish to compile from source code you can follow the next steps
 
-**- please ensure you have installed angular cli, otherwise `npm install -g @angular/cli`**
+## Run from master
+If you want to build a package yourself, or contribute. Here is a guide for how to do that.
 
-1. git clone https://github.com/wangdicoder/angular-material-dashboard
-2. cd angular-material-dashboard
-3. npm install
-4. ng serve -o (it will automatically open localhost:4200)
+### Dependencies
 
-## Further Plan
-- [x] Add Wizard Component
-- [ ] Responsive Sidebar
-- [ ] Consolidate form elements, like switch
+- Go 1.8
+- NodeJS >=6.2.1
 
-## Screenshot
+### Get Code
 
-### Dashboard
+```bash
+mkdir -p $GOPATH/src/bitbucket.org/everis_ipas/ipas-home
+cd $GOPATH/src/bitbucket.org/everis_ipas/ipas-home
+git clone https://ipasdevel@bitbucket.org/everis_ipas/ipas-home.git
+```
 
-![](https://github.com/wangdicoder/angular2-material-dashboard-pro/raw/master/screenshot/dashboard.png)
+### Building the backend
 
-### Login
 
-![](https://github.com/wangdicoder/angular2-material-dashboard-pro/raw/master/screenshot/login.png)
+```bash
+go run build.go setup            (only needed once to install godep)
+godep restore                    (will pull down all golang lib dependencies in your current GOPATH)
+```
 
-### Register
-![](https://github.com/wangdicoder/angular2-material-dashboard-pro/raw/master/screenshot/register.png)
+### Building frontend and backend in production mode
 
-### Lock
-![](https://github.com/wangdicoder/angular2-material-dashboard-pro/raw/master/screenshot/lock.png)
+```bash
+npm install
+PATH=$(npm bin):$PATH
+npm run build:pro #will build fronted and backend
+```
+### Creating minimal package tar.gz
 
-### User Profile
-![](https://github.com/wangdicoder/angular2-material-dashboard-pro/raw/master/screenshot/profile.png)
+```bash
+npm run postbuild #will build fronted and backend
+```
 
-### Sweet Alert
-![](https://github.com/wangdicoder/angular2-material-dashboard-pro/raw/master/screenshot/sweetalert.gif)
+### Running first time
+To execute without any configuration you need a minimal config.toml file on the conf directory.
 
-### Notification
-![](https://github.com/wangdicoder/angular2-material-dashboard-pro/raw/master/screenshot/notification.gif)
+```bash
+cp conf/sample.ipashome.toml conf/ipashome.toml
+./bin/ipashome
+```
 
-### Settings
-![](https://github.com/wangdicoder/angular2-material-dashboard-pro/raw/master/screenshot/settings.gif)
+### Recompile backend on source change (only for developers)
 
-### Table
-![](https://github.com/wangdicoder/angular2-material-dashboard-pro/raw/master/screenshot/table.png)
+To rebuild on source change (requires that you executed godep restore)
+```bash
+go get github.com/Unknwon/bra
+npm start
+```
+will init a change autodetect webserver with angular-cli (ng serve) and also a autodetect and recompile process with bra for the backend
 
-### Price
-![](https://github.com/wangdicoder/angular2-material-dashboard-pro/raw/master/screenshot/price.png)
 
-### Panels
-![](https://github.com/wangdicoder/angular2-material-dashboard-pro/raw/master/screenshot/panel.png)
+#### Online config
 
-## Acknowledge 
-
-- [Creative Tim](https://github.com/creativetimofficial)
-- [Sweet Alert 2](https://github.com/limonte/sweetalert2)
-- [Bootstrap Notify](http://bootstrap-notify.remabledesigns.com)
-
-## License
-
-MIT
+Now you wil be able to configure metrics/measuremnets and devices from the builting web server at  http://localhost:5090 or http://localhost:4200 if working in development mode (npm start)
