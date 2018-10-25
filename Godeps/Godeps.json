@@ -1,0 +1,230 @@
+{
+	"ImportPath": "bitbucket.org/everis_ipas/ipas-home",
+	"GoVersion": "go1.10",
+	"GodepVersion": "v80",
+	"Packages": [
+		"./pkg/..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v1.1.1-16-g4fabf2f",
+			"Rev": "4fabf2fffcecfd47f802869b7b92d75e43c5a095"
+		},
+		{
+			"ImportPath": "github.com/Unknwon/com",
+			"Comment": "v1-15-g41959bd",
+			"Rev": "41959bdd855fb7db467f78865d5f9044507df1cd"
+		},
+		{
+			"ImportPath": "github.com/fsnotify/fsnotify",
+			"Comment": "v1.4.7-6-gccc981b",
+			"Rev": "ccc981bf80385c528a65fbfdd49bf2d8da22aa23"
+		},
+		{
+			"ImportPath": "github.com/go-macaron/binding",
+			"Rev": "ac54ee249c27dca7e76fad851a4a04b73bd1b183"
+		},
+		{
+			"ImportPath": "github.com/go-macaron/inject",
+			"Rev": "d8a0b8677191f4380287cfebd08e462217bac7ad"
+		},
+		{
+			"ImportPath": "github.com/go-macaron/session",
+			"Rev": "330e4e4d8beb7b00111ac34539561f46f94c4458"
+		},
+		{
+			"ImportPath": "github.com/go-macaron/toolbox",
+			"Rev": "a77f45a7ce909c0ff14b28279fa1a2b674acb70f"
+		},
+		{
+			"ImportPath": "github.com/go-sql-driver/mysql",
+			"Comment": "v1.4.0-8-g7daee5b",
+			"Rev": "7daee5be2a29576f4bada53f3754b8cf886772a6"
+		},
+		{
+			"ImportPath": "github.com/go-xorm/builder",
+			"Comment": "v0.3.2",
+			"Rev": "ef80bec6771b66907d34a878fe8b3914b9f5cda8"
+		},
+		{
+			"ImportPath": "github.com/go-xorm/core",
+			"Comment": "v0.6.0-2-g6bc9412",
+			"Rev": "6bc9412b1c4d00c0a5cc9dd939a245a82cc50227"
+		},
+		{
+			"ImportPath": "github.com/go-xorm/xorm",
+			"Comment": "v0.7.1",
+			"Rev": "1f39c590c64924f358c0d89016ac9b2bb84e9125"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl",
+			"Comment": "v1.0.0-1-g65a6292",
+			"Rev": "65a6292f0157eff210d03ed1bf6c59b190b8b906"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/hcl/ast",
+			"Comment": "v1.0.0-1-g65a6292",
+			"Rev": "65a6292f0157eff210d03ed1bf6c59b190b8b906"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/hcl/parser",
+			"Comment": "v1.0.0-1-g65a6292",
+			"Rev": "65a6292f0157eff210d03ed1bf6c59b190b8b906"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/hcl/printer",
+			"Comment": "v1.0.0-1-g65a6292",
+			"Rev": "65a6292f0157eff210d03ed1bf6c59b190b8b906"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/hcl/scanner",
+			"Comment": "v1.0.0-1-g65a6292",
+			"Rev": "65a6292f0157eff210d03ed1bf6c59b190b8b906"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/hcl/strconv",
+			"Comment": "v1.0.0-1-g65a6292",
+			"Rev": "65a6292f0157eff210d03ed1bf6c59b190b8b906"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/hcl/token",
+			"Comment": "v1.0.0-1-g65a6292",
+			"Rev": "65a6292f0157eff210d03ed1bf6c59b190b8b906"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/json/parser",
+			"Comment": "v1.0.0-1-g65a6292",
+			"Rev": "65a6292f0157eff210d03ed1bf6c59b190b8b906"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/json/scanner",
+			"Comment": "v1.0.0-1-g65a6292",
+			"Rev": "65a6292f0157eff210d03ed1bf6c59b190b8b906"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/json/token",
+			"Comment": "v1.0.0-1-g65a6292",
+			"Rev": "65a6292f0157eff210d03ed1bf6c59b190b8b906"
+		},
+		{
+			"ImportPath": "github.com/influxdata/influxdb/client/v2",
+			"Comment": "v1.6.0rc0-509-g691dfb8bc",
+			"Rev": "691dfb8bc1a192c61568b64d17940d868936fe9a"
+		},
+		{
+			"ImportPath": "github.com/influxdata/influxdb/models",
+			"Comment": "v1.6.0rc0-509-g691dfb8bc",
+			"Rev": "691dfb8bc1a192c61568b64d17940d868936fe9a"
+		},
+		{
+			"ImportPath": "github.com/influxdata/influxdb/pkg/escape",
+			"Comment": "v1.6.0rc0-509-g691dfb8bc",
+			"Rev": "691dfb8bc1a192c61568b64d17940d868936fe9a"
+		},
+		{
+			"ImportPath": "github.com/influxdata/platform/models",
+			"Rev": "095c2be65f4d523ac8f0e9057e35820ee7130d79"
+		},
+		{
+			"ImportPath": "github.com/influxdata/platform/pkg/escape",
+			"Rev": "095c2be65f4d523ac8f0e9057e35820ee7130d79"
+		},
+		{
+			"ImportPath": "github.com/konsorten/go-windows-terminal-sequences",
+			"Comment": "v1.0.1",
+			"Rev": "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
+		},
+		{
+			"ImportPath": "github.com/magiconair/properties",
+			"Comment": "v1.8.0",
+			"Rev": "c2353362d570a7bfa228149c62842019201cfb71"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-sqlite3",
+			"Comment": "v1.9.0-38-gc7c4067",
+			"Rev": "c7c4067b79cc51e6dfdcef5c702e74b1e0fa7c75"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/mapstructure",
+			"Comment": "v1.1.2",
+			"Rev": "3536a929edddb9a5b34bd6861dc4a9647cb459fe"
+		},
+		{
+			"ImportPath": "github.com/pelletier/go-toml",
+			"Comment": "v1.2.0-12-g81a861c",
+			"Rev": "81a861c69d25a841d0c4394f0e6f84bc8c5afae0"
+		},
+		{
+			"ImportPath": "github.com/spf13/afero",
+			"Comment": "v1.1.2",
+			"Rev": "d40851caa0d747393da1ffb28f7f9d8b4eeffebd"
+		},
+		{
+			"ImportPath": "github.com/spf13/afero/mem",
+			"Comment": "v1.1.2",
+			"Rev": "d40851caa0d747393da1ffb28f7f9d8b4eeffebd"
+		},
+		{
+			"ImportPath": "github.com/spf13/cast",
+			"Comment": "v1.2.0-6-g8c9545a",
+			"Rev": "8c9545af88b134710ab1cd196795e7f2388358d7"
+		},
+		{
+			"ImportPath": "github.com/spf13/jwalterweatherman",
+			"Comment": "v1.0.0-1-g103a6da",
+			"Rev": "103a6da826d08544f49833dabd4f1cdf8a1038bb"
+		},
+		{
+			"ImportPath": "github.com/spf13/pflag",
+			"Comment": "v1.0.3-4-g082b515",
+			"Rev": "082b515c9490f4eccc758469c3152b77d139f868"
+		},
+		{
+			"ImportPath": "github.com/spf13/viper",
+			"Comment": "v1.2.1-9-g62edee3",
+			"Rev": "62edee319679b6ceaec16de03b966102d2dea709"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/pbkdf2",
+			"Rev": "74cb1d3d52f4c01cbfb44c1b50d204462f3124c7"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/ssh/terminal",
+			"Rev": "74cb1d3d52f4c01cbfb44c1b50d204462f3124c7"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "d989b31c87461dc8ab2f1cac6792814e27fadea9"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/windows",
+			"Rev": "d989b31c87461dc8ab2f1cac6792814e27fadea9"
+		},
+		{
+			"ImportPath": "golang.org/x/text/transform",
+			"Comment": "v0.3.0-63-g4d1c5fb",
+			"Rev": "4d1c5fb19474adfe9562c9847ba425e7da817e81"
+		},
+		{
+			"ImportPath": "golang.org/x/text/unicode/norm",
+			"Comment": "v0.3.0-63-g4d1c5fb",
+			"Rev": "4d1c5fb19474adfe9562c9847ba425e7da817e81"
+		},
+		{
+			"ImportPath": "gopkg.in/ini.v1",
+			"Comment": "v1.39.0",
+			"Rev": "9c8236e659b76e87bf02044d06fde8683008ff3e"
+		},
+		{
+			"ImportPath": "gopkg.in/macaron.v1",
+			"Comment": "v1.3.1",
+			"Rev": "c1be95e6d21e769e44e1ec33cec9da5837861c10"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v2",
+			"Comment": "v2.2.1",
+			"Rev": "5420a8b6744d3b0345ab293f6fcba19c978f1183"
+		}
+	]
+}

@@ -18,6 +18,7 @@ If you want to build a package yourself, or contribute. Here is a guide for how 
 mkdir -p $GOPATH/src/bitbucket.org/everis_ipas/ipas-home
 cd $GOPATH/src/bitbucket.org/everis_ipas/ipas-home
 git clone https://ipasdevel@bitbucket.org/everis_ipas/ipas-home.git
+export PATH=$PATH:$GOPATH/bin/
 ```
 
 ### Building the backend
