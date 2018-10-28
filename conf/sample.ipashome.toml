@@ -81,3 +81,11 @@
  adminpassword = "adm1pass"
  #When more than one instance you will need customize the cookie_id allowing navigate to all instances
  cookieid ="my_instance_cookie"
+
+############################
+# Product Repo
+############################
+
+[productrepo]
+ clonesource   = "https://ipasdevel:1p4sm0l4@bitbucket.org/everis_ipas/ipas-gva.git"
+ clonepath = "/tmp/clone"

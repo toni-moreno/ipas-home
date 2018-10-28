@@ -43,12 +43,19 @@ type HTTPConfig struct {
 	CookieID      string `toml:"cookieid"`
 }
 
+//GitRepo main Product Repo config
+type GitRepo struct {
+	CloneSource string `toml:"clone_source"`
+	ClonePath   string `toml:"clone_path"`
+}
+
 // Config All resitor configuration
 type Config struct {
-	General  GeneralConfig
-	Database DatabaseCfg
-	Selfmon  SelfMonConfig
-	HTTP     HTTPConfig
+	General     GeneralConfig
+	Database    DatabaseCfg
+	Selfmon     SelfMonConfig
+	HTTP        HTTPConfig
+	ProductRepo GitRepo
 }
 
 //var MainConfig Config

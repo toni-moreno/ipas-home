@@ -18,6 +18,7 @@ import (
 	"bitbucket.org/everis_ipas/ipas-home/pkg/agent/selfmon"
 	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
 	"bitbucket.org/everis_ipas/ipas-home/pkg/data/impexp"
+	"bitbucket.org/everis_ipas/ipas-home/pkg/repo"
 	"bitbucket.org/everis_ipas/ipas-home/pkg/webui"
 )
 
@@ -155,6 +156,8 @@ func init() {
 
 	impexp.SetLogger(log)
 
+	repo.SetLogger(log)
+
 	log.Infof("Set Default directories : \n   - Exec: %s\n   - Config: %s\n   -Logs: %s\n -Home: %s\n", appdir, confDir, logDir, homeDir)
 }
 
@@ -168,6 +171,7 @@ func main() {
 
 	agent.MainConfig.Database.InitDB()
 	impexp.SetDB(&agent.MainConfig.Database)
+	repo.Init(&agent.MainConfig.ProductRepo)
 
 	agent.LoadConf()
 
