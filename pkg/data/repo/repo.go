@@ -13,6 +13,7 @@ var (
 	log     *logrus.Logger
 	confDir string              //Needed to get File Filters data
 	dbc     *config.DatabaseCfg //Needed to get Custom Filter  data
+	repo    *git.Repository
 )
 
 // SetConfDir  enable load File Filters from anywhere in the our FS.
@@ -30,37 +31,37 @@ func SetLogger(l *logrus.Logger) {
 	log = l
 }
 
-// NewExport ExportData type creator
-func Init(repo *config.GitRepo) {
+// Init Initialices the Git Repo
+func Init(cfgrepo *config.GitRepo) {
 
-	if _, err := os.Stat(repo.ClonePath); os.IsNotExist(err) {
-		err := os.Mkdir(repo.ClonePath, 0750)
+	if _, err := os.Stat(cfgrepo.ClonePath); os.IsNotExist(err) {
+		err := os.Mkdir(cfgrepo.ClonePath, 0750)
 		if err != nil {
-			log.Errorf("Creating Repo Path [ %s ] : %s", repo.ClonePath, err)
+			log.Errorf("Creating Repo Path [ %s ] : %s", cfgrepo.ClonePath, err)
 			return
-		} else {
-			log.Infof("Creating Repo Path [ %s ]", repo.ClonePath)
 		}
+		log.Infof("Creating Repo Path [ %s ]", cfgrepo.ClonePath)
 	}
 
-	r, err := git.PlainClone(repo.ClonePath, false, &git.CloneOptions{
-		URL:      repo.CloneSource,
+	r, err := git.PlainClone(cfgrepo.ClonePath, false, &git.CloneOptions{
+		URL:      cfgrepo.CloneSource,
 		Progress: os.Stdout,
 	})
 	if err != nil {
-		log.Errorf("Error on Clone repo %s ", repo.CloneSource)
+		log.Errorf("Error on Clone repo %s ", cfgrepo.CloneSource)
 		return
 	}
+	repo = r
 
 	// retrieves the branch pointed by HEAD
-	ref, err := r.Head()
+	ref, err := repo.Head()
 	if err != nil {
 		log.Errorf("Error on get HEAD repo ")
 		return
 	}
 
 	// ... retrieves the commit history
-	cIter, err := r.Log(&git.LogOptions{From: ref.Hash()})
+	cIter, err := repo.Log(&git.LogOptions{From: ref.Hash()})
 	if err != nil {
 		log.Errorf("Error on get commit History ")
 		return

@@ -18,7 +18,7 @@ import (
 	"bitbucket.org/everis_ipas/ipas-home/pkg/agent/selfmon"
 	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
 	"bitbucket.org/everis_ipas/ipas-home/pkg/data/impexp"
-	"bitbucket.org/everis_ipas/ipas-home/pkg/repo"
+	"bitbucket.org/everis_ipas/ipas-home/pkg/data/repo"
 	"bitbucket.org/everis_ipas/ipas-home/pkg/webui"
 )
 

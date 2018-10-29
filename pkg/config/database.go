@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"strings"
+
 	// _ needed to mysql
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/core"
@@ -10,6 +11,7 @@ import (
 
 	"os"
 	"sync/atomic"
+
 	// _ needed to sqlite3
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -77,20 +79,13 @@ func (dbc *DatabaseCfg) InitDB() {
 	}
 
 	// Sync tables
-	if err = dbc.x.Sync(new(InfluxCfg)); err != nil {
+	if err = dbc.x.Sync(new(ServiceCfg)); err != nil {
 		log.Fatalf("Fail to sync database InfluxServerCfg: %v\n", err)
 	}
 
-	if err = dbc.x.Sync(new(HMCCfg)); err != nil {
-		log.Fatalf("Fail to sync database HMCConfig: %v\n", err)
-	}
-
-	if err = dbc.x.Sync(new(DeviceCfg)); err != nil {
-		log.Fatalf("Fail to sync database DeviceCfg: %v\n", err)
-	}
-
-	if err = dbc.x.Sync(new(NmonFileInfo)); err != nil {
-		log.Fatalf("Fail to sync database NmonFileStats: %v\n", err)
+	// Sync tables
+	if err = dbc.x.Sync(new(InfluxCfg)); err != nil {
+		log.Fatalf("Fail to sync database InfluxServerCfg: %v\n", err)
 	}
 }
 
