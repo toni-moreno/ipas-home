@@ -25,12 +25,13 @@ type InfluxCfg struct {
 // ServiceCfg has all the Platform Device
 type ServiceCfg struct {
 	ID          string `xorm:"'id' unique" binding:"Required"`
-	Label       string `xorm:"device_name" binding:"Required"` //title
+	Label       string `xorm:"label" binding:"Required"` //title
 	HeaderIcon  string `xorm:"header_icon"`
 	LinearColor string `xorm:"linear_color"`
 	FootContent string `xorm:"foot_content"`
 	FooterIcon  string `xorm:"footer_icon"`
 	Link        string `xorm:"link"`
+	Description string `xorm:"description"`
 	//--status
 	StatusMode            string `xorm:"status_mode"`
 	StatusURL             string `xorm:"status_url"`

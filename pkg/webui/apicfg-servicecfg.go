@@ -1,8 +1,13 @@
 package webui
 
 import (
-	//	"time"
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
 
+	"io/ioutil"
+	"net/http"
 	"time"
 
 	"bitbucket.org/everis_ipas/ipas-home/pkg/agent"
@@ -18,19 +23,19 @@ func NewAPICfgService(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/services", func() {
-		m.Get("/", reqSignedIn, GetServiceCfg)
-		m.Post("/", reqSignedIn, bind(config.ServiceCfg{}), AddServiceCfg)
-		m.Put("/:id", reqSignedIn, bind(config.ServiceCfg{}), UpdateServiceCfg)
-		m.Delete("/:id", reqSignedIn, DeleteServiceCfg)
-		m.Get("/:id", reqSignedIn, GetServiceCfgByID)
-		m.Get("/checkondel/:id", reqSignedIn, GetServiceCfgAffectOnDel)
-		m.Post("/ping/", reqSignedIn, bind(config.ServiceCfg{}), PingServiceCfg)
+		m.Get("/" /*reqSignedIn,*/, GetServiceCfg)
+		m.Post("/" /*reqSignedIn,*/, bind(config.ServiceCfg{}), AddServiceCfg)
+		m.Put("/:id" /* reqSignedIn,*/, bind(config.ServiceCfg{}), UpdateServiceCfg)
+		m.Delete("/:id" /* reqSignedIn,*/, DeleteServiceCfg)
+		m.Get("/:id" /*reqSignedIn,*/, GetServiceCfgByID)
+		m.Get("/checkondel/:id" /*reqSignedIn,*/, GetServiceCfgAffectOnDel)
+		m.Get("/ping/" /*reqSignedIn,*/, PingServiceCfg)
 	})
 
 	return nil
 }
 
-// GetServiceCfg Return Server Array
+// GetServiceCfg Return Service Array
 func GetServiceCfg(ctx *Context) {
 	cfgarray, err := agent.MainConfig.Database.GetServiceCfgArray("")
 	if err != nil {
@@ -42,7 +47,7 @@ func GetServiceCfg(ctx *Context) {
 	log.Debugf("Getting DEVICEs %+v", &cfgarray)
 }
 
-// AddServiceCfg Insert new measurement groups to de internal BBDD --pending--
+// AddServiceCfg Insert new service to the internal BBDD --pending--
 func AddServiceCfg(ctx *Context, dev config.ServiceCfg) {
 	log.Printf("ADDING Service %+v", dev)
 	affected, err := agent.MainConfig.Database.AddServiceCfg(dev)
@@ -105,27 +110,108 @@ func GetServiceCfgAffectOnDel(ctx *Context) {
 	}
 }
 
-// PingHTTP get info about url
-func PingHTTP(cfg *config.ServiceCfg, log *logrus.Logger, apidbg bool) (time.Duration, string, error) {
-	return 0, "", nil
+func inArray(val int, arr []string) bool {
+	for _, v := range arr {
+		log.Debugf("")
+		if v == strconv.Itoa(val) {
+			return true
+		}
+	}
+	return false
 }
 
-// PingService
-func PingServiceCfg(ctx *Context, cfg config.ServiceCfg) {
-	log.Infof("trying to ping influx server %s : %+v", cfg.ID, cfg)
-	elapsed, message, err := PingHTTP(&cfg, log, true)
-	type result struct {
-		Result  string
-		Elapsed time.Duration
-		Message string
+// PingHTTP get info about url
+func PingHTTP(cfg *config.ServiceCfg, log *logrus.Logger, apidbg bool) (time.Duration, string, error) {
+	var resp *http.Response
+	var err error
+	start := time.Now()
+	//Status Mode
+	switch cfg.StatusMode {
+	case "GET":
+		log.Debugf("PING HTTP GET : %s", cfg.ID)
+		resp, err = http.Get(cfg.StatusURL)
+		if err != nil {
+			elapsed := time.Since(start)
+			return elapsed, "ERROR", err
+		}
+		defer resp.Body.Close()
+
+	default:
+		log.Warnf("Unknown status mode %s", cfg.StatusMode)
 	}
+	//Validation mode
+	switch cfg.StatusValidationMode {
+	case "statuscode":
+
+		elapsed := time.Since(start)
+		if inArray(resp.StatusCode, strings.Split(cfg.StatusValidationValue, ",")) {
+			log.Debugf("PING HTTP GET STATUS : %d STATUS OK : %s", cfg.ID, resp.StatusCode)
+			return elapsed, "OK", nil
+		}
+		log.Debugf("PING HTTP GET STATUS : %s STATUS ERROR : %d  not in (%s)", cfg.ID, resp.StatusCode, cfg.StatusValidationValue)
+		return elapsed, "ERROR", fmt.Errorf("Got Status %d not in (%s)", resp.StatusCode, cfg.StatusValidationValue)
+	case "content":
+
+		body, err := ioutil.ReadAll(resp.Body)
+		elapsed := time.Since(start)
+		if err != nil {
+			log.Debugf("PING HTTP GET STATUS error : %s", err)
+			return elapsed, "ERROR", fmt.Errorf("ERROR: %s", err)
+		}
+
+		if len(body) > 0 {
+			log.Debugf("PING HTTP GET STATUS : %s :%d", cfg.ID, len(body))
+			log.Debugf("BODY: %s", body)
+			return elapsed, "OK", nil
+		}
+		return elapsed, "ERROR", errors.New("ERROR in body: size 0")
+	default:
+		elapsed := time.Since(start)
+		log.Debugf("Unknown Validation Mode %s", cfg.StatusValidationMode)
+		return elapsed, "ERROR", fmt.Errorf("Unknown Validation Mode %s", cfg.StatusValidationMode)
+	}
+	elapsed := time.Since(start)
+	return elapsed, "OK", nil
+}
+
+// ServiceStatus struct
+type ServiceStatus struct {
+	Cfg            *config.ServiceCfg
+	ServiceStat    string
+	ServiceElapsed time.Duration
+	ServiceError   string
+}
+
+// PingServiceCfg get status info
+func PingServiceCfg(ctx *Context) {
+
+	cfgarray, err := agent.MainConfig.Database.GetServiceCfgArray("")
 	if err != nil {
-		log.Debugf("ERROR on ping Service : %s", err)
-		res := result{Result: "NOOK", Elapsed: elapsed, Message: err.Error()}
-		ctx.JSON(400, res)
-	} else {
-		log.Debugf("OK on ping Service Server %+v, %+v", elapsed, message)
-		res := result{Result: "OK", Elapsed: elapsed, Message: message}
-		ctx.JSON(200, res)
+		ctx.JSON(400, err)
+		return
 	}
+	var outputarray []*ServiceStatus
+
+	for _, s := range cfgarray {
+		log.Infof("trying to ping Service  %s : %+v", s.ID, s)
+		elapsed, message, err := PingHTTP(s, log, true)
+		var ss *ServiceStatus
+		if err != nil {
+			ss = &ServiceStatus{
+				Cfg:            s,
+				ServiceStat:    message,
+				ServiceElapsed: elapsed,
+				ServiceError:   err.Error(),
+			}
+		} else {
+			ss = &ServiceStatus{
+				Cfg:            s,
+				ServiceStat:    message,
+				ServiceElapsed: elapsed,
+			}
+		}
+
+		outputarray = append(outputarray, ss)
+	}
+	ctx.JSON(200, outputarray)
 }
