@@ -23,18 +23,19 @@ import (
 )
 
 var (
-	log        = logrus.New()
-	quit       = make(chan struct{})
-	startTime  = time.Now()
-	getversion bool
-	httpPort   = 8080
-	appdir     = os.Getenv("PWD")
-	homeDir    string
-	pidFile    string
-	logDir     = filepath.Join(appdir, "log")
-	confDir    = filepath.Join(appdir, "conf")
-	dataDir    = confDir
-	configFile = filepath.Join(confDir, "ipashome.toml")
+	log         = logrus.New()
+	quit        = make(chan struct{})
+	startTime   = time.Now()
+	getversion  bool
+	httpPort    = 8080
+	appdir      = os.Getenv("PWD")
+	homeDir     string
+	pidFile     string
+	logDir      = filepath.Join(appdir, "log")
+	confDir     = filepath.Join(appdir, "conf")
+	downloadDir = filepath.Join(appdir, "download")
+	dataDir     = confDir
+	configFile  = filepath.Join(confDir, "ipashome.toml")
 )
 
 func writePIDFile() {
@@ -142,6 +143,11 @@ func init() {
 		}
 	}
 
+	if len(cfg.General.DownloadDir) > 0 {
+		downloadDir = cfg.General.DownloadDir
+		os.Mkdir(downloadDir, 0755)
+	}
+
 	log.Debug("AGENT MAINCONFIG LOAD  %#+v", cfg)
 	//needed to create SQLDB when SQLite and debug log
 	config.SetLogger(log)
@@ -152,6 +158,8 @@ func init() {
 	webui.SetLogger(log)
 	webui.SetLogDir(logDir)
 	webui.SetConfDir(confDir)
+	webui.SetDownloadDir(downloadDir)
+
 	agent.SetLogger(log)
 
 	impexp.SetLogger(log)

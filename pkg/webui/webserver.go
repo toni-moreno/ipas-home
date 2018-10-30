@@ -17,12 +17,17 @@ import (
 )
 
 var (
-	logDir     string
-	confDir    string
-	log        *logrus.Logger
-	confHTTP   *config.HTTPConfig
-	instanceID string
+	logDir      string
+	confDir     string
+	log         *logrus.Logger
+	confHTTP    *config.HTTPConfig
+	instanceID  string
+	downloadDir string
 )
+
+func SetDownloadDir(dir string) {
+	downloadDir = dir
+}
 
 // SetLogDir et dir for logs
 func SetLogDir(dir string) {
@@ -175,6 +180,7 @@ func WebServer(publicPath string, httpPort int, cfg *config.HTTPConfig, id strin
 	NewAPICfgImportExport(m)
 	NewAPICfgService(m)      //Services
 	NewAPICfgInfluxServer(m) //Influx Databases
+	NewAPIRtGitRepo(m)
 
 	log.Printf("Server is running on localhost:%d...", port)
 	httpServer := fmt.Sprintf("0.0.0.0:%d", port)

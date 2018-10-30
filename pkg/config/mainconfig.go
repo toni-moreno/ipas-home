@@ -6,11 +6,12 @@ import (
 
 // GeneralConfig has miscellaneous configuration options
 type GeneralConfig struct {
-	InstanceID string `toml:"instanceID"`
-	LogDir     string `toml:"logdir"`
-	HomeDir    string `toml:"homedir"`
-	DataDir    string `toml:"datadir"`
-	LogLevel   string `toml:"loglevel"`
+	InstanceID  string `toml:"instanceID"`
+	LogDir      string `toml:"logdir"`
+	HomeDir     string `toml:"homedir"`
+	DataDir     string `toml:"datadir"`
+	LogLevel    string `toml:"loglevel"`
+	DownloadDir string `toml:"downloaddir"`
 }
 
 //DatabaseCfg de configuration for the database

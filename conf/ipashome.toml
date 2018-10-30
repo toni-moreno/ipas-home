@@ -14,6 +14,8 @@
  # logLevel set de main process log level
  # valid values: panic,fatal,error,warn,info,debug
  logLevel = "debug"
+ # where files for download will be placed
+ downloaddir = "/tmp/files"
 
  ############################
  # DataBase Config
@@ -71,3 +73,14 @@
  adminuser = "adm1"
  adminpassword = "adm1pass"
  cookieid = "my_instance_cookie"
+
+
+############################
+# Product Repo
+############################
+
+[productrepo]
+ clonesource   = "https://ipasdevel:1p4sm0l4@bitbucket.org/everis_ipas/ipas-gva.git"
+ clonepath = "/tmp/clone"
+
+

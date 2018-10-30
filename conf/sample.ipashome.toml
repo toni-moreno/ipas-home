@@ -18,6 +18,8 @@
  # logLevel set the main process log level
  # valid values: panic,fatal,error,warn,info,debug
  logLevel = "warn"
+  # where files for download will be placed
+ downloaddir = "/tmp/files"
 
  ############################
  # DataBase Config

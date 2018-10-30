@@ -2,6 +2,9 @@ package webui
 
 import (
 	//	"github.com/go-macaron/binding"
+	"os"
+	"path/filepath"
+
 	"bitbucket.org/everis_ipas/ipas-home/pkg/agent"
 	//	"time"
 	macaron "gopkg.in/macaron.v1"
@@ -13,8 +16,9 @@ func NewAPIRtAgent(m *macaron.Macaron) error {
 	//	bind := binding.Bind
 
 	m.Group("/api/rt/agent", func() {
-		m.Get("/info/version/", reqSignedIn, RTGetVersion)
-		m.Get("/reload/", reqSignedIn, AgentReloadConf)
+		m.Get("/info/version/" /* reqSignedIn,*/, RTGetVersion)
+		m.Get("/reload/" /*reqSignedIn,*/, AgentReloadConf)
+		m.Get("/download/:id" /*reqSignedIn,*/, AgentDownloadFile)
 	})
 
 	return nil
@@ -35,4 +39,19 @@ func AgentReloadConf(ctx *Context) {
 		return
 	}
 	ctx.JSON(200, time)
+}
+
+// AgentDownloadFile xx
+func AgentDownloadFile(ctx *Context) {
+	log.Info("trying to reload configuration for all devices")
+	file := ctx.Params(":id")
+	path := filepath.Clean(downloadDir + "/" + file)
+	//avoid certain paths
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		// path/to/whatever does not exist
+		ctx.JSON(404, err.Error())
+		return
+	}
+	ctx.ServeFile(path)
 }
