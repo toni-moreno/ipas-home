@@ -4,21 +4,27 @@ interface NodeModule {
   id: string;
 }
 
-interface ServiceSection {
-  name: string;
-  description: string;
-  content: ServiceElement[]
+interface ServiceElement {
+  ID: string,
+  Label: string,
+  HeaderIcon: string,
+  LinearColor: string,
+  FootContent: string,
+  FooterIcon: string,
+  Link: string,
+  Description: string,
+  StatusMode: string,
+  StatusURL: string,
+  StatusContentType: string,
+  StatusValidationMode: string,
+  StatusValidationValue: string
 }
 
-interface ServiceElement {
-  title: string;
-  headerIcon: string;
-  description: string;
-  status?: any,
-  linearColor : string,
-  footContent : string,
-  footerIcon: string,
-  link: string
+
+interface StatusCard {
+  ServiceStat: string,
+  ServiceElapsed: number,
+  ServiceError: string,
 }
 
 interface ProductElement {

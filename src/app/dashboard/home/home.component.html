@@ -1,25 +1,9 @@
 <div class="container">
   <app-navbar title="Dashboard"></app-navbar>
+  <br>
   <mat-divider></mat-divider>
+  <br>
   <ng-container *ngFor="let item of myComponents">
-      <mat-card>
-
-    <div class="row">
-        <mat-card-title>	
-      {{item.name}}
-        </mat-card-title>
-        <mat-card-subtitle>
-      {{item.description}}
-    </mat-card-subtitle>
-      <ng-container *ngFor="let content of item.content">
-        <app-card [figurecard]="content"></app-card>
-      </ng-container>
-    </div>
-  </mat-card>
-  <br>
-  <mat-divider></mat-divider>
-  <br>
-
-    
+    <app-card [serviceCard]="item"></app-card>
   </ng-container>
 </div>

@@ -1,5 +1,7 @@
 <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-  <app-figurecard [title]="serviceCard.title" [description]="serviceCard.description" [headerIcon]="serviceCard.headerIcon" [status]="serviceCard.status?.result" [footContent]="serviceCard.footContent"
-    [footerIcon]="serviceCard.footerIcon" [linearColor]="serviceCard.linearColor">
+  <ng-container *ngIf="figureCard">
+  <app-figurecard [title]="figureCard.Label" [description]="figureCard.Description" [headerIcon]="figureCard.HeaderIcon" [status]="figureCard?.Result" [footContent]="figureCard.FootContent"
+    [footerIcon]="figureCard.FooterIcon" [linearColor]="figureCard.LinearColor">
   </app-figurecard>
+  </ng-container>
 </div>

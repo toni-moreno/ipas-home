@@ -1,4 +1,4 @@
-export const HomeItems: ServiceSection[] =
+export const HomeItems: any =
   [
     {
       'name': 'IPAS Services',

@@ -30,6 +30,7 @@ func NewAPICfgService(m *macaron.Macaron) error {
 		m.Get("/:id" /*reqSignedIn,*/, GetServiceCfgByID)
 		m.Get("/checkondel/:id" /*reqSignedIn,*/, GetServiceCfgAffectOnDel)
 		m.Get("/ping/" /*reqSignedIn,*/, PingServiceCfg)
+		m.Get("/ping/:id" /*reqSignedIn,*/, PingServiceCfgByID)
 	})
 
 	return nil
@@ -180,6 +181,31 @@ type ServiceStatus struct {
 	ServiceStat    string
 	ServiceElapsed time.Duration
 	ServiceError   string
+}
+
+func PingServiceCfgByID(ctx *Context) {
+	id := ctx.Params(":id")
+	dev, err := agent.MainConfig.Database.GetServiceCfgByID(id)
+	log.Infof("trying to ping Service  %s : %+v", &dev.ID, &dev)
+
+	elapsed, message, err := PingHTTP(&dev, log, true)
+	var ss *ServiceStatus
+
+	if err != nil {
+		ss = &ServiceStatus{
+			Cfg:            &dev,
+			ServiceStat:    message,
+			ServiceElapsed: elapsed,
+			ServiceError:   err.Error(),
+		}
+	} else {
+		ss = &ServiceStatus{
+			Cfg:            &dev,
+			ServiceStat:    message,
+			ServiceElapsed: elapsed,
+		}
+	}
+	ctx.JSON(200, ss)
 }
 
 // PingServiceCfg get status info

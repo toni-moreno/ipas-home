@@ -2,8 +2,8 @@
   <div class="card-header" [ngStyle]="{ 'background': linearColor}">
     <i class="material-icons">{{ headerIcon }}</i>
   </div>
-  <div *ngIf="status" class="card-header3" [ngStyle]="status  === 'OK' ?  { 'background': 'green'} : { 'background' : 'red'} ">
-      <span class="status">{{ status }}</span>
+  <div *ngIf="status" class="card-header3" [ngStyle]="status.ServiceStat  === 'OK' ?  { 'background': 'green'} : { 'background' : 'red'} ">
+      <span class="status">{{ status.ServiceStat }}</span>
   </div>
   <div *ngIf="!status" class="card-header4">
     <mat-spinner diameter=30> </mat-spinner>
