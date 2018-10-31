@@ -38,12 +38,19 @@ type ServiceCfg struct {
 	StatusContentType     string `xorm:"status_content_type"`
 	StatusValidationMode  string `xorm:"status_validation_mode"`
 	StatusValidationValue string `xorm:"status_validation_value"`
+} // ServiceCfg has all the Platform Device
+
+// ProductDBMap a map for products
+type ProductDBMap struct {
+	ID       string `xorm:"'id' unique" binding:"Required"`
+	Database string `xorm:"database"`
 }
 
 // DBConfig
 type DBConfig struct {
-	Services map[string]*ServiceCfg
-	Influxdb map[string]*InfluxCfg
+	Services     map[string]*ServiceCfg
+	Influxdb     map[string]*InfluxCfg
+	ProductDbMap map[string]*ProductDBMap
 }
 
 // Init initialices the DB

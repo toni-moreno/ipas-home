@@ -179,6 +179,7 @@ func main() {
 
 	agent.MainConfig.Database.InitDB()
 	impexp.SetDB(&agent.MainConfig.Database)
+	repo.SetDB(&agent.MainConfig.Database)
 	repo.Init(&agent.MainConfig.ProductRepo)
 
 	agent.LoadConf()

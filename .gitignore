@@ -43,3 +43,5 @@ testem.log
 Thumbs.db
 #binaries
 bin/*
+conf/*.db
+log/*

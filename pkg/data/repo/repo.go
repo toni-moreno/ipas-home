@@ -90,10 +90,11 @@ func Init(cfgrepo *config.GitRepo) {
 
 // ProductStat give us the definition stat for this product
 type ProductStat struct {
-	Name string
-	HasG bool
-	HasV bool
-	HasA bool
+	Name  string
+	HasDB bool
+	HasG  bool
+	HasV  bool
+	HasA  bool
 }
 
 // EngineConfig get MainConfig this engine
@@ -177,6 +178,15 @@ func GetProductStatus() ([]*ProductStat, error) {
 		if len(p.Visual) > 0 {
 			ps.HasV = true
 		}
+
+		_, err = dbc.GetProductDBMapByID(ps.Name)
+		if err != nil {
+			log.Warningf("Error on get DB map for proudct %s  , error: %s", ps.Name, err)
+			ps.HasDB = false
+		} else {
+			ps.HasDB = true
+		}
+
 		stat = append(stat, ps)
 		return nil
 	})
@@ -201,11 +211,6 @@ func GetProductDef(id string) (*Product, error) {
 		log.Errorf("")
 		return nil, fmt.Errorf("Error load Product YAML  %s, Err:%s", id, err)
 	}
-	/*datajson, err := json.Marshal(p)
-	if err != nil {
-		log.Errorf("ERROR JSON UNMARSHALL\n %s", err)
-		log.Debugf("%#v\n", p)
-	}
-	log.Debugf("DATA: %s", datajson)*/
+
 	return p, nil
 }

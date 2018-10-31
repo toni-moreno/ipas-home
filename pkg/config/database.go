@@ -87,19 +87,24 @@ func (dbc *DatabaseCfg) InitDB() {
 	if err = dbc.x.Sync(new(InfluxCfg)); err != nil {
 		log.Fatalf("Fail to sync database InfluxServerCfg: %v\n", err)
 	}
+
+	// Sync tables
+	if err = dbc.x.Sync(new(ProductDBMap)); err != nil {
+		log.Fatalf("Fail to sync database ProducDBMap: %v\n", err)
+	}
 }
 
 //LoadDbConfig get data from database
 func (dbc *DatabaseCfg) LoadDbConfig(cfg *DBConfig) {
 	/*var err error
 
-	/*Load InfluxDB engines map
+	//Load  Product DB Map engines map
 	cfg.Influxdb, err = dbc.GetInfluxCfgMap("")
 	if err != nil {
 		log.Warningf("Some errors on get Influx Ouput servers URL :%v", err)
 	}
 
-	//Load HMC engines map
+	/*Load HMC engines map
 	cfg.HMC, err = dbc.GetHMCCfgMap("")
 	if err != nil {
 		log.Warningf("Some errors on get HMC servers  URL :%v", err)
