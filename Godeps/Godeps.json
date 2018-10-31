@@ -369,6 +369,11 @@
 			"Rev": "c1be95e6d21e769e44e1ec33cec9da5837861c10"
 		},
 		{
+			"ImportPath": "gopkg.in/mikefarah/yaml.v2",
+			"Comment": "v2.3.0",
+			"Rev": "e175af14aaa1d0eff2ee04b691e4a4827a111416"
+		},
+		{
 			"ImportPath": "gopkg.in/src-d/go-billy.v4",
 			"Comment": "v4.3.0",
 			"Rev": "982626487c60a5252e7d0b695ca23fb0fa2fd670"

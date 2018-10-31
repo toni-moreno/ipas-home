@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 	"regexp"
 
 	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
@@ -13,7 +14,9 @@ import (
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 
-	"gopkg.in/yaml.v2"
+	//	"gopkg.in/yaml.v2"
+	//https://github.com/go-yaml/yaml/issues/139
+	"gopkg.in/mikefarah/yaml.v2"
 )
 
 var (
@@ -41,6 +44,10 @@ func SetLogger(l *logrus.Logger) {
 
 // Init Initialices the Git Repo
 func Init(cfgrepo *config.GitRepo) {
+
+	//https://github.com/go-yaml/yaml/issues/139
+	yaml.DefaultMapType = reflect.TypeOf(map[string]interface{}{})
+
 	clonePath = cfgrepo.ClonePath
 	if _, err := os.Stat(cfgrepo.ClonePath); os.IsNotExist(err) {
 		err := os.Mkdir(cfgrepo.ClonePath, 0750)
@@ -92,28 +99,28 @@ type ProductStat struct {
 
 // EngineConfig get MainConfig this engine
 type EngineConfig struct {
-	Name        string
-	Models      string
-	Description string
-	Dir         string
-	Config      interface{}
-	Params      interface{}
+	Name        string      `yaml:"name"`
+	Models      string      `yaml:"models"`
+	Description string      `yaml:"description"`
+	Dir         string      `yaml:"dir"`
+	Config      interface{} `yaml:"config"`
+	Params      interface{} `yaml:"params"`
 }
 
 // Engine a set of configurations related to One Engine or other
 type Engine struct {
-	Engine string
-	Config []EngineConfig
+	Engine string         `yaml:"engine"`
+	Config []EngineConfig `yaml:"config"`
 }
 
 // Product State of a product
 type Product struct {
-	Product     string
-	Models      string
-	Description string
-	Gather      []Engine
-	Visual      []Engine
-	Alert       []Engine
+	Product     string   `yaml:"product"`
+	Models      string   `yaml:"models"`
+	Description string   `yaml:"description"`
+	Gather      []Engine `yaml:"gather"`
+	Visual      []Engine `yaml:"visual"`
+	Alert       []Engine `yaml:"alert"`
 }
 
 // LoadProductYaml load product data
@@ -196,6 +203,10 @@ func GetProductDef(id string) (*Product, error) {
 		return nil, fmt.Errorf("Error load Product YAML  %s, Err:%s", id, err)
 	}
 	datajson, err := json.Marshal(p)
+	if err != nil {
+		log.Errorf("ERROR JSON UNMARSHALL\n %s", err)
+		log.Debugf("%#v\n", p)
+	}
 	log.Debugf("DATA: %s", datajson)
 	return p, nil
 }
