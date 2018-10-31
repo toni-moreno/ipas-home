@@ -46,8 +46,9 @@ type HTTPConfig struct {
 
 //GitRepo main Product Repo config
 type GitRepo struct {
-	CloneSource string `toml:"clone_source"`
-	ClonePath   string `toml:"clone_path"`
+	CloneSource  string `toml:"clone_source"`
+	ClonePath    string `toml:"clone_path"`
+	WorkOnBranch string `toml:"workonbranch"`
 }
 
 // Config All resitor configuration

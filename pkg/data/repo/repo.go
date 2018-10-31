@@ -11,6 +11,7 @@ import (
 	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
 	"github.com/Sirupsen/logrus"
 	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 
 	//	"gopkg.in/yaml.v2"
@@ -57,13 +58,23 @@ func Init(cfgrepo *config.GitRepo) {
 		log.Infof("Creating Repo Path [ %s ]", cfgrepo.ClonePath)
 	}
 
-	r, err := git.PlainClone(cfgrepo.ClonePath, false, &git.CloneOptions{
-		URL:      cfgrepo.CloneSource,
-		Progress: os.Stdout,
-	})
+	var r *git.Repository
+	var err error
+
+	// first try to get if exist
+	r, err = git.PlainOpen(cfgrepo.ClonePath)
 	if err != nil {
-		log.Errorf("Error on Clone repo %s ", cfgrepo.CloneSource)
-		return
+		//if not we will clone from source
+		log.Errorf("Error on Open Existing repo %s: Error: %s ", cfgrepo.ClonePath, err)
+
+		r, err = git.PlainClone(cfgrepo.ClonePath, false, &git.CloneOptions{
+			URL:      cfgrepo.CloneSource,
+			Progress: os.Stdout,
+		})
+		if err != nil {
+			log.Errorf("Error on Clone repo %s: Error: %s ", cfgrepo.CloneSource, err)
+			return
+		}
 	}
 	repo = r
 
@@ -86,6 +97,36 @@ func Init(cfgrepo *config.GitRepo) {
 		log.Debug(c)
 		return nil
 	})
+
+	// checkout to the working branch
+
+	if cfgrepo.WorkOnBranch != "master" {
+		w, err := r.Worktree()
+		if err != nil {
+			log.Errorf("Error on get Repo WorkTree")
+			return
+		}
+
+		branch := fmt.Sprintf("refs/heads/%s", cfgrepo.WorkOnBranch)
+		//first  checkout
+		err = w.Checkout(&git.CheckoutOptions{
+			//		Hash:   ref.Hash(),
+			Branch: plumbing.ReferenceName(branch),
+			Create: false,
+			Force:  false,
+		})
+		if err != nil {
+			log.Warnf("Can not change to brach %s, Error: %s", cfgrepo.WorkOnBranch, err)
+			err = w.Checkout(&git.CheckoutOptions{
+				//		Hash:   ref.Hash(),
+				Branch: plumbing.ReferenceName(branch),
+				Create: true,
+				Force:  false,
+			})
+			log.Infof("Successfully created Brach:  %s", cfgrepo.WorkOnBranch)
+		}
+		log.Infof("Successfully changed to Brach: %s", cfgrepo.WorkOnBranch)
+	}
 }
 
 // ProductStat give us the definition stat for this product
