@@ -130,7 +130,12 @@ func PingHTTP(cfg *config.ServiceCfg, log *logrus.Logger, apidbg bool) (time.Dur
 	switch cfg.StatusMode {
 	case "GET":
 		log.Debugf("PING HTTP GET : %s", cfg.ID)
-		resp, err = http.Get(cfg.StatusURL)
+
+		var httpclient = &http.Client{
+			Timeout: time.Second * 30,
+		}
+
+		resp, err = httpclient.Get(cfg.StatusURL)
 		if err != nil {
 			elapsed := time.Since(start)
 			return elapsed, "ERROR", err
@@ -146,7 +151,7 @@ func PingHTTP(cfg *config.ServiceCfg, log *logrus.Logger, apidbg bool) (time.Dur
 
 		elapsed := time.Since(start)
 		if inArray(resp.StatusCode, strings.Split(cfg.StatusValidationValue, ",")) {
-			log.Debugf("PING HTTP GET STATUS : %d STATUS OK : %s", cfg.ID, resp.StatusCode)
+			log.Debugf("PING HTTP GET STATUS : %s STATUS OK : %d", cfg.ID, resp.StatusCode)
 			return elapsed, "OK", nil
 		}
 		log.Debugf("PING HTTP GET STATUS : %s STATUS ERROR : %d  not in (%s)", cfg.ID, resp.StatusCode, cfg.StatusValidationValue)

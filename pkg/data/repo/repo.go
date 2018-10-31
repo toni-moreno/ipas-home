@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -202,11 +201,11 @@ func GetProductDef(id string) (*Product, error) {
 		log.Errorf("")
 		return nil, fmt.Errorf("Error load Product YAML  %s, Err:%s", id, err)
 	}
-	datajson, err := json.Marshal(p)
+	/*datajson, err := json.Marshal(p)
 	if err != nil {
 		log.Errorf("ERROR JSON UNMARSHALL\n %s", err)
 		log.Debugf("%#v\n", p)
 	}
-	log.Debugf("DATA: %s", datajson)
+	log.Debugf("DATA: %s", datajson)*/
 	return p, nil
 }
