@@ -1,12 +1,14 @@
 package repo
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"time"
 
 	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
 	"github.com/Sirupsen/logrus"
@@ -24,7 +26,10 @@ var (
 	confDir   string              //Needed to get File Filters data
 	dbc       *config.DatabaseCfg //Needed to get Custom Filter  data
 	repo      *git.Repository
+	wtree     *git.Worktree
 	clonePath string
+	gitName   string
+	gitEmail  string
 )
 
 // SetConfDir  enable load File Filters from anywhere in the our FS.
@@ -49,6 +54,9 @@ func Init(cfgrepo *config.GitRepo) {
 	yaml.DefaultMapType = reflect.TypeOf(map[string]interface{}{})
 
 	clonePath = cfgrepo.ClonePath
+	gitName = cfgrepo.Name
+	gitEmail = cfgrepo.Email
+
 	if _, err := os.Stat(cfgrepo.ClonePath); os.IsNotExist(err) {
 		err := os.Mkdir(cfgrepo.ClonePath, 0750)
 		if err != nil {
@@ -78,6 +86,14 @@ func Init(cfgrepo *config.GitRepo) {
 	}
 	repo = r
 
+	w, err := r.Worktree()
+	if err != nil {
+		log.Errorf("Error on get Repo WorkTree")
+		return
+	}
+
+	wtree = w
+
 	// retrieves the branch pointed by HEAD
 	ref, err := repo.Head()
 	if err != nil {
@@ -101,11 +117,6 @@ func Init(cfgrepo *config.GitRepo) {
 	// checkout to the working branch
 
 	if cfgrepo.WorkOnBranch != "master" {
-		w, err := r.Worktree()
-		if err != nil {
-			log.Errorf("Error on get Repo WorkTree")
-			return
-		}
 
 		branch := fmt.Sprintf("refs/heads/%s", cfgrepo.WorkOnBranch)
 		//first  checkout
@@ -254,4 +265,55 @@ func GetProductDef(id string) (*Product, error) {
 	}
 
 	return p, nil
+}
+
+// AddFile , add File to repo
+func AddFile(filename string, content *bytes.Buffer) error {
+	var err error
+
+	//path := clonePath + filename
+	path := filepath.Join(clonePath, filename)
+	dirname := filepath.Dir(path)
+	if _, err := os.Stat(dirname); os.IsNotExist(err) {
+		log.Info("Path %s does not exist.. creatin...", dirname)
+		os.MkdirAll(dirname, 0775)
+	}
+
+	err = ioutil.WriteFile(path, content.Bytes(), 0644)
+	if err != nil {
+		log.Errorf("Can not Add File to Repo, Err: %s", err)
+		return err
+	}
+
+	_, err = wtree.Add(filename)
+	if err != nil {
+		log.Errorf("Can not Add Filename: Err: %s", err)
+	}
+	return nil
+}
+
+func Commit(msg string) error {
+
+	status, err := wtree.Status()
+	if err != nil {
+		log.Errorf("Can not Get Status: Err: %s", err)
+	}
+	log.Println(status)
+	commit, err := wtree.Commit(msg, &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  gitName,
+			Email: gitEmail,
+			When:  time.Now(),
+		},
+	})
+	if err != nil {
+		return err
+	}
+	obj, err := repo.CommitObject(commit)
+	if err != nil {
+		return err
+	}
+
+	log.Println(obj)
+	return nil
 }

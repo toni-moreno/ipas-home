@@ -49,6 +49,8 @@ type GitRepo struct {
 	CloneSource  string `toml:"clone_source"`
 	ClonePath    string `toml:"clone_path"`
 	WorkOnBranch string `toml:"workonbranch"`
+	Name         string `toml:"name"`
+	Email        string `toml:"email"`
 }
 
 // Config All resitor configuration
