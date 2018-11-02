@@ -20,6 +20,13 @@ interface ServiceElement {
   StatusValidationValue: string
 }
 
+interface ProductList {
+  Name: string,
+  HasDB: boolean,
+  HasG: boolean,
+  HasV: boolean,
+  HasA: boolean,
+}
 
 interface StatusCard {
   ServiceStat: string,
