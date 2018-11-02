@@ -29,8 +29,6 @@ const routes: Routes = [
       { path: '', component: HomeComponent },
       { path: 'profile', component: ProfileComponent },
       { path: 'products',component: ProductComponent },
-      { path: 'products/list', component: ProductComponent },
-      { path: 'products/wizard', component: WizardComponent },
       { path: 'engines',component: EngineComponent },
       { path: 'devices',component: DeviceComponent },
       { path: 'notification', component: NotificationComponent },
