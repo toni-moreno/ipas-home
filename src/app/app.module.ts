@@ -41,7 +41,7 @@ import {
 
 import {HttpClientModule} from '@angular/common/http';
 
-
+import { DialogParamsComponent } from './shared/dialogparams/dialogparams.component'
 import { AppComponent } from './app.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { HomeComponent } from './dashboard/home/home.component';
@@ -76,6 +76,7 @@ import { WizardService } from  './dashboard/products/wizard/wizard.service';
 @NgModule({
   declarations: [
     AppComponent,
+    DialogParamsComponent,
     SidebarComponent,
     HomeComponent,
     ProfileComponent,
@@ -142,6 +143,7 @@ import { WizardService } from  './dashboard/products/wizard/wizard.service';
     MatTooltipModule,
     ReactiveFormsModule,
   ],
+  entryComponents: [DialogParamsComponent],
   providers: [SettingsService, WizardService ],
   bootstrap: [AppComponent]
 })
