@@ -11,12 +11,7 @@ export class WizardService {
     constructor(public httpAPI: HttpClient) {
         console.log('Task Service created.', httpAPI);
     }
-
-    parseJSON(key,value) {
-        if ( key == 'IndexAsValue' ) return ( value === "true" || value === true);
-        return value;
-    }
-
+    
     createNewProduct(url: string, dev : any) {
      console.log(url, dev)
      return this.httpAPI.post(url,dev)
@@ -25,6 +20,22 @@ export class WizardService {
         )
     };
 
+    uploadFiles(url,formGroup: any, files : any) {
+        const formData: any = new FormData();        
+        formData.append('Msg','MyCustomMessage' );
+        //All engines
+        for (let i in files.gather) {
+            //All config of iengine
+            for (let j in  files.gather[i].config){
+                //All available configs...
+                for (let p in files.gather[i].config[j]) {
+                    let source = formGroup['gather'][i].config[j].config[p].source
+                    formData.append("CommitFile", files.gather[i].config[j][p][0], source+files.gather[i].config[j][p][0]['name']);
+                }
+            }
+        }
+        return this.httpAPI.post(url, formData)
+    }
 
     retrieveYAML(url: string) {
         console.log(url)
