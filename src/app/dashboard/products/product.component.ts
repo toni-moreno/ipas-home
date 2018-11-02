@@ -1,23 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource, MatSidenav } from '@angular/material';
 import { FormControl } from '@angular/forms';
-import { ProductSample }  from './product.data';
+import { ProductService } from './product.service';
 
-
-const ELEMENT_DATA: ProductElement[] = [
-  { name: 'Cisco Catalyst', engine: 'SNMPCollector', gather: false, visual: true, alert: false },
-  { name: 'Cisco Nexus', engine: 'SNMPCollector', gather: true, visual: true, alert: false },
-  { name: 'Juniper', engine: 'SNMPCollector', gather: false, visual: true, alert: false },
-  { name: 'Weblogic', engine: 'DomainHealth', gather: true, visual: false, alert: false },
-  { name: 'OS Linux', engine: 'Telegraf', gather: true, visual: true, alert: true },
-  { name: 'OS Windows', engine: 'Telegraf', gather: false, visual: false, alert: true }
-];
-
-/**
- * @title Table with filtering
- */
 @Component({
   selector: 'product-component',
+  providers: [ProductService],
   styleUrls: ['product.component.css'],
   templateUrl: 'product.component.html',
 })
@@ -28,30 +16,39 @@ export class ProductComponent {
   @ViewChild(MatSidenav) left: MatSidenav;
 
   viewMode: string = 'list';
-  name: string;
-  engine: string;
-  gather: boolean;
-  visual: boolean;
-  alert: boolean;
 
-  productSample = ProductSample;
+  displayedColumns: string[] = ['actions', 'name', 'db', 'gather', 'visual', 'alert'];
+  dataSource: MatTableDataSource<ProductList> = new MatTableDataSource();
 
-  displayedColumns: string[] = ['actions', 'name', 'engine', 'gather', 'visual', 'alert'];
-  dataSource = new MatTableDataSource(ELEMENT_DATA);
+  constructor(public productService: ProductService) {
 
-  constructor() {
-    this.dataSource = new MatTableDataSource(ELEMENT_DATA);
+    this.productService.getProducts('/api/rt/gitrepo/product')
+      .subscribe(
+      (data: ProductList[]) => { this.dataSource = new MatTableDataSource(data); console.log(data) },
+      (err) => console.log(err),
+      () => console.log("DONE")
+      )
   }
-  
+
+  viewItem(name: string) {
+    this.productService.getProductByID('/api/rt/gitrepo/product/', name)
+      .subscribe(
+      (data) => {
+        console.log(data);
+      },
+      (err) => console.log(err),
+      () => console.log("DONE")
+      )
+  }
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;    
+    this.dataSource.sort = this.sort;
   }
 
   applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+    filterValue = filterValue.trim();
+    filterValue = filterValue.toLowerCase();
     this.dataSource.filter = filterValue;
   }
 }
