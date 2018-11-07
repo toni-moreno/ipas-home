@@ -1,6 +1,6 @@
 // Package escape contains utilities for escaping parts of InfluxQL
 // and InfluxDB line protocol.
-package escape
+package escape // import "github.com/influxdata/platform/pkg/escape"
 
 import (
 	"bytes"
