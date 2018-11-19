@@ -14,7 +14,7 @@ type InfluxCfg struct {
 	RetentionTime      int    `xorm:"retentiontime"`
 	ShardingTime       int    `xorm:"sharingtime" `
 	RDUser             string `xorm:"rduser"`
-	RDPassword         string `xorm:"rduser"`
+	RDPassword         string `xorm:"rdpassword"`
 	Precision          string `xorm:"'precision' default 's'" binding:"Default(s);OmitEmpty;In(h,m,s,ms,u,ns)"` //posible values [h,m,s,ms,u,ns] default seconds for the nature of data
 	Timeout            int    `xorm:"'timeout' default 30" binding:"Default(30);IntegerNotZero"`
 	UserAgent          string `xorm:"useragent" binding:"Default(ipashome)"`
