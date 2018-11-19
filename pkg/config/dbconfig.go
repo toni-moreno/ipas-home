@@ -49,8 +49,9 @@ type ServiceCfg struct {
 
 // ProductDBMap a map for products
 type ProductDBMap struct {
-	ID       string `xorm:"'id' unique" binding:"Required"`
-	Database string `xorm:"database"`
+	ID          string `xorm:"'id' unique" binding:"Required"`
+	Database    string `xorm:"database"`
+	ProductTags string `xorm:"product_tags"`
 }
 
 // TableName go-xorm way to set the Table name to something different to "product_d_b_map"
