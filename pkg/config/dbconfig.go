@@ -12,7 +12,7 @@ type InfluxCfg struct {
 	RWPassword         string `xorm:"rwpassword" binding:"Required"`
 	Retention          string `xorm:"'retention' default 'autogen'" binding:"Required"`
 	RetentionTime      int    `xorm:"retentiontime"`
-	ShardingTime       int    `xorm:"sharingtime" `
+	ShardingTime       int    `xorm:"shardingtime" `
 	RDUser             string `xorm:"rduser"`
 	RDPassword         string `xorm:"rdpassword"`
 	Precision          string `xorm:"'precision' default 's'" binding:"Default(s);OmitEmpty;In(h,m,s,ms,u,ns)"` //posible values [h,m,s,ms,u,ns] default seconds for the nature of data
