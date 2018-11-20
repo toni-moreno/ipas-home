@@ -96,8 +96,8 @@ func Ping(cfg *config.InfluxCfg) (client.Client, time.Duration, string, error) {
 		}
 		conf = client.HTTPConfig{
 			Addr:      fmt.Sprintf("https://%s:%d", cfg.Host, cfg.Port),
-			Username:  cfg.User,
-			Password:  cfg.Password,
+			Username:  cfg.RWUser,
+			Password:  cfg.RWPassword,
 			UserAgent: cfg.UserAgent,
 			Timeout:   time.Duration(cfg.Timeout) * time.Second,
 			TLSConfig: tls,
@@ -106,8 +106,8 @@ func Ping(cfg *config.InfluxCfg) (client.Client, time.Duration, string, error) {
 
 		conf = client.HTTPConfig{
 			Addr:      fmt.Sprintf("http://%s:%d", cfg.Host, cfg.Port),
-			Username:  cfg.User,
-			Password:  cfg.Password,
+			Username:  cfg.RWUser,
+			Password:  cfg.RWPassword,
 			UserAgent: cfg.UserAgent,
 			Timeout:   time.Duration(cfg.Timeout) * time.Second,
 		}

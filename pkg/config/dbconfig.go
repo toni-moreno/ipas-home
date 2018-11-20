@@ -8,9 +8,13 @@ type InfluxCfg struct {
 	Host               string `xorm:"host" binding:"Required"`
 	Port               int    `xorm:"port" binding:"Required;IntegerNotZero"`
 	DB                 string `xorm:"db" binding:"Required"`
-	User               string `xorm:"user" binding:"Required"`
-	Password           string `xorm:"password" binding:"Required"`
+	RWUser             string `xorm:"rwuser" binding:"Required"`
+	RWPassword         string `xorm:"rwpassword" binding:"Required"`
 	Retention          string `xorm:"'retention' default 'autogen'" binding:"Required"`
+	RetentionTime      int    `xorm:"retentiontime"`
+	ShardingTime       int    `xorm:"shardingtime" `
+	RDUser             string `xorm:"rduser"`
+	RDPassword         string `xorm:"rdpassword"`
 	Precision          string `xorm:"'precision' default 's'" binding:"Default(s);OmitEmpty;In(h,m,s,ms,u,ns)"` //posible values [h,m,s,ms,u,ns] default seconds for the nature of data
 	Timeout            int    `xorm:"'timeout' default 30" binding:"Default(30);IntegerNotZero"`
 	UserAgent          string `xorm:"useragent" binding:"Default(ipashome)"`
@@ -38,12 +42,21 @@ type ServiceCfg struct {
 	StatusContentType     string `xorm:"status_content_type"`
 	StatusValidationMode  string `xorm:"status_validation_mode"`
 	StatusValidationValue string `xorm:"status_validation_value"`
+	//--Credentials
+	AdmUser   string `xorm:"adm_user"`
+	AdmPasswd string `xorm:"adm_passwd"`
 } // ServiceCfg has all the Platform Device
 
 // ProductDBMap a map for products
 type ProductDBMap struct {
-	ID       string `xorm:"'id' unique" binding:"Required"`
-	Database string `xorm:"database"`
+	ID          string `xorm:"'id' unique" binding:"Required"`
+	Database    string `xorm:"database"`
+	ProductTags string `xorm:"product_tags"`
+}
+
+// TableName go-xorm way to set the Table name to something different to "product_d_b_map"
+func (ProductDBMap) TableName() string {
+	return "product_db_map"
 }
 
 // DBConfig

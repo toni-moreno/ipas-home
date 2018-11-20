@@ -26,7 +26,6 @@ export PATH=$PATH:$GOPATH/bin/
 
 ```bash
 go run build.go setup            (only needed once to install godep)
-godep restore                    (will pull down all golang lib dependencies in your current GOPATH)
 ```
 
 ### Building frontend and backend in production mode
