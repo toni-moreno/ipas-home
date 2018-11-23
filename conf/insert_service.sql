@@ -5,11 +5,14 @@
 
 delete from service_cfg where id='Grafana00';
 insert into service_cfg 
-  (id,label,description,header_icon,linear_color,foot_content,footer_icon,link,status_mode,status_url,status_content_type,status_validation_mode,status_validation_value)
+  (id,engine,adm_user,adm_passwd,label,description,header_icon,linear_color,foot_content,footer_icon,link,status_mode,status_url,status_content_type,status_validation_mode,status_validation_value)
 values
   ('Grafana00',                      --id
+    'grafana',                       --engine
+   'ipas_admin',              --adm_user
+   '1p4sm0l4',           --adm_passwd
    'Grafana',                        --label
-   'Dashboarding Tool',              --Description
+   'Dashboarding Tool',                --Description
    'devices',                        --header_icon
    '#236B8E',                        --linear_color
    'http://grafana.mydomain2.org',   --foot_content
@@ -23,9 +26,12 @@ values
 
 delete from service_cfg where id='SnmpCollectorPRO';
 insert into service_cfg 
-  (id,label,description,header_icon,linear_color,foot_content,footer_icon,link,status_mode,status_url,status_content_type,status_validation_mode,status_validation_value)
+  (id,engine,adm_user,adm_passwd,label,description,header_icon,linear_color,foot_content,footer_icon,link,status_mode,status_url,status_content_type,status_validation_mode,status_validation_value)
 values
   ('SnmpCollectorPRO',                      --id
+    'snmpcollector',                        --engine
+         'ipas_admin',              --adm_user
+   '1p4sm0l4',           --adm_passwd
    'SnmpCollector',                        --label
    'SNMP Metrics based Agent Tool',     --description
    'devices',                        --header_icon
@@ -41,9 +47,12 @@ values
 
 delete from service_cfg where id='ResistorPRO';
 insert into service_cfg 
-  (id,label,description,header_icon,linear_color,foot_content,footer_icon,link,status_mode,status_url,status_content_type,status_validation_mode,status_validation_value)
+  (id,engine,adm_user,adm_passwd,label,description,header_icon,linear_color,foot_content,footer_icon,link,status_mode,status_url,status_content_type,status_validation_mode,status_validation_value)
 values
   ('ResistorPRO',                      --id
+    'resistor',                        --engine
+     'ipas_admin',              --adm_user
+   '1p4sm0l4',           --adm_passwd
    'Resistor',                        --label
    'Our Alerting WebUI for the Internal TICK stack',     --description
    'devices',                        --header_icon
@@ -77,9 +86,11 @@ values
 
 delete from service_cfg where id='JenkinsPRO';
 insert into service_cfg 
-  (id,label,description,header_icon,linear_color,foot_content,footer_icon,link,status_mode,status_url,status_content_type,status_validation_mode,status_validation_value)
+  (id,adm_user,adm_passwd,label,description,header_icon,linear_color,foot_content,footer_icon,link,status_mode,status_url,status_content_type,status_validation_mode,status_validation_value)
 values
   ('JenkinsPRO',                      --id
+     'ipas_admin',              --adm_user
+   '1p4sm0l4',           --adm_passwd
    'Jenkins',                        --label
    'IPAS Automatization tool based in a Jenkins Server',     --description
    'timeline',                        --header_icon
