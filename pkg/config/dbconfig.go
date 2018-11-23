@@ -45,6 +45,7 @@ type ServiceCfg struct {
 	//--Credentials
 	AdmUser   string `xorm:"adm_user"`
 	AdmPasswd string `xorm:"adm_passwd"`
+	Engine    string `xorm:"engine"`
 } // ServiceCfg has all the Platform Device
 
 // ProductDBMap a map for products
