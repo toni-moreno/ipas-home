@@ -60,11 +60,22 @@ func (ProductDBMap) TableName() string {
 	return "product_db_map"
 }
 
+// PlatformEngine group of LAB/TST/PRE/PRO service to offer services to this user.
+type PlatformEngines struct {
+	ID       string `xorm:"'id' unique" binding:"Required"`
+	EngineID string `xorm:"engineid"`
+	LabSvcID string `xorm: lab_svc_id`
+	TstSvcID string `xorm:"tst_svc_id"`
+	PreSvcID string `xorm:"pre_scv_id"`
+	ProScvID string `xorm:"pro_svc_id"`
+}
+
 // DBConfig
 type DBConfig struct {
-	Services     map[string]*ServiceCfg
-	Influxdb     map[string]*InfluxCfg
-	ProductDbMap map[string]*ProductDBMap
+	Services        map[string]*ServiceCfg
+	Influxdb        map[string]*InfluxCfg
+	ProductDbMap    map[string]*ProductDBMap
+	PlatformEngines map[string]*ProductDBMap
 }
 
 // Init initialices the DB
