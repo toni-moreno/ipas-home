@@ -4,34 +4,34 @@ import "fmt"
 
 /***************************
 	Service DB backends
-	-GetPlatformEnginesCfgByID(struct)
-	-GetPlatformEnginesMap (map - for interna config use
-	-GetPlatformEnginesArray(Array - for web ui use )
-	-AddPlatformEngines
-	-DelPlatformEngines
-	-UpdatePlatformEngines
-  -GetPlatformEnginesAffectOnDel
+	-GetProductDBMapCfgByID(struct)
+	-GetProductDBMapMap (map - for interna config use
+	-GetProductDBMapArray(Array - for web ui use )
+	-AddProductDBMap
+	-DelProductDBMap
+	-UpdateProductDBMap
+  -GetProductDBMapAffectOnDel
 ***********************************/
 
-/*GetPlatformEnginesByID get device data by id*/
-func (dbc *DatabaseCfg) GetPlatformEnginesByID(id string) (PlatformEngines, error) {
-	cfgarray, err := dbc.GetPlatformEnginesArray("id='" + id + "'")
+/*GetProductDBMapByID get device data by id*/
+func (dbc *DatabaseCfg) GetProductDBMapByID(id string) (ProductDBMap, error) {
+	cfgarray, err := dbc.GetProductDBMapArray("id='" + id + "'")
 	if err != nil {
-		return PlatformEngines{}, err
+		return ProductDBMap{}, err
 	}
 	if len(cfgarray) > 1 {
-		return PlatformEngines{}, fmt.Errorf("Error %d results on get PlatformEngines by id %s", len(cfgarray), id)
+		return ProductDBMap{}, fmt.Errorf("Error %d results on get ProductDBMap by id %s", len(cfgarray), id)
 	}
 	if len(cfgarray) == 0 {
-		return PlatformEngines{}, fmt.Errorf("Error no values have been returned with this id %s in the Services config table", id)
+		return ProductDBMap{}, fmt.Errorf("Error no values have been returned with this id %s in the Services config table", id)
 	}
 	return *cfgarray[0], nil
 }
 
-/*GetPlatformEnginesMap  return data in map format*/
-func (dbc *DatabaseCfg) GetPlatformEnginesMap(filter string) (map[string]*PlatformEngines, error) {
-	cfgarray, err := dbc.GetPlatformEnginesArray(filter)
-	cfgmap := make(map[string]*PlatformEngines)
+/*GetProductDBMapMap  return data in map format*/
+func (dbc *DatabaseCfg) GetProductDBMapMap(filter string) (map[string]*ProductDBMap, error) {
+	cfgarray, err := dbc.GetProductDBMapArray(filter)
+	cfgmap := make(map[string]*ProductDBMap)
 	for _, val := range cfgarray {
 		cfgmap[val.ID] = val
 		log.Debugf("%+v", *val)
@@ -39,14 +39,14 @@ func (dbc *DatabaseCfg) GetPlatformEnginesMap(filter string) (map[string]*Platfo
 	return cfgmap, err
 }
 
-/*GetPlatformEnginesArray generate an array of devices with all its information */
-func (dbc *DatabaseCfg) GetPlatformEnginesArray(filter string) ([]*PlatformEngines, error) {
+/*GetProductDBMapArray generate an array of devices with all its information */
+func (dbc *DatabaseCfg) GetProductDBMapArray(filter string) ([]*ProductDBMap, error) {
 	var err error
-	var devices []*PlatformEngines
+	var devices []*ProductDBMap
 	//Get Only data for selected devices
 	if len(filter) > 0 {
 		if err = dbc.x.Where(filter).Find(&devices); err != nil {
-			log.Warnf("Fail to get PlatformEngines  data filteter with %s : %v\n", filter, err)
+			log.Warnf("Fail to get ProductDBMap  data filteter with %s : %v\n", filter, err)
 			return nil, err
 		}
 	} else {
@@ -58,8 +58,8 @@ func (dbc *DatabaseCfg) GetPlatformEnginesArray(filter string) ([]*PlatformEngin
 	return devices, nil
 }
 
-/*AddPlatformEngines for adding new devices*/
-func (dbc *DatabaseCfg) AddPlatformEngines(dev PlatformEngines) (int64, error) {
+/*AddProductDBMap for adding new devices*/
+func (dbc *DatabaseCfg) AddProductDBMap(dev ProductDBMap) (int64, error) {
 	var err error
 	var affected int64
 	session := dbc.x.NewSession()
@@ -80,8 +80,8 @@ func (dbc *DatabaseCfg) AddPlatformEngines(dev PlatformEngines) (int64, error) {
 	return affected, nil
 }
 
-/*DelPlatformEngines for deleting Services databases from ID*/
-func (dbc *DatabaseCfg) DelPlatformEngines(id string) (int64, error) {
+/*DelProductDBMap for deleting Services databases from ID*/
+func (dbc *DatabaseCfg) DelProductDBMap(id string) (int64, error) {
 	var affecteddev, affected int64
 	var err error
 
@@ -95,7 +95,7 @@ func (dbc *DatabaseCfg) DelPlatformEngines(id string) (int64, error) {
 		return 0, fmt.Errorf("Error on Delete Service with id on delete HMCCfg with id: %s, error: %s", id, err)
 	}*/
 
-	affected, err = session.Where("id='" + id + "'").Delete(&PlatformEngines{})
+	affected, err = session.Where("id='" + id + "'").Delete(&ProductDBMap{})
 	if err != nil {
 		session.Rollback()
 		return 0, err
@@ -110,8 +110,32 @@ func (dbc *DatabaseCfg) DelPlatformEngines(id string) (int64, error) {
 	return affected, nil
 }
 
-/*UpdatePlatformEnginesBase for adding new Services from Scanned products , don't change current configurations*/
-func (dbc *DatabaseCfg) UpdatePlatformEnginesBase(id string, dev PlatformEngines) (int64, error) {
+/*/ AddOrUpdateProductDBMap this method insert data if not previouosly exist the tuple ifxServer.Name or update it if already exist
+func (dbc *DatabaseCfg) AddOrUpdateProductDBMap(dev *ProductDBMap) (int64, error) {
+	log.Debugf("ADD OR UPDATE %+v", dev)
+	//check if exist
+	m, err := dbc.GetProductDBMapArray("id == '" + dev.ID + "'")
+	if err != nil {
+		return 0, err
+	}
+	switch len(m) {
+	case 1:
+		log.Debugf("Updating Service ID[%s] %#+v", m[0].ID, dev)
+		return dbc.UpdateProductDBMapBase(m[0].ID, *dev)
+	case 0:
+		dev.EnableHMCStats = true
+		dev.EnableNmonStats = true
+		log.Debugf("Adding new Service ID[%s] %#+v", dev.ID, dev)
+		return dbc.AddProductDBMap(*dev)
+	default:
+		log.Errorf("There is some error when searching for db %+v , found %d", dev, len(m))
+		return 0, fmt.Errorf("There is some error when searching for db %+v , found %d", dev, len(m))
+	}
+
+}*/
+
+/*UpdateProductDBMapBase for adding new Services from Scanned products , don't change current configurations*/
+func (dbc *DatabaseCfg) UpdateProductDBMapBase(id string, dev ProductDBMap) (int64, error) {
 	var affecteddev, affected int64
 	var err error
 	session := dbc.x.NewSession()
@@ -132,8 +156,8 @@ func (dbc *DatabaseCfg) UpdatePlatformEnginesBase(id string, dev PlatformEngines
 	return affected, nil
 }
 
-/*UpdatePlatformEngines for adding new Services*/
-func (dbc *DatabaseCfg) UpdatePlatformEngines(id string, dev PlatformEngines) (int64, error) {
+/*UpdateProductDBMap for adding new Services*/
+func (dbc *DatabaseCfg) UpdateProductDBMap(id string, dev ProductDBMap) (int64, error) {
 	var affecteddev, affected int64
 	var err error
 	session := dbc.x.NewSession()
@@ -162,8 +186,8 @@ func (dbc *DatabaseCfg) UpdatePlatformEngines(id string, dev PlatformEngines) (i
 	return affected, nil
 }
 
-/*GetPlatformEnginesAffectOnDel for deleting devices from ID*/
-func (dbc *DatabaseCfg) GetPlatformEnginesAffectOnDel(id string) ([]*DbObjAction, error) {
+/*GetProductDBMapAffectOnDel for deleting devices from ID*/
+func (dbc *DatabaseCfg) GetProductDBMapAffectOnDel(id string) ([]*DbObjAction, error) {
 	var obj []*DbObjAction
 	/*var devices []*HMCCfg
 
