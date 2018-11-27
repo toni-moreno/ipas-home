@@ -64,9 +64,9 @@ func (ProductDBMap) TableName() string {
 type PlatformEngines struct {
 	ID       string `xorm:"'id' unique" binding:"Required"`
 	EngineID string `xorm:"engineid"`
-	LabSvcID string `xorm: lab_svc_id`
+	LabSvcID string `xorm:"lab_svc_id"`
 	TstSvcID string `xorm:"tst_svc_id"`
-	PreSvcID string `xorm:"pre_scv_id"`
+	PreSvcID string `xorm:"pre_svc_id"`
 	ProScvID string `xorm:"pro_svc_id"`
 }
 
@@ -75,7 +75,7 @@ type DBConfig struct {
 	Services        map[string]*ServiceCfg
 	Influxdb        map[string]*InfluxCfg
 	ProductDbMap    map[string]*ProductDBMap
-	PlatformEngines map[string]*ProductDBMap
+	PlatformEngines map[string]*PlatformEngines
 }
 
 // Init initialices the DB

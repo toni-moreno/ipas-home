@@ -92,6 +92,10 @@ func (dbc *DatabaseCfg) InitDB() {
 	if err = dbc.x.Sync(new(ProductDBMap)); err != nil {
 		log.Fatalf("Fail to sync database ProducDBMap: %v\n", err)
 	}
+	// Sync tables
+	if err = dbc.x.Sync(new(PlatformEngines)); err != nil {
+		log.Fatalf("Fail to sync database PlatformEngines: %v\n", err)
+	}
 }
 
 //LoadDbConfig get data from database
