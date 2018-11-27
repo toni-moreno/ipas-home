@@ -17,12 +17,12 @@
   version = "v2"
 
 [[projects]]
-  digest = "1:e01ab993afe6ca65913cb579723b53cdf0779402129101c8bc8d49740cd7f79e"
+  branch = "master"
+  digest = "1:1e76fc656275d476631662a5c763e7f4a1404fe6207cd9888736b7816431ad45"
   name = "github.com/bndr/gojenkins"
   packages = ["."]
   pruneopts = "UT"
-  revision = "668c6a1cb16b659ece2e90506e643ea16abc712c"
-  version = "v1.0"
+  revision = "de43c03cf849dd63a9737df6e05791c7a176c93d"
 
 [[projects]]
   branch = "master"
@@ -318,9 +318,13 @@
   revision = "74cb1d3d52f4c01cbfb44c1b50d204462f3124c7"
 
 [[projects]]
-  digest = "1:76ee51c3f468493aff39dbacc401e8831fbb765104cbf613b89bef01cf4bad70"
+  digest = "1:17847c677cb69303e0b8606b690f400c53485620a98d288aee1a215235118fcb"
   name = "golang.org/x/net"
-  packages = ["context"]
+  packages = [
+    "context",
+    "html",
+    "html/atom",
+  ]
   pruneopts = "UT"
   revision = "9b4f9f5ad5197c79fd623a3638e70d8b26cef344"
 

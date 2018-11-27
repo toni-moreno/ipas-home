@@ -35,13 +35,13 @@ type Artifact struct {
 // Get raw byte data of Artifact
 func (a Artifact) GetData() ([]byte, error) {
 	var data string
-	_, err := a.Jenkins.Requester.Get(a.Path, &data, nil)
+	response, err := a.Jenkins.Requester.Get(a.Path, &data, nil)
 
 	if err != nil {
 		return nil, err
 	}
 
-	code := a.Jenkins.Requester.LastResponse.StatusCode
+	code := response.StatusCode
 	if code != 200 {
 		Error.Printf("Jenkins responded with StatusCode: %d", code)
 		return nil, errors.New("Could not get File Contents")
@@ -73,8 +73,8 @@ func (a Artifact) Save(path string) (bool, error) {
 // Save Artifact to directory using Artifact filename.
 func (a Artifact) SaveToDir(dir string) (bool, error) {
 	if _, err := os.Stat(dir); err != nil {
-		Error.Printf("Can't Save Artifact. Directory %s does not exist...", dir)
-		return false, errors.New(fmt.Sprintf("Can't Save Artifact. Directory %s does not exist...", dir))
+		Error.Printf("can't save artifact: directory %s does not exist", dir)
+		return false, fmt.Errorf("can't save artifact: directory %s does not exist", dir)
 	}
 	saved, err := a.Save(path.Join(dir, a.FileName))
 	if err != nil {
@@ -87,15 +87,15 @@ func (a Artifact) SaveToDir(dir string) (bool, error) {
 func (a Artifact) validateDownload(path string) (bool, error) {
 	localHash := a.getMD5local(path)
 
-	fp := Fingerprint{Jenkins: a.Jenkins, Base: "/fingerprint/", Id: localHash, Raw: new(fingerPrintResponse)}
+	fp := FingerPrint{Jenkins: a.Jenkins, Base: "/fingerprint/", Id: localHash, Raw: new(FingerPrintResponse)}
 
-	valid , err := fp.ValidateForBuild(a.FileName, a.Build)
+	valid, err := fp.ValidateForBuild(a.FileName, a.Build)
 
 	if err != nil {
 		return false, err
 	}
 	if !valid {
-		return false, errors.New("Fingerprint of the downloaded artifact could not be verified")
+		return false, errors.New("FingerPrint of the downloaded artifact could not be verified")
 	}
 	return true, nil
 }

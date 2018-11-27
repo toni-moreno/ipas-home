@@ -32,6 +32,7 @@ type Task struct {
 	Raw     *taskResponse
 	Jenkins *Jenkins
 	Queue   *Queue
+	Base    string
 }
 
 type taskResponse struct {
@@ -49,8 +50,12 @@ type taskResponse struct {
 		Name  string `json:"name"`
 		URL   string `json:"url"`
 	} `json:"task"`
-	URL string `json:"url"`
-	Why string `json:"why"`
+	URL        string `json:"url"`
+	Why        string `json:"why"`
+	Executable struct {
+		Number int64  `json:"number"`
+		URL    string `json:"url"`
+	} `json:"executable"`
 }
 
 type generalAction struct {
@@ -94,11 +99,11 @@ func (t *Task) Cancel() (bool, error) {
 	qr := map[string]string{
 		"id": strconv.FormatInt(t.Raw.ID, 10),
 	}
-	_, err := t.Jenkins.Requester.Post(t.Jenkins.GetQueueUrl()+"/cancelItem", nil, t.Raw, qr)
+	response, err := t.Jenkins.Requester.Post(t.Jenkins.GetQueueUrl()+"/cancelItem", nil, t.Raw, qr)
 	if err != nil {
 		return false, err
 	}
-	return t.Jenkins.Requester.LastResponse.StatusCode == 200, nil
+	return response.StatusCode == 200, nil
 }
 
 func (t *Task) GetJob() (*Job, error) {
@@ -128,9 +133,17 @@ func (t *Task) GetCauses() []map[string]interface{} {
 }
 
 func (q *Queue) Poll() (int, error) {
-	_, err := q.Jenkins.Requester.GetJSON(q.Base, q.Raw, nil)
+	response, err := q.Jenkins.Requester.GetJSON(q.Base, q.Raw, nil)
 	if err != nil {
 		return 0, err
 	}
-	return q.Jenkins.Requester.LastResponse.StatusCode, nil
+	return response.StatusCode, nil
+}
+
+func (t *Task) Poll() (int, error) {
+	response, err := t.Jenkins.Requester.GetJSON(t.Base, t.Raw, nil)
+	if err != nil {
+		return 0, err
+	}
+	return response.StatusCode, nil
 }

@@ -15,14 +15,16 @@
 package gojenkins
 
 import (
+	"bytes"
 	"errors"
+	"net/url"
 	"regexp"
 	"strconv"
 	"time"
 )
 
 type Build struct {
-	Raw     *buildResponse
+	Raw     *BuildResponse
 	Job     *Job
 	Jenkins *Jenkins
 	Base    string
@@ -39,19 +41,19 @@ type branch struct {
 	Name string
 }
 
-type buildRevision struct {
+type BuildRevision struct {
 	SHA1   string   `json:"SHA1"`
 	Branch []branch `json:"branch"`
 }
 
-type builds struct {
+type Builds struct {
 	BuildNumber int64         `json:"buildNumber"`
 	BuildResult interface{}   `json:"buildResult"`
-	Marked      buildRevision `json:"marked"`
-	Revision    buildRevision `json:"revision"`
+	Marked      BuildRevision `json:"marked"`
+	Revision    BuildRevision `json:"revision"`
 }
 
-type culprit struct {
+type Culprit struct {
 	AbsoluteUrl string
 	FullName    string
 }
@@ -59,8 +61,8 @@ type culprit struct {
 type generalObj struct {
 	Parameters              []parameter              `json:"parameters"`
 	Causes                  []map[string]interface{} `json:"causes"`
-	BuildsByBranchName      map[string]builds        `json:"buildsByBranchName"`
-	LastBuiltRevision       buildRevision            `json:"lastBuiltRevision"`
+	BuildsByBranchName      map[string]Builds        `json:"buildsByBranchName"`
+	LastBuiltRevision       BuildRevision            `json:"lastBuiltRevision"`
 	RemoteUrls              []string                 `json:"remoteUrls"`
 	ScmName                 string                   `json:"scmName"`
 	MercurialNodeName       string                   `json:"mercurialNodeName"`
@@ -70,7 +72,7 @@ type generalObj struct {
 	UrlName                 string
 }
 
-type testResult struct {
+type TestResult struct {
 	Duration  int64 `json:"duration"`
 	Empty     bool  `json:"empty"`
 	FailCount int64 `json:"failCount"`
@@ -100,7 +102,7 @@ type testResult struct {
 	} `json:"suites"`
 }
 
-type buildResponse struct {
+type BuildResponse struct {
 	Actions   []generalObj
 	Artifacts []struct {
 		DisplayPath  string `json:"displayPath"`
@@ -117,7 +119,7 @@ type buildResponse struct {
 				FullName    string `json:"fullName"`
 			} `json:"author"`
 			Comment  string `json:"comment"`
-			CommitId string `json:"commitId"`
+			CommitID string `json:"commitId"`
 			Date     string `json:"date"`
 			ID       string `json:"id"`
 			Msg      string `json:"msg"`
@@ -133,29 +135,61 @@ type buildResponse struct {
 			Revision int
 		} `json:"revision"`
 	} `json:"changeSet"`
-	Culprits          []culprit   `json:"culprits"`
+	ChangeSets []struct {
+		Items []struct {
+			AffectedPaths []string `json:"affectedPaths"`
+			Author        struct {
+				AbsoluteUrl string `json:"absoluteUrl"`
+				FullName    string `json:"fullName"`
+			} `json:"author"`
+			Comment  string `json:"comment"`
+			CommitID string `json:"commitId"`
+			Date     string `json:"date"`
+			ID       string `json:"id"`
+			Msg      string `json:"msg"`
+			Paths    []struct {
+				EditType string `json:"editType"`
+				File     string `json:"file"`
+			} `json:"paths"`
+			Timestamp int64 `json:"timestamp"`
+		} `json:"items"`
+		Kind      string `json:"kind"`
+		Revisions []struct {
+			Module   string
+			Revision int
+		} `json:"revision"`
+	} `json:"changeSets"`
+	Culprits          []Culprit   `json:"culprits"`
 	Description       interface{} `json:"description"`
 	Duration          int64       `json:"duration"`
 	EstimatedDuration int64       `json:"estimatedDuration"`
 	Executor          interface{} `json:"executor"`
+	DisplayName       string      `json:"displayName"`
 	FullDisplayName   string      `json:"fullDisplayName"`
 	ID                string      `json:"id"`
 	KeepLog           bool        `json:"keepLog"`
 	Number            int64       `json:"number"`
+	QueueID           int64       `json:"queueId"`
 	Result            string      `json:"result"`
 	Timestamp         int64       `json:"timestamp"`
 	URL               string      `json:"url"`
 	MavenArtifacts    interface{} `json:"mavenArtifacts"`
 	MavenVersionUsed  string      `json:"mavenVersionUsed"`
-	Fingerprint       []fingerPrintResponse
+	FingerPrint       []FingerPrintResponse
 	Runs              []struct {
 		Number int64
-		Url    string
-	} `json:"runs`
+		URL    string
+	} `json:"runs"`
+}
+
+type consoleResponse struct {
+	Content     string
+	Offset      int64
+	HasMoreText bool
 }
 
 // Builds
-func (b *Build) Info() *buildResponse {
+func (b *Build) Info() *BuildResponse {
 	return b.Raw
 }
 
@@ -187,17 +221,17 @@ func (b *Build) GetArtifacts() []Artifact {
 	return artifacts
 }
 
-func (b *Build) GetCulprits() []culprit {
+func (b *Build) GetCulprits() []Culprit {
 	return b.Raw.Culprits
 }
 
 func (b *Build) Stop() (bool, error) {
 	if b.IsRunning() {
-		_, err := b.Jenkins.Requester.GetJSON(b.Base+"/stop", nil, nil)
+		response, err := b.Jenkins.Requester.Post(b.Base+"/stop", nil, nil, nil)
 		if err != nil {
 			return false, err
 		}
-		return b.Jenkins.Requester.LastResponse.StatusCode == 200, nil
+		return response.StatusCode == 200, nil
 	}
 	return true, nil
 }
@@ -207,6 +241,29 @@ func (b *Build) GetConsoleOutput() string {
 	var content string
 	b.Jenkins.Requester.GetXML(url, &content, nil)
 	return content
+}
+
+func (b *Build) GetConsoleOutputFromIndex(startID int64) (consoleResponse, error) {
+	strstart := strconv.FormatInt(startID, 10)
+	url := b.Base + "/logText/progressiveText"
+
+	var console consoleResponse
+
+	querymap := make(map[string]string)
+	querymap["start"] = strstart
+	rsp, err := b.Jenkins.Requester.Get(url, &console.Content, querymap)
+	if err != nil {
+		return console, err
+	}
+
+	textSize := rsp.Header.Get("X-Text-Size")
+	console.HasMoreText = len(rsp.Header.Get("X-More-Data")) != 0
+	console.Offset, err = strconv.ParseInt(textSize, 10, 64)
+	if err != nil {
+		return console, err
+	}
+
+	return console, err
 }
 
 func (b *Build) GetCauses() ([]map[string]interface{}, error) {
@@ -231,26 +288,40 @@ func (b *Build) GetParameters() []parameter {
 	return nil
 }
 
+func (b *Build) GetInjectedEnvVars() (map[string]string, error) {
+	var envVars struct {
+		EnvMap map[string]string `json:"envMap"`
+	}
+	endpoint := b.Base + "/injectedEnvVars"
+	_, err := b.Jenkins.Requester.GetJSON(endpoint, &envVars, nil)
+	if err != nil {
+		return envVars.EnvMap, err
+	}
+	return envVars.EnvMap, nil
+}
+
 func (b *Build) GetDownstreamBuilds() ([]*Build, error) {
-	downstreamJobs := b.GetDownstreamJobNames()
-	fingerprints := b.GetAllFingerprints()
 	result := make([]*Build, 0)
-	for _, fingerprint := range fingerprints {
-		for _, usage := range fingerprint.Raw.Usage {
-			if inSlice(usage.Name, downstreamJobs) {
-				job, err := b.Jenkins.GetJob(usage.Name)
-				if err != nil {
-					return nil, err
-				}
-				for _, ranges := range usage.Ranges.Ranges {
-					for i := ranges.Start; i <= ranges.End; i++ {
-						build, err := job.GetBuild(i)
-						if err != nil {
-							return nil, err
-						}
-						result = append(result, build)
-					}
-				}
+	downstreamJobs, err := b.Job.GetDownstreamJobs()
+	if err != nil {
+		return nil, err
+	}
+	for _, job := range downstreamJobs {
+		allBuildIDs, err := job.GetAllBuildIds()
+		if err != nil {
+			return nil, err
+		}
+		for _, buildID := range allBuildIDs {
+			build, err := job.GetBuild(buildID.Number)
+			if err != nil {
+				return nil, err
+			}
+			upstreamBuild, err := build.GetUpstreamBuild()
+			// older build may no longer exist, so simply ignore these
+			// cannot compare only id, it can be from different job
+			if err == nil && b.GetUrl() == upstreamBuild.GetUrl() {
+				result = append(result, build)
+				break
 			}
 		}
 	}
@@ -260,7 +331,7 @@ func (b *Build) GetDownstreamBuilds() ([]*Build, error) {
 func (b *Build) GetDownstreamJobNames() []string {
 	result := make([]string, 0)
 	downstreamJobs := b.Job.GetDownstreamJobsMetadata()
-	fingerprints := b.GetAllFingerprints()
+	fingerprints := b.GetAllFingerPrints()
 	for _, fingerprint := range fingerprints {
 		for _, usage := range fingerprint.Raw.Usage {
 			for _, job := range downstreamJobs {
@@ -273,11 +344,11 @@ func (b *Build) GetDownstreamJobNames() []string {
 	return result
 }
 
-func (b *Build) GetAllFingerprints() []*Fingerprint {
+func (b *Build) GetAllFingerPrints() []*FingerPrint {
 	b.Poll(3)
-	result := make([]*Fingerprint, len(b.Raw.Fingerprint))
-	for i, f := range b.Raw.Fingerprint {
-		result[i] = &Fingerprint{Jenkins: b.Jenkins, Base: "/fingerprint/", Id: f.Hash, Raw: &f}
+	result := make([]*FingerPrint, len(b.Raw.FingerPrint))
+	for i, f := range b.Raw.FingerPrint {
+		result[i] = &FingerPrint{Jenkins: b.Jenkins, Base: "/fingerprint/", Id: f.Hash, Raw: &f}
 	}
 	return result
 }
@@ -287,8 +358,9 @@ func (b *Build) GetUpstreamJob() (*Job, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(causes) > 0 {
-		if job, ok := causes[0]["upstreamProject"]; ok {
+
+	for _, cause := range causes {
+		if job, ok := cause["upstreamProject"]; ok {
 			return b.Jenkins.GetJob(job.(string))
 		}
 	}
@@ -300,9 +372,14 @@ func (b *Build) GetUpstreamBuildNumber() (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	if len(causes) > 0 {
-		if build, ok := causes[0]["upstreamBuild"]; ok {
-			return build.(int64), nil
+	for _, cause := range causes {
+		if build, ok := cause["upstreamBuild"]; ok {
+			switch t := build.(type) {
+			default:
+				return t.(int64), nil
+			case float64:
+				return int64(t), nil
+			}
 		}
 	}
 	return 0, nil
@@ -315,7 +392,7 @@ func (b *Build) GetUpstreamBuild() (*Build, error) {
 	}
 	if job != nil {
 		buildNumber, err := b.GetUpstreamBuildNumber()
-		if err == nil {
+		if err == nil && buildNumber != 0 {
 			return job.GetBuild(buildNumber)
 		}
 	}
@@ -329,23 +406,19 @@ func (b *Build) GetMatrixRuns() ([]*Build, error) {
 	}
 	runs := b.Raw.Runs
 	result := make([]*Build, len(b.Raw.Runs))
-	r, _ := regexp.Compile("/job/" + b.Job.GetName() + "/label=(.*?)/(\\d+)/")
+	r, _ := regexp.Compile(`job/(.*?)/(.*?)/(\d+)/`)
+
 	for i, run := range runs {
-		result[i] = &Build{Jenkins: b.Jenkins, Job: b.Job, Raw: new(buildResponse), Depth: 1, Base: r.FindString(run.Url)}
+		result[i] = &Build{Jenkins: b.Jenkins, Job: b.Job, Raw: new(BuildResponse), Depth: 1, Base: "/" + r.FindString(run.URL)}
 		result[i].Poll()
 	}
 	return result, nil
 }
 
-func (b *Build) GetResultSet() (*testResult, error) {
+func (b *Build) GetResultSet() (*TestResult, error) {
 
-	for _, a := range b.Raw.Actions {
-		if a.TotalCount == 0 && a.UrlName == "" {
-			return nil, errors.New("No Result sets found")
-		}
-	}
 	url := b.Base + "/testReport"
-	var report testResult
+	var report TestResult
 
 	_, err := b.Jenkins.Requester.GetJSON(url, &report, nil)
 	if err != nil {
@@ -383,11 +456,11 @@ func (b *Build) GetRevision() string {
 	return ""
 }
 
-func (b *Build) GetRevistionBranch() string {
+func (b *Build) GetRevisionBranch() string {
 	vcs := b.Raw.ChangeSet.Kind
 	if vcs == "git" {
 		for _, a := range b.Raw.Actions {
-			if a.LastBuiltRevision.Branch[0].SHA1 != "" {
+			if len(a.LastBuiltRevision.Branch) > 0 && a.LastBuiltRevision.Branch[0].SHA1 != "" {
 				return a.LastBuiltRevision.Branch[0].SHA1
 			}
 		}
@@ -409,10 +482,18 @@ func (b *Build) IsRunning() bool {
 	return b.Raw.Building
 }
 
+func (b *Build) SetDescription(description string) error {
+	data := url.Values{}
+	data.Set("description", description)
+	_, err := b.Jenkins.Requester.Post(b.Base+"/submitDescription", bytes.NewBufferString(data.Encode()), nil, nil)
+	return err
+}
+
 // Poll for current data. Optional parameter - depth.
 // More about depth here: https://wiki.jenkins-ci.org/display/JENKINS/Remote+access+API
 func (b *Build) Poll(options ...interface{}) (int, error) {
-	depth := strconv.Itoa(b.Depth)
+	depth := "-1"
+
 	for _, o := range options {
 		switch v := o.(type) {
 		case string:
@@ -423,12 +504,16 @@ func (b *Build) Poll(options ...interface{}) (int, error) {
 			depth = strconv.FormatInt(v, 10)
 		}
 	}
+	if depth == "-1" {
+		depth = strconv.Itoa(b.Depth)
+	}
+
 	qr := map[string]string{
 		"depth": depth,
 	}
-	_, err := b.Jenkins.Requester.GetJSON(b.Base, b.Raw, qr)
+	response, err := b.Jenkins.Requester.GetJSON(b.Base, b.Raw, qr)
 	if err != nil {
 		return 0, err
 	}
-	return b.Jenkins.Requester.LastResponse.StatusCode, nil
+	return response.StatusCode, nil
 }
