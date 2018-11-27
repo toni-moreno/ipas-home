@@ -1,6 +1,8 @@
 package config
 
 import (
+	"time"
+
 	"github.com/go-xorm/xorm"
 )
 
@@ -53,6 +55,13 @@ type GitRepo struct {
 	Email        string `toml:"email"`
 }
 
+type JenkinsConfig struct {
+	URL      string        `toml:"url"`
+	User     string        `toml:"user"`
+	Password string        `toml:"passwd"`
+	Timeout  time.Duration `toml:"timeout"`
+}
+
 // Config All resitor configuration
 type Config struct {
 	General     GeneralConfig
@@ -60,6 +69,7 @@ type Config struct {
 	Selfmon     SelfMonConfig
 	HTTP        HTTPConfig
 	ProductRepo GitRepo
+	Jenkins     JenkinsConfig
 }
 
 //var MainConfig Config

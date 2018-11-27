@@ -17,6 +17,14 @@
   version = "v2"
 
 [[projects]]
+  digest = "1:e01ab993afe6ca65913cb579723b53cdf0779402129101c8bc8d49740cd7f79e"
+  name = "github.com/bndr/gojenkins"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "668c6a1cb16b659ece2e90506e643ea16abc712c"
+  version = "v1.0"
+
+[[projects]]
   branch = "master"
   digest = "1:b498b36dbb2b306d1c5205ee5236c9e60352be8f9eea9bf08186723a9f75b4f3"
   name = "github.com/emirpasic/gods"
@@ -457,6 +465,7 @@
   input-imports = [
     "github.com/Sirupsen/logrus",
     "github.com/Unknwon/com",
+    "github.com/bndr/gojenkins",
     "github.com/emirpasic/gods/containers",
     "github.com/emirpasic/gods/lists",
     "github.com/emirpasic/gods/lists/arraylist",

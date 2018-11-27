@@ -87,3 +87,12 @@
  email="ipas-home@ipas.org"
 
 
+############################
+# Jenkins
+############################
+
+[jenkins]
+ url   = "http://localhost:8080"
+ user = "ipas_admin"
+ password = "1p4sm0l4"
+ timeout = "300s"

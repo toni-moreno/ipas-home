@@ -18,6 +18,7 @@ import (
 	"bitbucket.org/everis_ipas/ipas-home/pkg/agent/selfmon"
 	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
 	"bitbucket.org/everis_ipas/ipas-home/pkg/data/impexp"
+	"bitbucket.org/everis_ipas/ipas-home/pkg/data/jenkins"
 	"bitbucket.org/everis_ipas/ipas-home/pkg/data/repo"
 	"bitbucket.org/everis_ipas/ipas-home/pkg/webui"
 )
@@ -160,6 +161,8 @@ func init() {
 	webui.SetConfDir(confDir)
 	webui.SetDownloadDir(downloadDir)
 
+	jenkins.SetLogger(log)
+
 	agent.SetLogger(log)
 
 	impexp.SetLogger(log)
@@ -181,6 +184,7 @@ func main() {
 	impexp.SetDB(&agent.MainConfig.Database)
 	repo.SetDB(&agent.MainConfig.Database)
 	repo.Init(&agent.MainConfig.ProductRepo)
+	jenkins.Init(&agent.MainConfig.Jenkins)
 
 	agent.LoadConf()
 
