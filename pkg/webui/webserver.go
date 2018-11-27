@@ -180,8 +180,11 @@ func WebServer(publicPath string, httpPort int, cfg *config.HTTPConfig, id strin
 	NewAPICfgImportExport(m)
 	NewAPICfgService(m)      //Services
 	NewAPICfgInfluxServer(m) //Influx Databases
-	NewAPIRtGitRepo(m)
 	NewAPICfgProductDBMap(m)
+	NewAPICfgPlatformEngines(m)
+
+	NewAPIRtGitRepo(m)
+	NewAPIRtJenkins(m)
 
 	log.Printf("Server is running on localhost:%d...", port)
 	httpServer := fmt.Sprintf("0.0.0.0:%d", port)
