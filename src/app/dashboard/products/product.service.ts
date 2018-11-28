@@ -19,4 +19,9 @@ export class ProductService {
         return this.httpAPI.get(url+id)
     }
 
+    getPlatformEngines(url) {
+        return this.httpAPI.get(url)
+    }
+
+
 }

@@ -30,7 +30,7 @@
               <button mat-icon-button mat-button color="primary">
                 <mat-icon>note_add</mat-icon>
               </button>
-              <button mat-icon-button mat-button color="primary" (click)="viewItem(element.Name)">
+              <button mat-icon-button mat-button color="primary" (click)="viewItem(element.name)">
                 <mat-icon>edit</mat-icon>
               </button>
               <button mat-icon-button mat-button color="primary">
@@ -42,7 +42,7 @@
           <!-- name Column -->
           <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Product</mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.Name | uppercase}} </mat-cell>
+            <mat-cell *matCellDef="let element"> {{element.name | uppercase}} </mat-cell>
           </ng-container>
 
           
@@ -50,7 +50,7 @@
           <ng-container matColumnDef="db">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> HasDB </mat-header-cell>
             <mat-cell *matCellDef="let element">
-              <i class="material-icons" [ngClass]="element.Hasdb === true ? 'text-test' : 'text-empty'">{{element.HasDB === true ? 'check' : 'remove' }} </i>
+              <i class="material-icons" [ngClass]="element.hasDB === true ? 'text-test' : 'text-empty'">{{element.hasDB === true ? 'check' : 'remove' }} </i>
             </mat-cell>
           </ng-container>
           
@@ -58,7 +58,7 @@
           <ng-container matColumnDef="gather">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Gather </mat-header-cell>
             <mat-cell *matCellDef="let element">
-              <i class="material-icons" [ngClass]="element.HasG === true ? 'text-test' : 'text-empty'">{{element.HasG === true ? 'check' : 'remove' }} </i>
+              <i class="material-icons" [ngClass]="element.hasG === true ? 'text-test' : 'text-empty'">{{element.hasG === true ? 'check' : 'remove' }} </i>
             </mat-cell>
           </ng-container>
 
@@ -66,7 +66,7 @@
           <ng-container matColumnDef="visual">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Visual </mat-header-cell>
             <mat-cell *matCellDef="let element">
-              <i class="material-icons" [ngClass]="element.HasV === true ? 'text-test' : 'text-empty'">{{element.HasV === true ? 'check' : 'remove' }} </i>
+              <i class="material-icons" [ngClass]="element.hasV === true ? 'text-test' : 'text-empty'">{{element.hasV === true ? 'check' : 'remove' }} </i>
             </mat-cell>
           </ng-container>
 
@@ -74,7 +74,7 @@
           <ng-container matColumnDef="alert">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Alert </mat-header-cell>
             <mat-cell *matCellDef="let element">
-              <i class="material-icons" [ngClass]="element.HasA === true ? 'text-test' : 'text-empty'">{{element.HasA === true ? 'check' : 'remove' }} </i>
+              <i class="material-icons" [ngClass]="element.hasA === true ? 'text-test' : 'text-empty'">{{element.hasA === true ? 'check' : 'remove' }} </i>
             </mat-cell>
           </ng-container>
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -84,7 +84,7 @@
       </div>
     </ng-template>
     <ng-template ngSwitchDefault>
-      <app-wizard></app-wizard>
+      <app-wizard [mode]="mode" [editData]="editData"></app-wizard>
     </ng-template>
   </ng-container>
 </div>

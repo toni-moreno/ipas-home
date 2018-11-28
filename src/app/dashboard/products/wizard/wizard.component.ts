@@ -16,6 +16,9 @@ import * as _ from 'yamljs';
 
 export class WizardComponent implements OnInit {
 
+  @Input() mode: boolean = true
+  @Input() editData: any;
+
   fileArray = {
     gather: [],
     visual: [],
@@ -57,6 +60,7 @@ export class WizardComponent implements OnInit {
   get alert(): FormArray { return this.productFormGroup.get('alert') as FormArray; }
 
   ngOnInit() {
+
     //Initial Form
     this.productFormGroup = this._formBuilder.group({
       product: "",
@@ -66,6 +70,16 @@ export class WizardComponent implements OnInit {
       visual: new FormArray([]),
       alert: new FormArray([])
     })
+
+    //check if its an edit by property mode
+    if (this.mode === true) {
+      console.log("EDIT")
+      console.log("DATA")
+      //Load core params:
+      this.productFormGroup.controls.product.setValue(this.editData.product)
+      this.productFormGroup.models = this.editData.models
+    }
+
   }
 
   /* *****************/
