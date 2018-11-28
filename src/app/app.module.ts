@@ -72,6 +72,9 @@ import { AppCardComponent } from './shared/appcard/appcard.component'
 import { SettingsService } from './services/settings.service';
 import { WizardComponent } from './dashboard/products/wizard/wizard.component';
 import { WizardService } from  './dashboard/products/wizard/wizard.service';
+import { DeviceWizardComponent } from './dashboard/devices/device-wizard/device-wizard.component';
+import { DeviceWizardService } from  './dashboard/devices/device-wizard/device-wizard.service';
+
 
 @NgModule({
   declarations: [
@@ -99,6 +102,7 @@ import { WizardService } from  './dashboard/products/wizard/wizard.service';
     PriceTableComponent,
     PanelsComponent,
     WizardComponent,
+    DeviceWizardComponent,
     WizardEngineComponent,
     AppCardComponent
   ],
@@ -144,7 +148,7 @@ import { WizardService } from  './dashboard/products/wizard/wizard.service';
     ReactiveFormsModule,
   ],
   entryComponents: [DialogParamsComponent],
-  providers: [SettingsService, WizardService ],
+  providers: [SettingsService, WizardService, DeviceWizardService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
