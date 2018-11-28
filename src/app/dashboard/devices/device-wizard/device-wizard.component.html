@@ -1,0 +1,200 @@
+<div class="container">
+  <!--INIT - stepper-->
+  <div class="row">
+    <div class="col-md-4">
+      <mat-vertical-stepper [linear]="isLinear" #stepper>
+        <!--INIT - stepper - firstStep -->
+        <mat-step [stepControl]="deviceFormGroup">
+          <form [formGroup]="deviceFormGroup">
+            <ng-template matStepLabel>
+              <h4>Device properties</h4>
+              <p>Fill device properties</p>
+            </ng-template>
+            <mat-form-field>
+              <input matInput placeholder="Device name" formControlName="id" required>
+            </mat-form-field>
+            <div>
+              <button mat-raised-button color="accent" matStepperNext type="button">Next</button>
+            </div>
+          </form>
+        </mat-step>
+
+        <mat-step [stepControl]="deviceFormGroup">
+          <form [formGroup]="deviceFormGroup">
+            <ng-template matStepLabel>
+              <h4>Product config</h4>
+              <p>Fill product configs</p>
+            </ng-template>
+            <!--INIT - Engine selector to load all related params"-->
+            <div class="col-md-6">
+              <mat-form-field>
+                <mat-select #product_selection placeholder="Available products" name="product">
+                  <mat-option *ngFor="let product of productList" [value]="product.name">
+                    {{product.name}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <button mat-mini-fab color="primary" [disabled]="product_selection.value == null" (click)="retrieveProductInfo(product_selection.value)">
+                <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
+              </button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step>
+          <ng-template matStepLabel>
+            <h4>Finish configuration</h4>
+            <p>Finish and submit a new product</p>
+          </ng-template>
+          You are now done. Review your definition:
+          <div>
+            <button mat-raised-button color="accent" matStepperPrevious>Back</button>
+            <button mat-raised-button color="accent">Cancel</button>
+            <button mat-raised-button color="accent" (click)="sendNewDeviceRequest()">Finish</button>
+          </div>
+        </mat-step>
+      </mat-vertical-stepper>
+    </div>
+    <div class="col-md-8" *ngIf="product_info">
+      <mat-card>
+        <h3>
+          <span class="text-left">Selected product: {{selectedProduct}}</span>
+          <button class="text-right" mat-mini-fab color="primary" (click)="removeProduct()">
+            <mat-icon aria-label="Example icon-button with a heart icon">delete_forever</mat-icon>
+          </button>
+        </h3>
+        <p>{{product_info.description}}</p>
+      </mat-card>
+      <mat-tab-group #tabGroup style="background-color:white" (selectedTabChange)="changeEngine($event)">
+        <mat-tab label="Engines">
+          <div class="container">
+            <h3>Help</h3>
+            <p>Navigate for each tab and follow the steps:</p>
+            <p>Select product configuration and fill the params</p>
+            <p>Select a platform engine to deploy on</p>
+            <p>Fill platform parameters</p>
+          </div>
+        </mat-tab>
+        <ng-container *ngFor="let kengine of product_info.gather; index as iengine">
+          <mat-tab [label]="kengine.engine">
+            <mat-horizontal-stepper [linear]="isLinear" #stepper *ngIf="product_info">
+              <br>
+              <mat-step [stepControl]="deviceFormGroup">
+                <form [formGroup]="deviceFormGroup">
+
+                  <mat-form-field>
+                    <mat-select #config_selection placeholder="Available configs" name="config">
+                      <mat-option *ngFor="let config of kengine.config; index as iconfig" [value]="iconfig">
+                        {{config.name}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <button mat-mini-fab color="primary" [disabled]="config_selection.value == null" (click)="loadEngineConfigParams(iengine, kengine.config[config_selection.value].name,kengine.config[config_selection.value].params)">
+                    <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
+                  </button>
+                  <div formArrayName='engine'>
+                    <div [formArrayName]="iengine">
+                      <ng-container *ngIf="deviceFormGroup.controls.engine.controls[iengine].controls.params">
+                        <h5> Device Params:
+                        </h5>
+                        <div formArrayName='params'>
+                          <br>
+                          <ng-container *ngFor="let kk of this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls; index as l">
+                            <ng-container [formArrayName]="l">
+                              <mat-form-field appearance="outline">
+                                <mat-label>{{this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key}}
+                                </mat-label>
+                                <input matInput formControlName="value">
+                                <mat-icon matSuffix mat-mini-fab [matTooltip]="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.description">help</mat-icon>
+                              </mat-form-field>
+                            </ng-container>
+                          </ng-container>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div>
+                  <ng-template matStepLabel>
+                    <h4>Product config</h4>
+                    <p>Fill product configs</p>
+                  </ng-template>
+                </form>
+              </mat-step>
+              <mat-step>
+                <ng-template matStepLabel>
+                  <h4>Service config</h4>
+                  <p>Fill service configs</p>
+                </ng-template>
+                <ng-container>
+                  <mat-table #table [dataSource]="filteredServices">
+                    <div class="example-header">
+                      <mat-form-field>
+                        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter Device">
+                      </mat-form-field>
+                    </div>
+                    {{selection | json}}
+                    <ng-container matColumnDef="select">
+                      <mat-header-cell *matHeaderCellDef>
+                        <!--mat-checkbox [indeterminate]="selection.isSelected()">
+                      </mat-checkbox-->
+                        --
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row">
+                        <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selectService(row,kengine.engine) : null" [checked]="selection.isSelected(row)">
+                        </mat-checkbox>
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="ID">
+                      <mat-header-cell *matHeaderCellDef class="cell-header text-test"> ID</mat-header-cell>
+                      <mat-cell *matCellDef="let element"> {{element.ID}} Pepito </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="EngineID">
+                      <mat-header-cell *matHeaderCellDef class="cell-header text-test">EngineID</mat-header-cell>
+                      <mat-cell *matCellDef="let element"> {{element.EngineID}}</mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                  </mat-table>
+                </ng-container>
+                <ng-template #noValue>
+                  <h1><p class="text-center">No services related with</p></h1>
+                </ng-template>
+              </mat-step>
+              <mat-step>
+                <form [formGroup]="platformFormGroup">
+                  <ng-template matStepLabel>
+                    <h4>Platform configs params</h4>
+                    <p>Fill service configs</p>
+                  </ng-template>
+                  <h4>Tags</h4>
+                  <ng-container *ngIf="platformFormGroup.controls.tags">
+                    <ng-container formArrayName="tags">
+                      <ng-container *ngFor="let e of platformFormGroup.controls.tags.controls; index as itag">
+                        <ng-container [formArrayName]="itag">
+                          <mat-form-field appearance="outline">
+                            <mat-label>{{e.value.key}}
+                            </mat-label>
+                            <input matInput formControlName="value">
+                            <!--mat-icon matSuffix mat-mini-fab [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value.description">help</mat-icon-->
+                          </mat-form-field>
+                        </ng-container>
+                      </ng-container>
+                    </ng-container>
+                  </ng-container>
+                </form>
+              </mat-step>
+            </mat-horizontal-stepper>
+          </mat-tab>
+        </ng-container>
+      </mat-tab-group>
+    </div>
+  </div>
+  <br>
+  <mat-divider></mat-divider>
+  <br>
+  <mat-slide-toggle [checked]="showDebug" (change)="showDebug === true ?  showDebug = false : showDebug = true">Debug Mode</mat-slide-toggle>
+  <ng-container *ngIf="showDebug === true">
+    <h4>Debug - Platform section</h4>
+    <pre>{{platformFormGroup.value | json}}</pre>
+    <h4>Debug - Device section</h4>
+    <pre>{{deviceFormGroup.value | json}}</pre>
+  </ng-container>
+</div>

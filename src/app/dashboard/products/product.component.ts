@@ -16,6 +16,8 @@ export class ProductComponent {
   @ViewChild(MatSidenav) left: MatSidenav;
 
   viewMode: string = 'list';
+  mode : boolean =  false;
+  editData : any;
 
   displayedColumns: string[] = ['actions', 'name', 'db', 'gather', 'visual', 'alert'];
   dataSource: MatTableDataSource<ProductList> = new MatTableDataSource();
@@ -35,6 +37,9 @@ export class ProductComponent {
       .subscribe(
       (data) => {
         console.log(data);
+        this.mode =  true
+        this.viewMode = 'edit'
+        this.editData =  data;
       },
       (err) => console.log(err),
       () => console.log("DONE")

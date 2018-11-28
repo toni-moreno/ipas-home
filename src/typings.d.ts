@@ -21,11 +21,11 @@ interface ServiceElement {
 }
 
 interface ProductList {
-  Name: string,
-  HasDB: boolean,
-  HasG: boolean,
-  HasV: boolean,
-  HasA: boolean,
+  name: string,
+  hasDB: boolean,
+  hasG: boolean,
+  hasV: boolean,
+  hasA: boolean,
 }
 
 interface StatusCard {
