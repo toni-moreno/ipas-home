@@ -29,8 +29,12 @@ export class WizardService {
             for (let j in  files.gather[i].config){
                 //All available configs...
                 for (let p in files.gather[i].config[j]) {
+                    //Generate output dir: /products/<PRODUCT_NAME>/<DIR>/<SOURCE>
+                    let rootDir =  '/products/'
+                    let product =  formGroup.product+'/'
+                    let dir = formGroup['gather'][i].config[j].dir+'/'
                     let source = formGroup['gather'][i].config[j].config[p].source
-                    formData.append("CommitFile", files.gather[i].config[j][p][0], source+files.gather[i].config[j][p][0]['name']);
+                    formData.append("CommitFile", files.gather[i].config[j][p][0], rootDir+product+dir+source);
                 }
             }
         }

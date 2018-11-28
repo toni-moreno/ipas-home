@@ -41,6 +41,13 @@ export class WizardComponent implements OnInit {
     { name: 'Resistor', type: 'resistor' }
   ];
 
+
+  available_engines = [
+    {'id': 'gather', 'desc': 'Gather', 'data': this.gather_engines},
+    {'id': 'visual', 'desc': 'Visual', 'data': this.visual_engines},
+    {'id': 'alert', 'desc': 'Alert', 'data': this.alert_engines},
+  ]
+
   constructor(private _formBuilder: FormBuilder, public wizardService: WizardService, public dialog: MatDialog) { }
 
   //Set core config vars as formarrays, it will be easier to go over them
