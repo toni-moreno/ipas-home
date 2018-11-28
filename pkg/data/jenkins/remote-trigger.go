@@ -44,7 +44,7 @@ func SetLogger(l *logrus.Logger) {
 
 // Init
 func Init(cfg *config.JenkinsConfig) error {
-	log.Debug("JENKNS CREATE for %+v", cfg)
+	log.Debugf("JENKNS CREATE for %+v", cfg)
 	client := &http.Client{
 		Timeout: cfg.Timeout,
 	}
@@ -54,11 +54,11 @@ func Init(cfg *config.JenkinsConfig) error {
 	// jenkins.Requester.CACert = caCert
 	j, err := gojenkins.CreateJenkins(client, cfg.URL, cfg.User, cfg.Password).Init()
 	if err != nil {
-		log.Error("Something Went Wrong when trying to initialize Jenkins URL %s, User: %s, Password %s: Error: %s", cfg.URL, cfg.User, cfg.Password, err)
+		log.Errorf("Something Went Wrong when trying to initialize Jenkins URL %s, User: %s, Password %s: Error: %s", cfg.URL, cfg.User, cfg.Password, err)
 		return err
 	}
 	jenkins = j
-	log.Debug("JENKNS CREATE OK : %#+v", jenkins)
+	log.Debugf("JENKNS CREATE OK : %#+v", jenkins)
 	return nil
 }
 
@@ -97,8 +97,8 @@ type PlatformData struct {
 			TstSvcID string `json:"TstSvcID"`
 			PreSvcID string `json:"PreSvcID"`
 			ProSvcID string `json:"ProSvcID"`
-		} `json: "platform"`
-	} `json: "engine"`
+		} `json:"platform"`
+	} `json:"engine"`
 }
 
 type EngineParam struct {
@@ -161,7 +161,7 @@ func CreateJobEngineConfig(data *JobData, engine string) *JobEngineConfig {
 					jecfg.Lab["snmpcollector_pass"] = svc.AdmPasswd
 					jecfg.Lab["snmpcollector_server"] = svc.Link
 				} else {
-					log.Error("Error on get Service %s", err)
+					log.Errorf("Error on get Service %s", err)
 				}
 
 			}
@@ -175,7 +175,7 @@ func CreateJobEngineConfig(data *JobData, engine string) *JobEngineConfig {
 					jecfg.TST["snmpcollector_pass"] = svc.AdmPasswd
 					jecfg.TST["snmpcollector_server"] = svc.Link
 				} else {
-					log.Error("Error on get Service %s", err)
+					log.Errorf("Error on get Service %s", err)
 				}
 			}
 			//PRE
@@ -188,7 +188,7 @@ func CreateJobEngineConfig(data *JobData, engine string) *JobEngineConfig {
 					jecfg.PRE["snmpcollector_pass"] = svc.AdmPasswd
 					jecfg.PRE["snmpcollector_server"] = svc.Link
 				} else {
-					log.Error("Error on get Service %s", err)
+					log.Errorf("Error on get Service %s", err)
 				}
 			}
 
@@ -202,7 +202,7 @@ func CreateJobEngineConfig(data *JobData, engine string) *JobEngineConfig {
 					jecfg.PRO["snmpcollector_pass"] = svc.AdmPasswd
 					jecfg.PRO["snmpcollector_server"] = svc.Link
 				} else {
-					log.Error("Error on get Service %s", err)
+					log.Errorf("Error on get Service %s", err)
 				}
 
 			}
@@ -223,8 +223,9 @@ func CreateAnsibleInventory(data *JobData, engine string) *AnsibleInventory {
 			if eng.Name == engine {
 				log.Infof("Detected device %s for Engine %s", dev.ID, engine)
 				m := make(map[string]interface{})
+				m["device_config"] = eng.Config
 				for _, param := range eng.Params {
-					log.Debug("Detected parameter %s : %s", param.Key, param.Value)
+					log.Debugf("Detected parameter %s : %s", param.Key, param.Value)
 					m[param.Key] = param.Value
 				}
 				inv.All.Hosts[dev.ID] = m
@@ -298,7 +299,7 @@ func Send(id string, filename string, content *bytes.Buffer) (int64, error) {
 
 	jid, err := job.InvokeSimple(params)
 	if err != nil {
-		log.Error("Some error triggered while invoking job Error %s", err)
+		log.Errorf("Some error triggered while invoking job Error %s", err)
 	}
 
 	return jid, nil
