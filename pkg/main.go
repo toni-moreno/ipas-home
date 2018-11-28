@@ -162,6 +162,7 @@ func init() {
 	webui.SetDownloadDir(downloadDir)
 
 	jenkins.SetLogger(log)
+	jenkins.SetDownloadDir(downloadDir)
 
 	agent.SetLogger(log)
 
@@ -185,6 +186,7 @@ func main() {
 	repo.SetDB(&agent.MainConfig.Database)
 	repo.Init(&agent.MainConfig.ProductRepo)
 	jenkins.Init(&agent.MainConfig.Jenkins)
+	jenkins.SetDB(&agent.MainConfig.Database)
 
 	agent.LoadConf()
 

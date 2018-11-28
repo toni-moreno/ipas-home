@@ -78,7 +78,7 @@ type DBConfig struct {
 	PlatformEngines map[string]*PlatformEngines
 }
 
-// Init initialices the DB
+// Init initialices the  DB
 func Init(cfg *DBConfig) error {
 
 	log.Debug("--------------------Initializing Config-------------------")

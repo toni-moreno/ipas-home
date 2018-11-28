@@ -15,7 +15,7 @@
  # valid values: panic,fatal,error,warn,info,debug
  logLevel = "debug"
  # where files for download will be placed
- downloaddir = "/tmp/files"
+ downloaddir = "./downloadfiles"
 
  ############################
  # DataBase Config

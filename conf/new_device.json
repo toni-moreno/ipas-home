@@ -1,0 +1,150 @@
+{
+    "platform": {
+        "productid": "checkpoint",
+        "tags": [
+            {
+                "key": "ch_tag1",
+                "value": "tag1_value"
+            },
+            {
+                "key": "ch_tag2",
+                "value": "tag2_value"
+            },
+            {
+                "key": "ch_tag3",
+                "value": "tag3_value"
+            }
+        ],
+        "engine": [
+            {
+                "name": "snmpcollector",
+                "platform": {
+                    "ID": "LAN",
+                    "EngineID": "snmpcollector",
+                    "LabSvcID": "SnmpCollectorPRO",
+                    "TstSvcID": "SnmpCollectorPRO",
+                    "PreSvcID": "SnmpCollectorPRO",
+                    "ProSvcID": "SnmpCollectorPRO"
+                }
+            }
+        ]
+    },
+    "devices": [
+        {
+            "id": "myhostXXX",
+            "engine": [
+                {
+                    "name": "snmpcollector",
+                    "config": "Checkpoint",
+                    "params": [
+                        {
+                            "agent_key": "ID",
+                            "description": "Text String that uniquely identify the device , should be unique in the config db, it can be hostname, serial number or any other text id",
+                            "key": "DEVICE_ID",
+                            "type": "string",
+                            "value": "val1"
+                        },
+                        {
+                            "agent_key": "Host",
+                            "description": "Text String that uniquely identify the device , should be unique in the config db, it can be hostname, serial number or any other text id",
+                            "key": "DEVICE_HOST",
+                            "type": "string",
+                            "value": "val2"
+                        },
+                        {
+                            "agent_key": "Port",
+                            "description": "Overwrite default device port",
+                            "key": "DEVICE_PORT",
+                            "type": "integer",
+                            "value": "val3"
+                        },
+                        {
+                            "agent_key": "Active",
+                            "description": "Let device begin gathering process on agent boot process",
+                            "key": "DEVICE_ACTIVE",
+                            "type": "boolean",
+                            "value": true
+                        },
+                        {
+                            "agent_key": "SnmpVersion",
+                            "description": "SNMP version. Values accepted: [1,2c,3]",
+                            "key": "DEVICE_SNMPVERSION",
+                            "type": "string",
+                            "value": "val4"
+                        },
+                        {
+                            "agent_key": "Community",
+                            "description": "SNMP version 1/2c community",
+                            "key": "DEVICE_COMMUNITY",
+                            "type": "string",
+                            "value": "val5"
+                        },
+                        {
+                            "agent_key": "V3SecLevel",
+                            "description": "Define the level of security needed for the connection valid values are (only for snmpv3) NoAuthNoPriv AuthNoPriv AuthPriv",
+                            "key": "DEVICE_V3SECLEVEL",
+                            "type": "string",
+                            "value": "val6"
+                        },
+                        {
+                            "agent_key": "V3AuthUser",
+                            "description": "The username that will establish the snmp query (snmpv3 only)",
+                            "key": "DEVICE_V3AUTHUSER",
+                            "type": "string",
+                            "value": "val7"
+                        },
+                        {
+                            "agent_key": "V3AuthPass",
+                            "description": "The authentication password (snmpv3 only)",
+                            "key": "DEVICE_V3AUTHPASS",
+                            "type": "string",
+                            "value": "val8"
+                        },
+                        {
+                            "agent_key": "V3AuthProt",
+                            "description": "The Authentication Protocol values should be any of (snmpv3 only) -MD5 -SHA",
+                            "key": "DEVICE_V3AUTHPROT",
+                            "type": "string",
+                            "value": "val9"
+                        },
+                        {
+                            "agent_key": "V3PrivPass",
+                            "description": "Privacy password (snmpv3 only)",
+                            "key": "DEVICE_V3PRIVPASS",
+                            "type": "string",
+                            "value": "val10"
+                        },
+                        {
+                            "agent_key": "V3PrivProt",
+                            "description": "Privacy Protocol values should be any of [ \"DES\", \"AES\"] (snmpv3 only)",
+                            "key": "DEVICE_V3PRIVPROT",
+                            "type": "string",
+                            "value": "val11"
+                        },
+                        {
+                            "agent_key": "V3ContextEngineID",
+                            "description": "SNMPV3 ContextEngineID in ScopedPDU (equivalent to the net-snmp -E paramenter) (snmpv3 only)",
+                            "key": "DEVICE_V3CONTEXTENGINE",
+                            "type": "string",
+                            "value": "val12"
+                        },
+                        {
+                            "agent_key": "V3ContextName",
+                            "description": "SNMPV3 ContextEngineID in ScopedPDU (equivalent to the net-snmp -E paramenter) (snmpv3 only)",
+                            "key": "DEVICE_V3CONTEXTNAME",
+                            "type": "string",
+                            "value": "val13"
+                        },
+                        {
+                            "agent_key": "ExtraTags",
+                            "description": "Device ExtraTag Values",
+                            "key": "DEVICE_EXTRATAG_VALUES",
+                            "type": "string",
+                            "value": ""
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
