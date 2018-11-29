@@ -272,35 +272,46 @@ func SaveConfigFiles(data *JobData) (string, string) {
 	return purl, durl
 }
 
-func Send(id string, filename string, content *bytes.Buffer) (int64, error) {
+func Send(subject string, action string, filename string, content *bytes.Buffer) error {
 	//Unmarshall file into Job Data
 
 	var jobdt JobData
 
 	if err := json.Unmarshal(content.Bytes(), &jobdt); err != nil {
 		log.Errorf("error on unmarshall JobData %s", err)
+		return err
 	}
 	log.Debugf("DATA %#+v", jobdt)
 
-	log.Infof("Trying to get JOB %s", id)
+	for _, engine := range jobdt.Platform.Engine {
 
-	job, err := jenkins.GetJob(id)
-	if err != nil {
-		log.Errorf("Error on get Job. Error %s ", err)
-		return 0, err
+		id := subject + "_" + action + "_" + engine.Name
+
+		log.Infof("Triggering Jenkins job %s", id)
+
+		job, err := jenkins.GetJob(id)
+		if err != nil {
+			log.Errorf("Error on get Job. Error %s ", err)
+			return err
+		}
+
+		purl, durl := SaveConfigFiles(&jobdt)
+
+		var params = map[string]string{
+			"PLATFORM_CONFIG_URL": purl,
+			"DEVICE_CONFIG_URL":   durl,
+		}
+
+		jid, err := job.InvokeSimple(params)
+		if err != nil {
+			log.Errorf("Some error triggered while invoking job  %s Error %s", id, err)
+			return err
+		}
+		//b , err := job.GetBuild(jid))
+
+		log.Infof("Invoked job with number %d", jid)
+
 	}
 
-	purl, durl := SaveConfigFiles(&jobdt)
-
-	var params = map[string]string{
-		"PLATFORM_CONFIG_URL": purl,
-		"DEVICE_CONFIG_URL":   durl,
-	}
-
-	jid, err := job.InvokeSimple(params)
-	if err != nil {
-		log.Errorf("Some error triggered while invoking job Error %s", err)
-	}
-
-	return jid, nil
+	return nil
 }

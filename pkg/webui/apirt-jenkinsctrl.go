@@ -19,15 +19,19 @@ func NewAPIRtJenkins(m *macaron.Macaron) error {
 	//	bind := binding.Bind
 
 	m.Group("/api/rt/jenkins", func() {
-		m.Post("/build/:id" /* reqSignedIn,*/, binding.MultipartForm(CommitFileForm{}), JenkinsSendBuild)
+		//		m.Post("/build/:id" /* reqSignedIn,*/, binding.MultipartForm(CommitFileForm{}), JenkinsSendBuild)
+		m.Post("/build/:subject/:action" /* reqSignedIn,*/, binding.MultipartForm(CommitFileForm{}), JenkinsSendBuild)
 	})
+	// subject = device/produt/,,,
+	// action  = add / delete / update
 
 	return nil
 }
 
 func JenkinsSendBuild(ctx *Context, cf CommitFileForm) {
 
-	id := ctx.Params(":id")
+	subject := ctx.Params(":subject")
+	action := ctx.Params(":action")
 
 	log.Debugf("Uploaded data :%+v", cf)
 	if cf.CommitFile == nil {
@@ -49,7 +53,7 @@ func JenkinsSendBuild(ctx *Context, cf CommitFileForm) {
 		buf.ReadFrom(file)
 		s := buf.String()
 		log.Debug("FILE DATA: %s", s)
-		jid, err := jenkins.Send(id, f.Filename, buf)
+		jid, err := jenkins.Send(subject, action, f.Filename, buf)
 		if err != nil {
 			log.Warningf("Error on JOB Execution: %s", err)
 			ctx.JSON(404, err.Error())
