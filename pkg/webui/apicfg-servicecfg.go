@@ -191,7 +191,7 @@ type ServiceStatus struct {
 func PingServiceCfgByID(ctx *Context) {
 	id := ctx.Params(":id")
 	dev, err := agent.MainConfig.Database.GetServiceCfgByID(id)
-	log.Infof("trying to ping Service  %s : %+v", &dev.ID, &dev)
+	log.Infof("trying to ping Service  %s : %+v", dev.ID, &dev)
 
 	elapsed, message, err := PingHTTP(&dev, log, true)
 	var ss *ServiceStatus
