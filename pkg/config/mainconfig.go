@@ -56,10 +56,11 @@ type GitRepo struct {
 }
 
 type JenkinsConfig struct {
-	URL      string        `toml:"url"`
-	User     string        `toml:"user"`
-	Password string        `toml:"passwd"`
-	Timeout  time.Duration `toml:"timeout"`
+	URL        string        `toml:"url"`
+	User       string        `toml:"user"`
+	Password   string        `toml:"passwd"`
+	Timeout    time.Duration `toml:"timeout"`
+	UpdateFreq time.Duration `toml:"updatefreq"`
 }
 
 // Config All resitor configuration

@@ -96,6 +96,14 @@ func (dbc *DatabaseCfg) InitDB() {
 	if err = dbc.x.Sync(new(PlatformEngines)); err != nil {
 		log.Fatalf("Fail to sync database PlatformEngines: %v\n", err)
 	}
+	// Sync tables
+	if err = dbc.x.Sync(new(PlatformDevices)); err != nil {
+		log.Fatalf("Fail to sync PlatformDevices: %v\n", err)
+	}
+	// Sync tables
+	if err = dbc.x.Sync(new(DeviceConfigParams)); err != nil {
+		log.Fatalf("Fail to sync DeviceConfigParams : %v\n", err)
+	}
 }
 
 //LoadDbConfig get data from database

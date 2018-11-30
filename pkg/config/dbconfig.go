@@ -1,5 +1,9 @@
 package config
 
+import (
+	"time"
+)
+
 //Real Time Filtering by device/alertid/or other tags
 
 // InfluxCfg is the main configuration for any InfluxDB TSDB
@@ -68,6 +72,41 @@ type PlatformEngines struct {
 	TstSvcID string `xorm:"tst_svc_id"`
 	PreSvcID string `xorm:"pre_svc_id"`
 	ProScvID string `xorm:"pro_svc_id"`
+}
+
+type TaskStatus struct {
+	JobName    string
+	TaskID     int64
+	ExecID     int64
+	IsFinished bool
+	Result     string
+	ExecURL    string
+	Launched   time.Time
+	LastUpdate time.Time
+}
+
+type PlatformDevices struct {
+	ProductID string                `xorm:"'productid' not null unique(devid)" binding:"Required"`
+	DeviceID  string                `xorm:"'deviceid' not null unique(devid)" binding:"Required"`
+	LastState string                `xorm:"last_state"` //SUCCESS,FAILURE,PENDING
+	TaskStat  map[int64]*TaskStatus `xorm:"task_stat"`
+}
+
+/*type PlatformExecutions struct {
+	ID            string           `xorm:"'id' not null unique" binding:"Required"`
+	Launched      time.Time        `xorm:"when"`
+	LastUpdate    time.Time        `xorm:"last_updated"`
+	LastState     string           `xorm:"last_state"`
+	LastJobsState map[int64]string `xorm:"last_jobs_stats"`
+	LastJobsURL   map[int64]string `xorm:"last_jobs_url"`
+}*/
+
+// DeviceConfigParams parameters for each
+type DeviceConfigParams struct {
+	ProductID string      `xorm:"'productid' not null unique(devkey)" binding:"Required"`
+	DeviceID  string      `xorm:"'deviceid'  unique(devkey)" binding:"Required"`
+	Key       string      `xorm:"'key' not  null unique(devkey)"`
+	Value     interface{} `xorm:"'value' not  null"`
 }
 
 // DBConfig

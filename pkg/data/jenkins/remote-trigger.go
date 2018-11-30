@@ -4,76 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
-	"net"
-	"net/http"
 	"path/filepath"
 	"time"
 
 	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
-	"github.com/Sirupsen/logrus"
-	"github.com/bndr/gojenkins"
 )
-
-var (
-	log         *logrus.Logger
-	confDir     string              //Needed to get File Filters data
-	dbc         *config.DatabaseCfg //Needed to get Custom Filter  data
-	downloadDir string
-	jenkins     *gojenkins.Jenkins
-)
-
-// SetConfDir  enable load File Filters from anywhere in the our FS.
-func SetConfDir(dir string) {
-	confDir = dir
-}
-
-// SetConfDir  enable load File Filters from anywhere in the our FS.
-func SetDownloadDir(dir string) {
-	downloadDir = dir
-}
-
-// SetDB load database config to load data if needed (used in filters)
-func SetDB(db *config.DatabaseCfg) {
-	dbc = db
-}
-
-// SetLogger set output log
-func SetLogger(l *logrus.Logger) {
-	log = l
-}
-
-// Init
-func Init(cfg *config.JenkinsConfig) error {
-	log.Debugf("JENKNS CREATE for %+v", cfg)
-	client := &http.Client{
-		Timeout: cfg.Timeout,
-	}
-
-	// Provide CA certificate if server is using self-signed certificate
-	// caCert, _ := ioutil.ReadFile("/tmp/ca.crt")
-	// jenkins.Requester.CACert = caCert
-	j, err := gojenkins.CreateJenkins(client, cfg.URL, cfg.User, cfg.Password).Init()
-	if err != nil {
-		log.Errorf("Something Went Wrong when trying to initialize Jenkins URL %s, User: %s, Password %s: Error: %s", cfg.URL, cfg.User, cfg.Password, err)
-		return err
-	}
-	jenkins = j
-	log.Debugf("JENKNS CREATE OK : %#+v", jenkins)
-	return nil
-}
-
-// Get preferred outbound ip of this machine
-func GetOutboundIP() string {
-	conn, err := net.Dial("udp", "8.8.8.8:80")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close()
-
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
-
-	return localAddr.IP.String()
-}
 
 type AnsibleInventory struct {
 	All struct {
@@ -152,9 +87,9 @@ func CreateJobEngineConfig(data *JobData, engine string) *JobEngineConfig {
 	for _, eng := range data.Platform.Engine {
 		if eng.Name == engine {
 			//LAB
-			lab_qid := eng.Platform.LabSvcID
-			if len(lab_qid) > 0 {
-				svc, err := dbc.GetServiceCfgByID(lab_qid)
+			labQid := eng.Platform.LabSvcID
+			if len(labQid) > 0 {
+				svc, err := dbc.GetServiceCfgByID(labQid)
 				if err == nil {
 					jecfg.Lab = GetGlobalVarKeysByEngine(data, engine)
 					jecfg.Lab["snmpcollector_user"] = svc.AdmUser
@@ -166,9 +101,9 @@ func CreateJobEngineConfig(data *JobData, engine string) *JobEngineConfig {
 
 			}
 			//TST
-			tst_qid := eng.Platform.TstSvcID
-			if len(tst_qid) > 0 {
-				svc, err := dbc.GetServiceCfgByID(tst_qid)
+			tstQid := eng.Platform.TstSvcID
+			if len(tstQid) > 0 {
+				svc, err := dbc.GetServiceCfgByID(tstQid)
 				if err == nil {
 					jecfg.TST = GetGlobalVarKeysByEngine(data, engine)
 					jecfg.TST["snmpcollector_user"] = svc.AdmUser
@@ -179,9 +114,9 @@ func CreateJobEngineConfig(data *JobData, engine string) *JobEngineConfig {
 				}
 			}
 			//PRE
-			pre_qid := eng.Platform.PreSvcID
-			if len(pre_qid) > 0 {
-				svc, err := dbc.GetServiceCfgByID(pre_qid)
+			preQid := eng.Platform.PreSvcID
+			if len(preQid) > 0 {
+				svc, err := dbc.GetServiceCfgByID(preQid)
 				if err == nil {
 					jecfg.PRE = GetGlobalVarKeysByEngine(data, engine)
 					jecfg.PRE["snmpcollector_user"] = svc.AdmUser
@@ -192,10 +127,10 @@ func CreateJobEngineConfig(data *JobData, engine string) *JobEngineConfig {
 				}
 			}
 
-			pro_qid := eng.Platform.ProSvcID
+			proQid := eng.Platform.ProSvcID
 
-			if len(pro_qid) > 0 {
-				svc, err := dbc.GetServiceCfgByID(pro_qid)
+			if len(proQid) > 0 {
+				svc, err := dbc.GetServiceCfgByID(proQid)
 				if err == nil {
 					jecfg.PRO = GetGlobalVarKeysByEngine(data, engine)
 					jecfg.PRO["snmpcollector_user"] = svc.AdmUser
@@ -225,8 +160,10 @@ func CreateAnsibleInventory(data *JobData, engine string) *AnsibleInventory {
 				m := make(map[string]interface{})
 				m["device_config"] = eng.Config
 				for _, param := range eng.Params {
-					log.Debugf("Detected parameter %s : %s", param.Key, param.Value)
-					m[param.Key] = param.Value
+					log.Debugf("Detected parameter %s : %#v", param.Key, param.Value)
+					if param.Value != nil {
+						m[param.Key] = param.Value
+					}
 				}
 				inv.All.Hosts[dev.ID] = m
 			}
@@ -235,46 +172,45 @@ func CreateAnsibleInventory(data *JobData, engine string) *AnsibleInventory {
 	return inv
 }
 
-func SaveConfigFiles(data *JobData) (string, string) {
+func SaveConfigFiles(data *JobData, engine string) (string, string) {
 
-	inv_data := CreateAnsibleInventory(data, "snmpcollector")
-	jec_data := CreateJobEngineConfig(data, "snmpcollector")
+	invData := CreateAnsibleInventory(data, engine)
+	jecData := CreateJobEngineConfig(data, engine)
 
-	pfm_data, err := json.MarshalIndent(jec_data, "", "  ")
+	pfmData, err := json.MarshalIndent(jecData, "", "  ")
 	if err != nil {
 		log.Warnf("Error on Marshall Platform data %s", err)
 	}
 
-	dev_data, err := json.MarshalIndent(inv_data, "", "  ")
+	devData, err := json.MarshalIndent(invData, "", "  ")
 	if err != nil {
 		log.Warnf("Error on Marshall  Device Data %s", err)
 	}
 
 	t := time.Now()
 
-	purl_filename := t.Format("20060102150405") + "_platform_config.json"
-	dev_filename := t.Format("20060102150405") + "_device_config.json"
+	purlFilename := t.Format("20060102150405") + "_platform_config.json"
+	devFilename := t.Format("20060102150405") + "_device_config.json"
 
-	err = ioutil.WriteFile(filepath.Join(downloadDir, purl_filename), pfm_data, 0644)
+	err = ioutil.WriteFile(filepath.Join(downloadDir, purlFilename), pfmData, 0644)
 	if err != nil {
-		log.Errorf("Error on Write Platform Config File  %s", filepath.Join(downloadDir, purl_filename))
+		log.Errorf("Error on Write Platform Config File  %s", filepath.Join(downloadDir, purlFilename))
 	}
-	err = ioutil.WriteFile(filepath.Join(downloadDir, dev_filename), dev_data, 0644)
+	err = ioutil.WriteFile(filepath.Join(downloadDir, devFilename), devData, 0644)
 	if err != nil {
-		log.Errorf("Error on Write Device Config File  %s", filepath.Join(downloadDir, dev_filename))
+		log.Errorf("Error on Write Device Config File  %s", filepath.Join(downloadDir, devFilename))
 	}
 
 	ip := GetOutboundIP()
 
-	purl := "http://" + ip + ":5090/api/rt/agent/download/" + purl_filename
-	durl := "http://" + ip + ":5090/api/rt/agent/download/" + dev_filename
+	purl := "http://" + ip + ":5090/api/rt/agent/download/" + purlFilename
+	durl := "http://" + ip + ":5090/api/rt/agent/download/" + devFilename
 
 	return purl, durl
 }
 
-func Send(subject string, action string, filename string, content *bytes.Buffer) error {
+func SendDeviceAction(subject string, action string, filename string, content *bytes.Buffer) error {
 	//Unmarshall file into Job Data
-
 	var jobdt JobData
 
 	if err := json.Unmarshal(content.Bytes(), &jobdt); err != nil {
@@ -282,6 +218,8 @@ func Send(subject string, action string, filename string, content *bytes.Buffer)
 		return err
 	}
 	log.Debugf("DATA %#+v", jobdt)
+
+	taskmap := make(map[int64]*config.TaskStatus)
 
 	for _, engine := range jobdt.Platform.Engine {
 
@@ -295,7 +233,7 @@ func Send(subject string, action string, filename string, content *bytes.Buffer)
 			return err
 		}
 
-		purl, durl := SaveConfigFiles(&jobdt)
+		purl, durl := SaveConfigFiles(&jobdt, engine.Name)
 
 		var params = map[string]string{
 			"PLATFORM_CONFIG_URL": purl,
@@ -304,14 +242,73 @@ func Send(subject string, action string, filename string, content *bytes.Buffer)
 
 		jid, err := job.InvokeSimple(params)
 		if err != nil {
-			log.Errorf("Some error triggered while invoking job  %s Error %s", id, err)
-			return err
+			log.Errorf("Some error triggered while invoking job  %s for engine %s Error %s", id, engine.Name, err)
+			continue
 		}
-		//b , err := job.GetBuild(jid))
 
 		log.Infof("Invoked job with number %d", jid)
 
+		//waiting for job info
+		for {
+			t, err := jenkins.GetQueueItem(jid)
+			if err != nil {
+				log.Errorf("Some error triggered while invoking queue  %s for engine %s Error %s", id, engine.Name, err)
+				continue
+			}
+			time.Sleep(5 * time.Second)
+			log.Debugf("QUEUE  RAW %#+v", t.Raw)
+			if len(t.Raw.Why) > 0 {
+				log.Infof("Waiting while task in queue:%s", t.Raw.Why)
+				time.Sleep(5 * time.Second)
+			} else {
+				log.Debugf("QUEUE  RAW %#+v", t.Raw)
+				bid := t.Raw.Executable.Number
+
+				taskmap[jid] = &config.TaskStatus{
+					JobName:    id,
+					TaskID:     jid,
+					ExecID:     t.Raw.Executable.Number,
+					IsFinished: false,
+					ExecURL:    t.Raw.Executable.URL,
+					Launched:   time.Now(),
+					LastUpdate: time.Now(),
+				}
+				log.Infof("Set Executable %d : %s", bid, t.Raw.Executable.URL)
+				break
+			}
+		}
+
+	}
+
+	for _, d := range jobdt.Devices {
+
+		PfmDevice := config.PlatformDevices{
+			ProductID: jobdt.Platform.ProductID,
+			DeviceID:  d.ID,
+			LastState: "PENDING",
+			TaskStat:  taskmap,
+		}
+
+		_, err := dbc.AddOrUpdatePlatformDevices(PfmDevice)
+		if err != nil {
+			log.Errorf("While trying to insert data into PlatformDevices: %+v Error: %s", PfmDevice, err)
+		}
 	}
 
 	return nil
+}
+
+func Send(subject string, action string, filename string, content *bytes.Buffer) error {
+
+	switch subject {
+	case "device":
+		return SendDeviceAction(subject, action, filename, content)
+	case "product":
+		log.Warning("There is not product jobs ,yet")
+	case "engine":
+		log.Warning("There is not engine jobs, yet")
+	default:
+		log.Errorf("There is no %s action registered", subject)
+	}
+	return nil //pending set error
 }

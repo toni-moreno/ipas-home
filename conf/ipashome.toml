@@ -96,3 +96,4 @@
  user = "ipas_admin"
  password = "1p4sm0l4"
  timeout = "300s"
+ updatefreq = "20s"

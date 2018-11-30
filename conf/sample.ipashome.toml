@@ -104,3 +104,4 @@
  user = "jenkins_admin"
  password = "jenkins_password"
  timeout = "300s"
+ updatefreq = "1m"

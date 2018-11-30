@@ -19,11 +19,10 @@ func NewAPIRtJenkins(m *macaron.Macaron) error {
 	//	bind := binding.Bind
 
 	m.Group("/api/rt/jenkins", func() {
-		//		m.Post("/build/:id" /* reqSignedIn,*/, binding.MultipartForm(CommitFileForm{}), JenkinsSendBuild)
 		m.Post("/build/:subject/:action" /* reqSignedIn,*/, binding.MultipartForm(CommitFileForm{}), JenkinsSendBuild)
 	})
-	// subject = device/produt/,,,
-	// action  = add / delete / update
+	// subject = device/product/engine/...
+	// action  = add / delete / update/...
 
 	return nil
 }
