@@ -100,12 +100,14 @@
                           <br>
                           <ng-container *ngFor="let kk of this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls; index as l">
                             <ng-container [formArrayName]="l">
-                              <mat-form-field appearance="outline">
+                              <div class="col-md-6">
+                              <mat-form-field [color]="'accent'" appearance="outline" style="padding-right: 30px !important;  display: block;">
                                 <mat-label>{{this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key}}
                                 </mat-label>
                                 <input matInput formControlName="value">
                                 <mat-icon matSuffix mat-mini-fab [matTooltip]="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.description">help</mat-icon>
                               </mat-form-field>
+                            </div>
                             </ng-container>
                           </ng-container>
                         </div>

@@ -21,17 +21,22 @@ export class DeviceWizardService {
     };
 
     newDevice(platform: any, device: any) {
+        console.log("DEVICEE", device);
+        let dev =  JSON.parse(JSON.stringify(device))
         let pTags = platform.tags.map((element) => { return element.key+'='+element.value} )
         console.log(pTags)
         //Map platform tags as device tags only on snmpcollector engine
         
-        let ie = device.engine.findIndex((engine) => engine.name === 'snmpcollector')  
-        let iparam = device.engine[ie].params.findIndex((param) => param.key === 'DEVICE_EXTRATAG_VALUES')
+        let ie = dev.engine.findIndex((engine) => engine.name === 'snmpcollector')  
+        let iparam = dev.engine[ie].params.findIndex((param) => param.key === 'DEVICE_EXTRATAG_VALUES')
     
-        device.engine[ie].params[iparam].value = device.engine[ie].params[iparam].value.split(',').concat(pTags)
+        dev.engine[ie].params[iparam].value = dev.engine[ie].params[iparam].value.split(',').concat(pTags)
     
         //Prepare structure to be sent:
-        let finalForm = {'platform' : platform, 'devices': [device]}
+        let finalForm = {'platform' : platform, 'devices': [dev]}
+
+        console.log(finalForm);
+
       }
 
 

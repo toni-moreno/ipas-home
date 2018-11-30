@@ -142,37 +142,37 @@ func Init(cfgrepo *config.GitRepo) {
 
 // ProductStat give us the definition stat for this product
 type ProductStat struct {
-	Name  string
-	HasDB bool
-	HasG  bool
-	HasV  bool
-	HasA  bool
+	Name  string `json:"name"`
+	HasDB bool   `json:"hasdb"`
+	HasG  bool   `json:"hasg"`
+	HasV  bool   `json:"hasv"`
+	HasA  bool   `json:"hasa"`
 }
 
 // EngineConfig get MainConfig this engine
 type EngineConfig struct {
-	Name        string      `yaml:"name"`
-	Models      string      `yaml:"models"`
-	Description string      `yaml:"description"`
-	Dir         string      `yaml:"dir"`
-	Config      interface{} `yaml:"config"`
-	Params      interface{} `yaml:"params"`
+	Name        string      `yaml:"name" json:"name"`
+	Models      string      `yaml:"models" json:"models"`
+	Description string      `yaml:"description" json:"description"`
+	Dir         string      `yaml:"dir" json:"dir"`
+	Config      interface{} `yaml:"config" json:"config"`
+	Params      interface{} `yaml:"params" json:"params"`
 }
 
 // Engine a set of configurations related to One Engine or other
 type Engine struct {
-	Engine string         `yaml:"engine"`
-	Config []EngineConfig `yaml:"config"`
+	Engine string         `yaml:"engine" json:"engine"`
+	Config []EngineConfig `yaml:"config" json:"config"`
 }
 
 // Product State of a product
 type Product struct {
-	Product     string   `yaml:"product"`
-	Models      string   `yaml:"models"`
-	Description string   `yaml:"description"`
-	Gather      []Engine `yaml:"gather"`
-	Visual      []Engine `yaml:"visual"`
-	Alert       []Engine `yaml:"alert"`
+	Product     string   `yaml:"product" json:"product"`
+	Models      string   `yaml:"models" json:"models"`
+	Description string   `yaml:"description" json:"description"`
+	Gather      []Engine `yaml:"gather" json:"gather"`
+	Visual      []Engine `yaml:"visual" json:"visual"`
+	Alert       []Engine `yaml:"alert" json:"alert"`
 }
 
 // LoadProductYaml load product data
