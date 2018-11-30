@@ -293,6 +293,23 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 		if err != nil {
 			log.Errorf("While trying to insert data into PlatformDevices: %+v Error: %s", PfmDevice, err)
 		}
+
+		for _, e := range d.Engine {
+			for _, p := range e.Params {
+				dcParams := config.DeviceConfigParams{
+					ProductID: jobdt.Platform.ProductID,
+					DeviceID:  d.ID,
+					EngineID:  e.Name,
+					Key:       p.Key,
+					Value:     p.Value,
+				}
+				_, err := dbc.AddOrUpdateDeviceConfigParams(dcParams)
+				if err != nil {
+					log.Errorf("While trying to insert data into DeviceConfigParams: %+v Error: %s", dcParams, err)
+				}
+
+			}
+		}
 	}
 
 	return nil
