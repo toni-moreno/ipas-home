@@ -182,6 +182,8 @@ func WebServer(publicPath string, httpPort int, cfg *config.HTTPConfig, id strin
 	NewAPICfgInfluxServer(m) //Influx Databases
 	NewAPICfgProductDBMap(m)
 	NewAPICfgPlatformEngines(m)
+	NewAPICfgDeviceConfigParams(m)
+	NewAPICfgPlatformDevices(m)
 
 	NewAPIRtGitRepo(m)
 	NewAPIRtJenkins(m)
