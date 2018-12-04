@@ -63,6 +63,7 @@ export class DeviceWizardComponent implements OnInit {
   selectedProduct = null;
   selectedEnvironment = null;
 
+  bool_params =  [true,false];
 
   constructor(private _formBuilder: FormBuilder, public homeService: HomeService, public wizardService: DeviceWizardService, public productService : ProductService) { }
 
@@ -156,7 +157,7 @@ export class DeviceWizardComponent implements OnInit {
           this.platformFormGroup.setControl('tags',tags_array);
           console.log("OOOO",this.platformFormGroup);
         },
-        (err) => console.log(err),
+        (err) => {console.log(err); this.platformFormGroup.setControl('tags',new FormArray([]))},
         () => console.log("DONE")
       )
 
@@ -229,15 +230,17 @@ export class DeviceWizardComponent implements OnInit {
     for (let i of params['product_params']) {
       let p = this._formBuilder.group({})
       for (let k in i) {
-        p.addControl(k, new FormControl({value: i[k], disabled: true}))
+        p.addControl(k, new FormControl(i[k]))
       }
+      p['param_disabled'] = true;
       test.push(p);
     }
     for (let i of params['platform_params']) {
       let p = this._formBuilder.group({})
       for (let k in i) {
-        p.addControl(k, new FormControl({value: i[k], disabled: true}))
+        p.addControl(k, new FormControl(i[k]))
       }
+      p['param_disabled'] = true;
       test.push(p);
     }
     for (let i of params['device_params']) {
@@ -245,19 +248,18 @@ export class DeviceWizardComponent implements OnInit {
       for (let k in i) {
         p.addControl(k, new FormControl(i[k]))
       }
+      p['param_disabled'] = false;
       test.push(p);
     }
 
     return test
   }
 
-    
-
+  
   /* **************************  */
   /* SERVICES SELECTION SECTION  */
   /* **************************  */
 
-  
   selectService(event,engine) {
     console.log(engine);
     this.selection.toggle(event)
@@ -283,7 +285,11 @@ export class DeviceWizardComponent implements OnInit {
 
   sendNewDeviceRequest() {
 
-    this.wizardService.newDevice(this.platformFormGroup.value, this.deviceFormGroup.value);
+    this.wizardService.newDevice(this.platformFormGroup.value, this.deviceFormGroup.value).subscribe(
+      (data) => {console.log('HOLA')},
+      (err) => {console.log("ERROR, ",err)},
+      () => {console.log("DONE")}
+    )
 
       }    
 

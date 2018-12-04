@@ -117,13 +117,6 @@ export const EngineSNMPParams = {
         description: 'If this option is set all snmp low level protocol queries with detailed info on this device will be written on a file with name "snmpdebug_XXXXXX.log"',
         type: "boolean",
         value: false
-      },
-      {
-        key: "PLATFORM_EXTRATAG_KEYS",
-        agent_key: "ExtraTags",
-        description: 'Device ExtraTag keys',
-        type: "string",
-        value: null
       }
     ],
   device_params:

@@ -80,7 +80,6 @@
               <br>
               <mat-step [stepControl]="deviceFormGroup">
                 <form [formGroup]="deviceFormGroup">
-
                   <mat-form-field>
                     <mat-select #config_selection placeholder="Available configs" name="config">
                       <mat-option *ngFor="let config of kengine.config; index as iconfig" [value]="iconfig">
@@ -98,16 +97,32 @@
                         </h5>
                         <div formArrayName='params'>
                           <br>
-                          <ng-container *ngFor="let kk of this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls; index as l">
-                            <ng-container [formArrayName]="l">
-                              <div class="col-md-6">
-                              <mat-form-field [color]="'accent'" appearance="outline" style="padding-right: 30px !important;  display: block;">
-                                <mat-label>{{this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key}}
-                                </mat-label>
-                                <input matInput formControlName="value">
-                                <mat-icon matSuffix mat-mini-fab [matTooltip]="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.description">help</mat-icon>
-                              </mat-form-field>
-                            </div>
+                          <ng-container *ngFor="let single_param of this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls; index as l">
+                            <ng-container *ngIf="single_param.param_disabled === false">
+                              <ng-container [formArrayName]="l">
+                                <div class="col-md-6">
+                                  <ng-container *ngIf="single_param.value.type === 'boolean'">
+                                    <mat-form-field [color]="'accent'" appearance="outline" style="padding-right: 30px !important;  display: block;">
+                                      <mat-label>{{this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key}}
+                                      </mat-label>
+                                      <mat-select formControlName="value">
+                                        <mat-option *ngFor="let bool_param of bool_params" [value]="bool_param">
+                                          {{bool_param}}
+                                        </mat-option>
+                                      </mat-select>
+                                      <mat-icon style="font-size: 16px" color='primary' matSuffix mat-mini-fab [matTooltip]="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.description">help</mat-icon>
+                                    </mat-form-field>
+                                  </ng-container>
+                                  <ng-container *ngIf="single_param.value.type !== 'boolean'">
+                                    <mat-form-field [color]="'accent'" appearance="outline" style="padding-right: 30px !important;  display: block;">
+                                      <mat-label>{{this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key}}
+                                      </mat-label>
+                                      <input matInput [type]="single_param.value.type === integer ? number : text" formControlName="value">
+                                      <mat-icon style="font-size: 16px" matSuffix mat-mini-fab color='primary' [matTooltip]="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.description">help</mat-icon>
+                                    </mat-form-field>
+                                  </ng-container>
+                                </div>
+                              </ng-container>
                             </ng-container>
                           </ng-container>
                         </div>
@@ -146,7 +161,7 @@
                     </ng-container>
                     <ng-container matColumnDef="ID">
                       <mat-header-cell *matHeaderCellDef class="cell-header text-test"> ID</mat-header-cell>
-                      <mat-cell *matCellDef="let element"> {{element.ID}} Pepito </mat-cell>
+                      <mat-cell *matCellDef="let element"> {{element.ID}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="EngineID">
                       <mat-header-cell *matHeaderCellDef class="cell-header text-test">EngineID</mat-header-cell>
@@ -157,7 +172,9 @@
                   </mat-table>
                 </ng-container>
                 <ng-template #noValue>
-                  <h1><p class="text-center">No services related with</p></h1>
+                  <h1>
+                    <p class="text-center">No services related with</p>
+                  </h1>
                 </ng-template>
               </mat-step>
               <mat-step>
