@@ -143,10 +143,10 @@ func Init(cfgrepo *config.GitRepo) {
 // ProductStat give us the definition stat for this product
 type ProductStat struct {
 	Name  string `json:"name"`
-	HasDB bool   `json:"hasdb"`
-	HasG  bool   `json:"hasg"`
-	HasV  bool   `json:"hasv"`
-	HasA  bool   `json:"hasa"`
+	HasDB bool   `json:"hasDB"`
+	HasG  bool   `json:"hasG"`
+	HasV  bool   `json:"hasV"`
+	HasA  bool   `json:"hasA"`
 }
 
 // EngineConfig get MainConfig this engine
