@@ -71,7 +71,7 @@ type PlatformEngines struct {
 	LabSvcID string `xorm:"lab_svc_id"`
 	TstSvcID string `xorm:"tst_svc_id"`
 	PreSvcID string `xorm:"pre_svc_id"`
-	ProScvID string `xorm:"pro_svc_id"`
+	ProSvcID string `xorm:"pro_svc_id"`
 }
 
 type TaskStatus struct {
