@@ -1,6 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource, MatSidenav } from '@angular/material';
-import { FormControl } from '@angular/forms';
 import { ProductService } from './product.service';
 
 @Component({
@@ -19,14 +18,18 @@ export class ProductComponent {
   mode : boolean =  false;
   editData : any;
 
-  displayedColumns: string[] = ['actions', 'name', 'db', 'gather', 'visual', 'alert'];
+  displayedColumns: string[] = ['actions', 'name', 'hasdb', 'gather', 'visual', 'alert'];
   dataSource: MatTableDataSource<ProductList> = new MatTableDataSource();
 
   constructor(public productService: ProductService) {
 
     this.productService.getProducts('/api/rt/gitrepo/product')
       .subscribe(
-      (data: ProductList[]) => { this.dataSource = new MatTableDataSource(data); console.log(data) },
+      (data: ProductList[]) => {
+        this.dataSource = new MatTableDataSource(data);
+        console.log(data)
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;},
       (err) => console.log(err),
       () => console.log("DONE")
       )
@@ -46,10 +49,6 @@ export class ProductComponent {
       )
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim();

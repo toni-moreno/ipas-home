@@ -8,19 +8,25 @@
     <br>
     <mat-card>
       <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="viewMode = 'list'">
-        <mat-icon>playlist_play</mat-icon> List Product</button>
+        <mat-icon>playlist_play</mat-icon> List Product
+      </button>
       <button mat-raised-button [color]="viewMode === 'new' ? 'accent' : 'primary'" (click)="viewMode = 'new'">
-        <mat-icon>playlist_add</mat-icon> New Product</button>
+        <mat-icon>playlist_add</mat-icon> New Product
+      </button>
     </mat-card>
   </div>
   <ng-container [ngSwitch]="viewMode">
     <ng-template ngSwitchCase="list">
       <div class="container">
-        <div class="example-header">
-          <mat-form-field>
-            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter Product">
-          </mat-form-field>
-        </div>
+
+        <mat-toolbar style="background-color: #e9e9e9;">
+          <mat-toolbar-row>
+            <mat-form-field style="font-size: 14px">
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter Device">
+            </mat-form-field>
+          </mat-toolbar-row>
+        </mat-toolbar>
+
         <mat-table #table [dataSource]="dataSource" matSort>
           <!-- Table Actions Column -->
           <ng-container matColumnDef="actions">
@@ -45,20 +51,22 @@
             <mat-cell *matCellDef="let element"> {{element.name | uppercase}} </mat-cell>
           </ng-container>
 
-          
+
           <!-- hasdb Column -->
-          <ng-container matColumnDef="db">
+          <ng-container matColumnDef="hasdb">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> HasDB </mat-header-cell>
             <mat-cell *matCellDef="let element">
-              <i class="material-icons" [ngClass]="element.hasdb === true ? 'text-test' : 'text-empty'">{{element.hasDB === true ? 'check' : 'remove' }} </i>
+              <i class="material-icons" [ngClass]="element.hasDB === true ? 'text-test' : 'text-empty'">{{element.hasDB
+                === true ? 'check' : 'remove' }} </i>
             </mat-cell>
           </ng-container>
-          
+
           <!-- gather Column -->
           <ng-container matColumnDef="gather">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Gather </mat-header-cell>
             <mat-cell *matCellDef="let element">
-              <i class="material-icons" [ngClass]="element.hasg === true ? 'text-test' : 'text-empty'">{{element.hasG === true ? 'check' : 'remove' }} </i>
+              <i class="material-icons" [ngClass]="element.hasG === true ? 'text-test' : 'text-empty'">{{element.hasG
+                === true ? 'check' : 'remove' }} </i>
             </mat-cell>
           </ng-container>
 
@@ -66,7 +74,8 @@
           <ng-container matColumnDef="visual">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Visual </mat-header-cell>
             <mat-cell *matCellDef="let element">
-              <i class="material-icons" [ngClass]="element.hasv === true ? 'text-test' : 'text-empty'">{{element.hasV === true ? 'check' : 'remove' }} </i>
+              <i class="material-icons" [ngClass]="element.hasV === true ? 'text-test' : 'text-empty'">{{element.hasV
+                === true ? 'check' : 'remove' }} </i>
             </mat-cell>
           </ng-container>
 
@@ -74,7 +83,8 @@
           <ng-container matColumnDef="alert">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Alert </mat-header-cell>
             <mat-cell *matCellDef="let element">
-              <i class="material-icons" [ngClass]="element.hasa === true ? 'text-test' : 'text-empty'">{{element.hasA === true ? 'check' : 'remove' }} </i>
+              <i class="material-icons" [ngClass]="element.hasA === true ? 'text-test' : 'text-empty'">{{element.hasA
+                === true ? 'check' : 'remove' }} </i>
             </mat-cell>
           </ng-container>
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
