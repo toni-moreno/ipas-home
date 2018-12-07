@@ -140,7 +140,7 @@ export const EngineSNMPParams = {
         agent_key: "Port",
         description: 'Overwritedefaultdeviceport',
         type: "integer",
-        value: null
+        value: 161
       },
       {
         key: "DEVICE_ACTIVE",

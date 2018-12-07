@@ -117,7 +117,7 @@
                                     <mat-form-field [color]="'accent'" appearance="outline" style="padding-right: 30px !important;  display: block;">
                                       <mat-label>{{this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key}}
                                       </mat-label>
-                                      <input matInput [type]="single_param.value.type === integer ? number : text" formControlName="value">
+                                      <input matInput [type]="single_param.value.type === 'integer' ? 'number' : 'text'" formControlName="value">
                                       <mat-icon style="font-size: 16px" matSuffix mat-mini-fab color='primary' [matTooltip]="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.description">help</mat-icon>
                                     </mat-form-field>
                                   </ng-container>

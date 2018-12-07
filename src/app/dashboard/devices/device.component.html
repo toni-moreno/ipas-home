@@ -8,51 +8,78 @@
     <br>
     <mat-card>
       <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="viewMode = 'list'">
-        <mat-icon>playlist_play</mat-icon> List Devices</button>
+        <mat-icon>playlist_play</mat-icon> List Devices
+      </button>
       <button mat-raised-button [color]="viewMode === 'new' ? 'accent' : 'primary'" (click)="viewMode = 'new'">
-        <mat-icon>playlist_add</mat-icon> New Device</button>
+        <mat-icon>playlist_add</mat-icon> New Device
+      </button>
     </mat-card>
   </div>
   <ng-container [ngSwitch]="viewMode">
     <ng-template ngSwitchCase="list">
-      <div class="container">
-        <div class="example-header">
-          <mat-form-field>
-            <input matInput (keyup)="applyFilter($event.target.valsue)" placeholder="Filter Device">
-          </mat-form-field>
-        </div>
-        <mat-table #table [dataSource]="dataSource" matSort>
-          <!-- Table Actions Column -->
-          <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef class="cell-header text-test">Actions</mat-header-cell>
-            <mat-cell *matCellDef="let element">
-              <button mat-icon-button mat-button color="primary">
-                <mat-icon>note_add</mat-icon>
-              </button>
-              <button mat-icon-button mat-button color="primary">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button mat-button color="primary">
-                <mat-icon>highlight_off</mat-icon>
-              </button>
-            </mat-cell>
-            {{element | json}}
-          </ng-container>
+      <mat-spinner [mode]="'indeterminate'" *ngIf="!dataSource"></mat-spinner>
 
-          <!-- ID Column -->
-          <ng-container matColumnDef="id">
-            <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> ID</mat-header-cell>
+      <ng-container *ngIf="dataSource">
+        <div class="container">
+
+          <mat-toolbar style="background-color: #e9e9e9;">
+            <mat-toolbar-row>
+              <mat-form-field style="font-size: 14px">
+                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter Device">
+              </mat-form-field>
+              <span style="font-size:12px" *ngIf="selProd">Addtional filters: {{selProd}}</span>
+              <span style="flex: 1 1 auto"></span>
+              <div>
+                <mat-radio-group [ngModel]="selectedListMode">
+                  <mat-radio-button style="font-size: 14px; padding-right: 10px" class="example-radio-button" *ngFor="let mode of listMode; index as imode"
+                    [value]="mode" (click)="changeView(mode, imode)" color="primary">
+                    {{mode.desc}}
+                  </mat-radio-button>
+                </mat-radio-group>
+              </div>
+            </mat-toolbar-row>
+          </mat-toolbar>
+          <mat-table #table [dataSource]="dataSource" matSort>
+            <!-- Table Actions Column -->
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef class="cell-header text-test">Actions</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <button mat-icon-button mat-button color="primary">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button mat-button color="primary" (click)="removeDevice(element)">
+                  <mat-icon>highlight_off</mat-icon>
+                </button>
+              </mat-cell>
+              {{element | json}}
+            </ng-container>
+
+            <ng-container matColumnDef="ProductID">
+              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> ProductID</mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.ProductID}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="DeviceID">
+              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> DeviceID</mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.DeviceID}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="LastState">
+              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> LastState</mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.LastState}} </mat-cell>
+            </ng-container>
+
+            <!--ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> ProductID</mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
           </ng-container>
 
-          <!-- Host Column -->
+
           <ng-container matColumnDef="host">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>Host
             </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.host}} </mat-cell>
           </ng-container>
 
-          <!-- Tags Column -->
+
           <ng-container matColumnDef="tags">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>Tags
             </mat-header-cell>
@@ -63,7 +90,7 @@
               </ng-container>
             </mat-cell>
           </ng-container>
-          <!-- Deployed Column -->
+
           <ng-container matColumnDef="products">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Products </mat-header-cell>
             <mat-cell *matCellDef="let element" class="cell-bordered">
@@ -73,13 +100,14 @@
                 <mat-divider *ngIf="!ls" style="width: 80%;"></mat-divider>
               </ng-container>
             </mat-cell>
-          </ng-container>
+          </ng-container-->
 
-          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-        </mat-table>
-        <mat-paginator [pageSize]="10" [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
-      </div>
+            <mat-header-row *matHeaderRowDef="selectedListMode.displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: selectedListMode.displayedColumns;"></mat-row>
+          </mat-table>
+          <mat-paginator [pageSize]="10" [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
+        </div>
+      </ng-container>
     </ng-template>
     <ng-template ngSwitchDefault>
       <device-wizard></device-wizard>
