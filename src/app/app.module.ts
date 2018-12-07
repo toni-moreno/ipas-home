@@ -42,6 +42,7 @@ import {
 import {HttpClientModule} from '@angular/common/http';
 
 import { DialogParamsComponent } from './shared/dialogparams/dialogparams.component'
+import { DialogListComponent } from './shared/dialoglist/dialoglist.component'
 import { AppComponent } from './app.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { HomeComponent } from './dashboard/home/home.component';
@@ -80,6 +81,7 @@ import { DeviceWizardService } from  './dashboard/devices/device-wizard/device-w
   declarations: [
     AppComponent,
     DialogParamsComponent,
+    DialogListComponent,
     SidebarComponent,
     HomeComponent,
     ProfileComponent,
@@ -147,7 +149,7 @@ import { DeviceWizardService } from  './dashboard/devices/device-wizard/device-w
     MatTooltipModule,
     ReactiveFormsModule,
   ],
-  entryComponents: [DialogParamsComponent],
+  entryComponents: [DialogParamsComponent, DialogListComponent],
   providers: [SettingsService, WizardService, DeviceWizardService ],
   bootstrap: [AppComponent]
 })

@@ -1,0 +1,14 @@
+<h1 mat-dialog-title>List Configuration</h1>
+  <div mat-dialog-content>
+  <mat-form-field>
+      <mat-label>Select product: </mat-label>
+      <mat-select placeholder="products" [(ngModel)]="selected">
+        <mat-option *ngFor="let product of data" [value]="product.name">
+          {{ product.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">No Thanks</button>
+    <button mat-button [mat-dialog-close]="selected" cdkFocusInitial>Ok</button>
+  </div>
