@@ -1,6 +1,7 @@
 package webui
 
 import (
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"strconv"
@@ -131,13 +132,19 @@ func PingHTTP(cfg *config.ServiceCfg, log *logrus.Logger, apidbg bool) (time.Dur
 	case "GET":
 		log.Debugf("PING HTTP GET : %s", cfg.ID)
 
+		transCfg := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore expired SSL certificates
+		}
+
 		var httpclient = &http.Client{
-			Timeout: time.Second * 30,
+			Timeout:   time.Second * 30,
+			Transport: transCfg,
 		}
 
 		resp, err = httpclient.Get(cfg.StatusURL)
 		if err != nil {
 			elapsed := time.Since(start)
+			log.Warnf("Service :%s : ERROR : %s ", cfg.ID, err)
 			return elapsed, "ERROR", err
 		}
 		defer resp.Body.Close()

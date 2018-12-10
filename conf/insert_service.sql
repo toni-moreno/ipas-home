@@ -15,11 +15,11 @@ values
    'Dashboarding Tool',                --Description
    'devices',                        --header_icon
    '#236B8E',                        --linear_color
-   'http://grafana.mydomain2.org',   --foot_content
+   'https://grafana.mydomain2.org',   --foot_content
    'public',                         --footer_icon
-   'http://grafana.mydomain2.org',   --link
+   'https://grafana.mydomain2.org',   --link
    'GET',                            --status_mode
-   'http://grafana.mydomain2.org/login', --status_url
+   'https://grafana.mydomain2.org/login', --status_url
    '',                           --status_content_type
    'statuscode',                         --status_validation_mode
     '200');                          --status_validation_value
@@ -36,11 +36,11 @@ values
    'SNMP Metrics based Agent Tool',     --description
    'devices',                        --header_icon
    '#236B8E',                        --linear_color
-   'http://snmpcollector.mydomain2.org',   --foot_content
+   'https://snmpcollector.mydomain2.org',   --foot_content
    'public',                         --footer_icon
-   'http://snmpcollector.mydomain2.org',   --link
+   'https://snmpcollector.mydomain2.org',   --link
    'GET',                            --status_mode
-   'http://snmpcollector.mydomain2.org/api/rt/agent/info/version/', --status_url
+   'https://snmpcollector.mydomain2.org/api/rt/agent/info/version/', --status_url
    '',                           --status_content_type
    'statuscode',                         --status_validation_mode
     '200');                          --status_validation_value
@@ -57,11 +57,11 @@ values
    'Our Alerting WebUI for the Internal TICK stack',     --description
    'devices',                        --header_icon
    '#236B8E',                        --linear_color
-   'http://resistor.mydomain2.org',   --foot_content
+   'https://resistor.mydomain2.org',   --foot_content
    'public',                         --footer_icon
-   'http://resistor.mydomain2.org',   --link
+   'https://resistor.mydomain2.org',   --link
    'GET',                            --status_mode
-   'http://resistor.mydomain2.org/api/rt/agent/info/version/', --status_url
+   'https://resistor.mydomain2.org/api/rt/agent/info/version/', --status_url
    '',                           --status_content_type
    'statuscode',                         --status_validation_mode
     '200');                          --status_validation_value
@@ -75,11 +75,11 @@ values
    'Online  Docs server',     --description
    'devices',                        --header_icon
    '#236B8E',                        --linear_color
-   'http://doc.mydomain2.org',   --foot_content
+   'https://doc.mydomain2.org',   --foot_content
    'public',                         --footer_icon
-   'http://doc.mydomain2.org',   --link
+   'https://doc.mydomain2.org',   --link
    'GET',                            --status_mode
-   'http://doc.mydomain2.org/', --status_url
+   'https://doc.mydomain2.org/', --status_url
    '',                           --status_content_type
    'statuscode',                         --status_validation_mode
     '200');    
@@ -95,11 +95,11 @@ values
    'IPAS Automatization tool based in a Jenkins Server',     --description
    'timeline',                        --header_icon
    '#236B8E',                        --linear_color
-   'http://jenkins.mydomain2.org',   --foot_content
+   'https://jenkins.mydomain2.org',   --foot_content
    'public',                         --footer_icon
-   'http://jenkins.mydomain2.org',   --link
+   'https://jenkins.mydomain2.org',   --link
    'GET',                            --status_mode
-   'http://jenkins.mydomain2.org/login', --status_url
+   'https://jenkins.mydomain2.org/login', --status_url
    '',                           --status_content_type
    'statuscode',                         --status_validation_mode
     '200');
@@ -113,11 +113,11 @@ values
    'IPAS GIT Server',     --description
    'timeline',                        --header_icon
    '#236B8E',                        --linear_color
-   'http://git.mydomain2.org',   --foot_content
+   'https://git.mydomain2.org',   --foot_content
    'public',                         --footer_icon
-   'http://git.mydomain2.org',   --link
+   'https://git.mydomain2.org',   --link
    'GET',                            --status_mode
-   'http://git.mydomain2.org/api/v1/version', --status_url
+   'https://git.mydomain2.org/api/v1/version', --status_url
    '',                           --status_content_type
    'statuscode',                         --status_validation_mode
     '200');
