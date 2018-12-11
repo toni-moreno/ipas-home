@@ -1,4 +1,5 @@
 import { Injectable, EventEmitter } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class SettingsService {
@@ -9,8 +10,14 @@ export class SettingsService {
   public sidebarColor = '#003F87';
   public sidebarColorUpdate: EventEmitter<string> = new EventEmitter();
 
-  constructor() { }
+  constructor(public httpAPI: HttpClient) {
+    console.log('Task Service created.', httpAPI);
+}
 
+  getVersion() {
+    return this.httpAPI.get('/api/rt/agent/info/version/')
+  }
+  
   getSidebarImageIndex(): number {
     return this.sidebarImageIndex;
   }
