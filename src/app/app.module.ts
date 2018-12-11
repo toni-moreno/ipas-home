@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CustomPipesModule } from './pipes/pipes.module'
 import { routing } from './app.routes';
 import {
   MatAutocompleteModule,
@@ -69,7 +70,7 @@ import { FooterComponent } from './shared/footer/footer.component';
 import { SettingsComponent } from './dashboard/settings/settings.component';
 import { PriceTableComponent } from './dashboard/component/pricetable/pricetable.component';
 import { PanelsComponent } from './dashboard/component/panels/panels.component';
-import { AppCardComponent } from './shared/appcard/appcard.component'
+import { AppCardComponent } from './shared/appcard/appcard.component';
 import { SettingsService } from './services/settings.service';
 import { WizardComponent } from './dashboard/products/wizard/wizard.component';
 import { WizardService } from  './dashboard/products/wizard/wizard.service';
@@ -148,6 +149,7 @@ import { DeviceWizardService } from  './dashboard/devices/device-wizard/device-w
     MatToolbarModule,
     MatTooltipModule,
     ReactiveFormsModule,
+    CustomPipesModule
   ],
   entryComponents: [DialogParamsComponent, DialogListComponent],
   providers: [SettingsService, WizardService, DeviceWizardService ],

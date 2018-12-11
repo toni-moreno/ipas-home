@@ -1,43 +1,46 @@
 <div class="container">
   <div class="background"></div>
   <div class="container">
-    <div class="row">
+    <!--div class="row">
       <app-header></app-header>
-    </div>
+    </div-->
    <div class="row">
      <div class="col-md-4 col-sm-6 col-md-offset-4 col-sm-offset-3">
        <div class="card">
          <div class="card-header">
             <h4>Login</h4>
-           <div class="social-btns">
+           <!--div class="social-btns">
              <button mat-icon-button><i class="fa fa-facebook-square"></i></button>
              <button mat-icon-button><i class="fa fa-twitter"></i></button>
              <button mat-icon-button><i class="fa fa-google-plus"></i></button>
-           </div>
+           </div-->
          </div>
-         <p class="tip">Or Be Classical</p>
+         <!--p class="tip">Or Be Classical</p-->
+          
          <div class="card-form">
+            <form class="example-container" [formGroup]="loginFormGroup" (ngSubmit)="loginSubmit(loginFormGroup.value)">
            <div class="form-row">
              <i class="material-icons">face</i>
              <mat-input-container color="accent">
-               <input type="text" matInput placeholder="First Name"/>
+               <input type="text" matInput formControlName="username" placeholder="Username"/>
              </mat-input-container>
            </div>
-           <div class="form-row">
+           <!--div class="form-row">
              <i class="material-icons">email</i>
              <mat-input-container color="accent">
                <input type="text" matInput placeholder="Email address"/>
              </mat-input-container>
-           </div>
+           </div-->
            <div class="form-row">
              <i class="material-icons">lock_outline</i>
              <mat-input-container color="accent">
-               <input type="password" matInput placeholder="Password"/>
+               <input type="password" matInput formControlName="password" placeholder="Password"/>
              </mat-input-container>
            </div>
-         </div>
-         <div class="card-footer">
-           <button mat-button (click)="loginBtn()">LET'S GO</button>
+           <div class="card-footer">
+              <button mat-button type="submit"[disabled]="!loginFormGroup.valid"> Enter</button>
+            </div>
+          </form>
          </div>
        </div>
      </div>

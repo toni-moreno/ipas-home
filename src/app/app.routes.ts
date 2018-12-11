@@ -21,9 +21,10 @@ import { LockComponent } from './page/lock/lock.component';
 import { RegisterComponent } from './page/register/register.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/dashboard',  pathMatch: 'full' },
+  { path: '', redirectTo: '/login',  pathMatch: 'full' },
   { path: 'lock', component: LockComponent },
-  { path: 'register', component: RegisterComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'register',  component: RegisterComponent },
   {
     path: 'dashboard', component: RootComponent, children: [
       { path: '', component: HomeComponent },
@@ -40,5 +41,5 @@ const routes: Routes = [
   }
 ];
 
-export const routing = RouterModule.forRoot(routes);
+export const routing = RouterModule.forRoot(routes, {useHash: true});
 
