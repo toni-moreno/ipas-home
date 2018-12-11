@@ -26,9 +26,9 @@ func NewAPIRtGitRepo(m *macaron.Macaron) error {
 	//	bind := binding.Bind
 
 	m.Group("/api/rt/gitrepo", func() {
-		m.Get("/product/" /*reqSignedIn,*/, GitRepoGetProducts)
-		m.Get("/product/:id" /*reqSignedIn,*/, GitRepoGetProductByID)
-		m.Post("/commitfile" /* reqSignedIn,*/, binding.MultipartForm(CommitFileForm{}), GitRepoCommitFile)
+		m.Get("/product/", reqSignedIn, GitRepoGetProducts)
+		m.Get("/product/:id", reqSignedIn, GitRepoGetProductByID)
+		m.Post("/commitfile", reqSignedIn, binding.MultipartForm(CommitFileForm{}), GitRepoCommitFile)
 	})
 
 	return nil

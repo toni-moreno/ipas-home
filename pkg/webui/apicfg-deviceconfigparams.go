@@ -13,14 +13,14 @@ func NewAPICfgDeviceConfigParams(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/deviceconfigparams", func() {
-		m.Get("/" /*reqSignedIn,*/, GetDeviceConfigParams)
-		m.Get("/byproduct/:productid" /*reqSignedIn,*/, GetDeviceConfigParamsByProduct)
-		m.Get("/bydevice/:productid/:deviceid" /*reqSignedIn,*/, GetDeviceConfigParamsByDevice)
-		m.Post("/" /*reqSignedIn,*/, bind(config.DeviceConfigParams{}), AddDeviceConfigParams)
-		m.Put("/" /* reqSignedIn,*/, bind(config.DeviceConfigParams{}), UpdateDeviceConfigParams)
-		m.Delete("/:productid/:deviceid/:engineid/:key" /* reqSignedIn,*/, DeleteDeviceConfigParams)
-		m.Get("/:productid/:deviceid/:engineid/:key" /*reqSignedIn,*/, GetDeviceConfigParamsByID)
-		m.Get("/checkondel/:id" /*reqSignedIn,*/, GetDeviceConfigParamsAffectOnDel)
+		m.Get("/", reqSignedIn, GetDeviceConfigParams)
+		m.Get("/byproduct/:productid", reqSignedIn, GetDeviceConfigParamsByProduct)
+		m.Get("/bydevice/:productid/:deviceid", reqSignedIn, GetDeviceConfigParamsByDevice)
+		m.Post("/", reqSignedIn, bind(config.DeviceConfigParams{}), AddDeviceConfigParams)
+		m.Put("/", reqSignedIn, bind(config.DeviceConfigParams{}), UpdateDeviceConfigParams)
+		m.Delete("/:productid/:deviceid/:engineid/:key", reqSignedIn, DeleteDeviceConfigParams)
+		m.Get("/:productid/:deviceid/:engineid/:key", reqSignedIn, GetDeviceConfigParamsByID)
+		m.Get("/checkondel/:id", reqSignedIn, GetDeviceConfigParamsAffectOnDel)
 	})
 
 	return nil

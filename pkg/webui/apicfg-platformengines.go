@@ -13,12 +13,12 @@ func NewAPICfgPlatformEngines(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/platformengines", func() {
-		m.Get("/" /*reqSignedIn,*/, GetPlatformEngines)
-		m.Post("/" /*reqSignedIn,*/, bind(config.PlatformEngines{}), AddPlatformEngines)
-		m.Put("/:id" /* reqSignedIn,*/, bind(config.PlatformEngines{}), UpdatePlatformEngines)
-		m.Delete("/:id" /* reqSignedIn,*/, DeletePlatformEngines)
-		m.Get("/:id" /*reqSignedIn,*/, GetPlatformEnginesByID)
-		m.Get("/checkondel/:id" /*reqSignedIn,*/, GetPlatformEnginesAffectOnDel)
+		m.Get("/", reqSignedIn, GetPlatformEngines)
+		m.Post("/", reqSignedIn, bind(config.PlatformEngines{}), AddPlatformEngines)
+		m.Put("/:id", reqSignedIn, bind(config.PlatformEngines{}), UpdatePlatformEngines)
+		m.Delete("/:id", reqSignedIn, DeletePlatformEngines)
+		m.Get("/:id", reqSignedIn, GetPlatformEnginesByID)
+		m.Get("/checkondel/:id", reqSignedIn, GetPlatformEnginesAffectOnDel)
 	})
 
 	return nil

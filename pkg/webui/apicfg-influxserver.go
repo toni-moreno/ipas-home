@@ -16,13 +16,13 @@ func NewAPICfgInfluxServer(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/influxservers", func() {
-		m.Get("/" /*reqSignedIn,*/, GetInfluxServer)
-		m.Post("/" /* reqSignedIn,*/, bind(config.InfluxCfg{}), AddInfluxServer)
-		m.Put("/:id" /*reqSignedIn, */, bind(config.InfluxCfg{}), UpdateInfluxServer)
-		m.Delete("/:id" /* reqSignedIn,*/, DeleteInfluxServer)
-		m.Get("/:id" /* reqSignedIn,*/, GetInfluxServerByID)
-		m.Get("/checkondel/:id" /*reqSignedIn,*/, GetInfluxAffectOnDel)
-		m.Post("/ping/" /* reqSignedIn,*/, bind(config.InfluxCfg{}), PingInfluxServer)
+		m.Get("/", reqSignedIn, GetInfluxServer)
+		m.Post("/", reqSignedIn, bind(config.InfluxCfg{}), AddInfluxServer)
+		m.Put("/:id", reqSignedIn, bind(config.InfluxCfg{}), UpdateInfluxServer)
+		m.Delete("/:id", reqSignedIn, DeleteInfluxServer)
+		m.Get("/:id", reqSignedIn, GetInfluxServerByID)
+		m.Get("/checkondel/:id", reqSignedIn, GetInfluxAffectOnDel)
+		m.Post("/ping/", reqSignedIn, bind(config.InfluxCfg{}), PingInfluxServer)
 	})
 
 	return nil

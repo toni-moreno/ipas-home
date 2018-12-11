@@ -13,13 +13,13 @@ func NewAPICfgPlatformDevices(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/platformdevices", func() {
-		m.Get("/" /*reqSignedIn,*/, GetPlatformDevices)
-		m.Get("/byproduct/:productid" /*reqSignedIn,*/, GetPlatformDevicesByProduct)
-		m.Post("/" /*reqSignedIn,*/, bind(config.PlatformDevices{}), AddPlatformDevices)
-		m.Put("/" /* reqSignedIn,*/, bind(config.PlatformDevices{}), UpdatePlatformDevices)
-		m.Delete("/:productid/:deviceid" /* reqSignedIn,*/, DeletePlatformDevices)
-		m.Get("/:productid/:deviceid" /*reqSignedIn,*/, GetPlatformDevicesByID)
-		m.Get("/checkondel/:id" /*reqSignedIn,*/, GetPlatformDevicesAffectOnDel)
+		m.Get("/", reqSignedIn, GetPlatformDevices)
+		m.Get("/byproduct/:productid", reqSignedIn, GetPlatformDevicesByProduct)
+		m.Post("/", reqSignedIn, bind(config.PlatformDevices{}), AddPlatformDevices)
+		m.Put("/", reqSignedIn, bind(config.PlatformDevices{}), UpdatePlatformDevices)
+		m.Delete("/:productid/:deviceid", reqSignedIn, DeletePlatformDevices)
+		m.Get("/:productid/:deviceid", reqSignedIn, GetPlatformDevicesByID)
+		m.Get("/checkondel/:id", reqSignedIn, GetPlatformDevicesAffectOnDel)
 	})
 
 	return nil

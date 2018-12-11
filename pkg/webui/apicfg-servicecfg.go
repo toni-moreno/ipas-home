@@ -24,14 +24,14 @@ func NewAPICfgService(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/services", func() {
-		m.Get("/" /*reqSignedIn,*/, GetServiceCfg)
-		m.Post("/" /*reqSignedIn,*/, bind(config.ServiceCfg{}), AddServiceCfg)
-		m.Put("/:id" /* reqSignedIn,*/, bind(config.ServiceCfg{}), UpdateServiceCfg)
-		m.Delete("/:id" /* reqSignedIn,*/, DeleteServiceCfg)
-		m.Get("/:id" /*reqSignedIn,*/, GetServiceCfgByID)
-		m.Get("/checkondel/:id" /*reqSignedIn,*/, GetServiceCfgAffectOnDel)
-		m.Get("/ping/" /*reqSignedIn,*/, PingServiceCfg)
-		m.Get("/ping/:id" /*reqSignedIn,*/, PingServiceCfgByID)
+		m.Get("/", reqSignedIn, GetServiceCfg)
+		m.Post("/", reqSignedIn, bind(config.ServiceCfg{}), AddServiceCfg)
+		m.Put("/:id", reqSignedIn, bind(config.ServiceCfg{}), UpdateServiceCfg)
+		m.Delete("/:id", reqSignedIn, DeleteServiceCfg)
+		m.Get("/:id", reqSignedIn, GetServiceCfgByID)
+		m.Get("/checkondel/:id", reqSignedIn, GetServiceCfgAffectOnDel)
+		m.Get("/ping/", reqSignedIn, PingServiceCfg)
+		m.Get("/ping/:id", reqSignedIn, PingServiceCfgByID)
 	})
 
 	return nil

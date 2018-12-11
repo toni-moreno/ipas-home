@@ -13,12 +13,12 @@ func NewAPICfgProductDBMap(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/productdbmap", func() {
-		m.Get("/" /*reqSignedIn,*/, GetProductDBMap)
-		m.Post("/" /*reqSignedIn,*/, bind(config.ProductDBMap{}), AddProductDBMap)
-		m.Put("/:id" /* reqSignedIn,*/, bind(config.ProductDBMap{}), UpdateProductDBMap)
-		m.Delete("/:id" /* reqSignedIn,*/, DeleteProductDBMap)
-		m.Get("/:id" /*reqSignedIn,*/, GetProductDBMapByID)
-		m.Get("/checkondel/:id" /*reqSignedIn,*/, GetProductDBMapAffectOnDel)
+		m.Get("/", reqSignedIn, GetProductDBMap)
+		m.Post("/", reqSignedIn, bind(config.ProductDBMap{}), AddProductDBMap)
+		m.Put("/:id", bind(config.ProductDBMap{}), UpdateProductDBMap)
+		m.Delete("/:id", reqSignedIn, DeleteProductDBMap)
+		m.Get("/:id", reqSignedIn, GetProductDBMapByID)
+		m.Get("/checkondel/:id", reqSignedIn, GetProductDBMapAffectOnDel)
 	})
 
 	return nil
