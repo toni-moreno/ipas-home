@@ -66,12 +66,17 @@ func (ProductDBMap) TableName() string {
 
 // PlatformEngine group of LAB/TST/PRE/PRO service to offer services to this user.
 type PlatformEngines struct {
-	ID       string `xorm:"'id' unique" binding:"Required"`
-	EngineID string `xorm:"engineid"`
-	LabSvcID string `xorm:"lab_svc_id"`
-	TstSvcID string `xorm:"tst_svc_id"`
-	PreSvcID string `xorm:"pre_svc_id"`
-	ProSvcID string `xorm:"pro_svc_id"`
+	ID       string `xorm:"'id' unique" binding:"Required" json:"ID"`
+	EngineID string `xorm:"engineid" json:"EngineID" `
+	LabSvcID string `xorm:"lab_svc_id" json:"LabSvcID`
+	TstSvcID string `xorm:"tst_svc_id" json:"TstSvcID"`
+	PreSvcID string `xorm:"pre_svc_id" json:"PreSvcID"`
+	ProSvcID string `xorm:"pro_svc_id" json:"ProSvcID"`
+}
+
+type PlatformEngAux struct {
+	Name     string           `json:"name"`
+	Platform *PlatformEngines `json:"platform"`
 }
 
 type TaskStatus struct {
@@ -86,10 +91,11 @@ type TaskStatus struct {
 }
 
 type PlatformDevices struct {
-	ProductID string                `xorm:"'productid' not null unique(devid)" binding:"Required"`
-	DeviceID  string                `xorm:"'deviceid' not null unique(devid)" binding:"Required"`
-	LastState string                `xorm:"last_state"` //SUCCESS,FAILURE,PENDING
-	TaskStat  map[int64]*TaskStatus `xorm:"task_stat"`
+	ProductID       string                `xorm:"'productid' not null unique(devid)" binding:"Required"`
+	DeviceID        string                `xorm:"'deviceid' not null unique(devid)" binding:"Required"`
+	LastState       string                `xorm:"last_state"` //SUCCESS,FAILURE,PENDING
+	TaskStat        map[int64]*TaskStatus `xorm:"task_stat"`
+	PlatformEngines []PlatformEngAux      `xorm: "platform_engines"`
 }
 
 /*type PlatformExecutions struct {

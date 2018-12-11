@@ -23,17 +23,7 @@ type PlatformData struct {
 		Key   string `json:"key"`
 		Value string `json:"value"`
 	} `json:"tags"`
-	Engine []struct {
-		Name     string `json:"name"`
-		Platform struct {
-			ID       string `json:"ID"`
-			EngineID string `json:"EngineID"`
-			LabSvcID string `json:"LabSvcID"`
-			TstSvcID string `json:"TstSvcID"`
-			PreSvcID string `json:"PreSvcID"`
-			ProSvcID string `json:"ProSvcID"`
-		} `json:"platform"`
-	} `json:"engine"`
+	Engine []config.PlatformEngAux `json:"engine"`
 }
 
 type EngineParam struct {
@@ -278,15 +268,18 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 			}
 		}
 
+		//Updating
+
 	}
 
 	for _, d := range jobdt.Devices {
 
 		PfmDevice := config.PlatformDevices{
-			ProductID: jobdt.Platform.ProductID,
-			DeviceID:  d.ID,
-			LastState: "PENDING",
-			TaskStat:  taskmap,
+			ProductID:       jobdt.Platform.ProductID,
+			DeviceID:        d.ID,
+			PlatformEngines: jobdt.Platform.Engine,
+			LastState:       "PENDING",
+			TaskStat:        taskmap,
 		}
 
 		_, err := dbc.AddOrUpdatePlatformDevices(PfmDevice)
