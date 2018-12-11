@@ -54,54 +54,30 @@
               {{element | json}}
             </ng-container>
 
+            <ng-container matColumnDef="PlatformID">
+              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>PlatformID</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <ng-container *ngFor="let pl of element.PlatformEngines">
+                  {{pl.platform.ID}}
+                </ng-container>
+              </mat-cell>
+            </ng-container>
             <ng-container matColumnDef="ProductID">
-              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> ProductID</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>ProductID</mat-header-cell>
               <mat-cell *matCellDef="let element"> {{element.ProductID}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="DeviceID">
-              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> DeviceID</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>DeviceID</mat-header-cell>
               <mat-cell *matCellDef="let element"> {{element.DeviceID}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="LastState">
-              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> LastState</mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.LastState}} </mat-cell>
+              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>LastState</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span *ngIf="element.LastState === 'SUCCESS'" style="color:green">{{element.LastState}}</span>
+                <span *ngIf="element.LastState === 'PENDING'" style="color:orange">{{element.LastState}}</span>
+                <span *ngIf="element.LastState === 'FAILURE'" style="color:red">{{element.LastState}}</span>
+              </mat-cell>
             </ng-container>
-
-            <!--ng-container matColumnDef="id">
-            <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> ProductID</mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
-          </ng-container>
-
-
-          <ng-container matColumnDef="host">
-            <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>Host
-            </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.host}} </mat-cell>
-          </ng-container>
-
-
-          <ng-container matColumnDef="tags">
-            <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>Tags
-            </mat-header-cell>
-            <mat-cell *matCellDef="let element">
-              <ng-container *ngFor="let tt of element.tags; let ls = last">
-                {{tt}}
-                <mat-divider *ngIf="!ls" style="width: 80%;"></mat-divider>
-              </ng-container>
-            </mat-cell>
-          </ng-container>
-
-          <ng-container matColumnDef="products">
-            <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Products </mat-header-cell>
-            <mat-cell *matCellDef="let element" class="cell-bordered">
-              <ng-container *ngFor="let product of element.products; let ls = last">
-                <mat-icon class="material-icons product-deployed" [ngClass]="product.deployed === true ? 'text-test' : 'text-empty'">{{product.deployed === true ? 'check' : 'clear' }}</mat-icon>
-                {{product.name }}
-                <mat-divider *ngIf="!ls" style="width: 80%;"></mat-divider>
-              </ng-container>
-            </mat-cell>
-          </ng-container-->
-
             <mat-header-row *matHeaderRowDef="selectedListMode.displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: selectedListMode.displayedColumns;"></mat-row>
           </mat-table>

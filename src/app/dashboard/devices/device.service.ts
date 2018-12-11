@@ -24,10 +24,13 @@ export class DeviceService {
       )
     }
 
-    removeDevice(url) {
-      return this.httpAPI.delete(url)
-      .map((responseData) => {console.log(responseData); return responseData }
-      )
+    removeDevice(data) {
+        //Create file form:
+        var blob = new Blob([JSON.stringify(data)], { type: 'application/octet-stream' });
+        const formData: any = new FormData()
+        formData.append('Msg', 'MyCustomMessage');
+        formData.append("CommitFile", blob);
+        return this.httpAPI.post('/api/rt/jenkins/build/device/delete', formData)
     }
 
     createNewProduct(url: string, dev: any) {

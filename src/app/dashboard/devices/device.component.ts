@@ -22,12 +22,18 @@ export class DeviceComponent {
 
   dataSource: MatTableDataSource<any> = new MatTableDataSource();
   listMode: Array<any> = [
-    { id: 'all', desc: 'All', displayedColumns: ['actions', 'ProductID', 'DeviceID', 'LastState'], selected: true },
-    { id: 'byproduct', desc: 'By Product', data: '', displayedColumns: ['actions', 'DeviceID', 'LastState'], selected: false }
+    { id: 'all', desc: 'All', displayedColumns: ['actions', 'PlatformID', 'ProductID', 'DeviceID', 'LastState'], selected: true },
+    { id: 'byproduct', desc: 'By Product', data: '', displayedColumns: ['actions', 'PlatformID', 'DeviceID', 'LastState'], selected: false }
   ]
 
   selectedListMode: any;
   selProd: string = null
+
+  mydata = {
+    platform: null,
+    devices: [{}]
+  }
+
 
   constructor(public deviceService: DeviceService, public productService: ProductService, public dialog: MatDialog) {
     //Default, show all devices:
@@ -118,10 +124,38 @@ export class DeviceComponent {
 
 
   removeDevice(element) {
+
+    console.log("ELEMENT",element);
+    this.mydata = {
+      platform: {},
+      devices: []
+    }
+
+    let tmpengines = [];
+
+    //Platform part
+    this.mydata.platform.productid = element.ProductID
+    this.mydata.platform.engine = []
+    for (let pengine of element['PlatformEngines']) {
+      this.mydata.platform.engine.push(pengine)
+      tmpengines.push({ 'name': pengine.name})
+    }  
+    
+
+    //Devices part
+    this.mydata.devices.push({'id': element.DeviceID, engine: tmpengines })
+    
+    console.log(this.mydata);
+
     let t = confirm("Are you sure you  want to remove  product " + element.ProductID + " from  " + element.DeviceID + "?")
     if (t === true) {
       console.log("removing element", element)
-      this.deviceService.removeDevice('/api/cfg/platformdevices/' + element.ProductID + '/' + element.DeviceID)
+      this.deviceService.removeDevice(this.mydata)
+      .subscribe(
+        (data) => console.log(data),
+        (err) =>  console.log(err),
+        () => console.log("DONE")
+      )
     }
 
   }
