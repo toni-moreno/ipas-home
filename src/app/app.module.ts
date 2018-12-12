@@ -4,6 +4,8 @@ import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CustomPipesModule } from './pipes/pipes.module'
+import { HttpService } from  './core/http.service'
+import { DefaultRequestOptions } from './core/http.service'
 import { routing } from './app.routes';
 import {
   MatAutocompleteModule,
@@ -152,7 +154,7 @@ import { DeviceWizardService } from  './dashboard/devices/device-wizard/device-w
     CustomPipesModule
   ],
   entryComponents: [DialogParamsComponent, DialogListComponent],
-  providers: [SettingsService, WizardService, DeviceWizardService ],
+  providers: [DefaultRequestOptions, HttpService, SettingsService, WizardService, DeviceWizardService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

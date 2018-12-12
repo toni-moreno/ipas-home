@@ -2,22 +2,21 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Observable';
+import { HttpService } from '../../../core/http.service'
 
 declare var _:any;
 
 @Injectable()
 export class WizardService {
 
-    constructor(public httpAPI: HttpClient) {
+    constructor(public httpAPI: HttpService) {
         console.log('Task Service created.', httpAPI);
     }
     
     createNewProduct(url: string, dev : any) {
      console.log(url, dev)
      return this.httpAPI.post(url,dev)
-        .map((responseData) =>
-            { console.log(responseData); return responseData}
-        )
+     .map((responseData) => {console.log(responseData); return responseData.json() })
     };
 
     uploadFiles(url,formGroup: any, files : any) {
@@ -43,7 +42,7 @@ export class WizardService {
 
     retrieveYAML(url: string) {
         console.log(url)
-        return this.httpAPI.get(url, {'responseType': 'text'})
+        return this.httpAPI.get(url/*,{'responseType': 'text'}*/)
            .map((responseData) =>
            { console.log(responseData); return responseData}
            )

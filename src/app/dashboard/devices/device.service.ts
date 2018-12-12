@@ -2,25 +2,25 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Observable';
+import { HttpService } from '../../core/http.service'
 
 declare var _: any;
 
 @Injectable()
 export class DeviceService {
 
-    constructor(public httpAPI: HttpClient) {
+    constructor(private httpAPI: HttpService) {
         console.log('Task Service created.', httpAPI);
     }
 
     getDeviceList(url) {
       return this.httpAPI.get(url)
-      .map((responseData) => {console.log(responseData); return responseData }
-      )
+      .map((responseData) => {console.log(responseData); return responseData.json() })
     }
 
     getDeviceListByProduct(url) {
       return this.httpAPI.get(url)
-      .map((responseData) => {console.log(responseData); return responseData }
+      .map((responseData) => {console.log(responseData); return responseData.json() }
       )
     }
 
@@ -32,12 +32,4 @@ export class DeviceService {
         formData.append("CommitFile", blob);
         return this.httpAPI.post('/api/rt/jenkins/build/device/delete', formData)
     }
-
-    createNewProduct(url: string, dev: any) {
-        console.log(url, dev)
-        return this.httpAPI.post(url, dev)
-            .map((responseData) => { console.log(responseData); return responseData }
-            )
-    };
-
 }
