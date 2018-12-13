@@ -25,7 +25,7 @@ export class DeviceWizardService {
         //Generate EXTRATAGS:
         console.log("DEVICEE", device);
         let dev = JSON.parse(JSON.stringify(device))
-        let pTags =[];
+        let pTags = [];
         if (platform.tags.length > 0) {
             let pTags = platform.tags.map((element) => { return element.key + '=' + element.value })
         }
@@ -51,10 +51,15 @@ export class DeviceWizardService {
 
         formData.append('Msg', 'MyCustomMessage');
         formData.append("CommitFile", blob);
-        return this.httpAPI.post('/api/rt/jenkins/build/device/add', formData)
+        return this.httpAPI.postFile('/api/rt/jenkins/build/device/add', formData)
+        .map((responseData) => { console.log(responseData); return responseData.json() }
+        )
+
     }
 
     getPlatformEngines(url: string) {
         return this.httpAPI.get(url)
+            .map((responseData) => { console.log(responseData); return responseData.json() }
+        )
     }
 }

@@ -30,6 +30,6 @@ export class DeviceService {
         const formData: any = new FormData()
         formData.append('Msg', 'MyCustomMessage');
         formData.append("CommitFile", blob);
-        return this.httpAPI.post('/api/rt/jenkins/build/device/delete', formData)
+        return this.httpAPI.postFile('/api/rt/jenkins/build/device/delete', formData)
     }
 }

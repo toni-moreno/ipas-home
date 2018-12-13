@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, Input } from '@angular/core';
+import { Component, OnInit,  Output, EventEmitter, Inject, Input } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { EngineSNMPParams } from './device-wizard.data';
 import { DeviceWizardService } from './device-wizard.service';
@@ -45,6 +45,7 @@ export class DeviceWizardComponent implements OnInit {
 
   @Input() mode: boolean = true
   @Input() editData: any;
+  @Output() public finishedAction: EventEmitter<any> = new EventEmitter();
 
   selection = new SelectionModel<Element>(false, []);
   isLinear : boolean = false;
@@ -286,7 +287,7 @@ export class DeviceWizardComponent implements OnInit {
   sendNewDeviceRequest() {
 
     this.wizardService.newDevice(this.platformFormGroup.value, this.deviceFormGroup.value).subscribe(
-      (data) => {console.log('HOLA')},
+      (data) => {console.log(data), this.finishedAction.emit(data)},
       (err) => {console.log("ERROR, ",err)},
       () => {console.log("DONE")}
     )

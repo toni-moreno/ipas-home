@@ -86,7 +86,7 @@
       </ng-container>
     </ng-template>
     <ng-template ngSwitchDefault>
-      <device-wizard></device-wizard>
+      <device-wizard (finishedAction)="finishAction()"></device-wizard>
     </ng-template>
   </ng-container>
 </div>

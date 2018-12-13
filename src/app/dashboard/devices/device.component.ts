@@ -43,6 +43,10 @@ export class DeviceComponent {
     this.retrieveAllDeviceList()
   }
 
+  finishAction() {
+    this.viewMode = 'list'
+  }
+
   retrieveAllDeviceList(imode?) {
     //Reset params:
     this.selProd = null;
