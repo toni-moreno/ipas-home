@@ -10,10 +10,13 @@ import { Router } from '@angular/router';
 export class RootComponent implements OnInit, OnDestroy {
   public id: number;
   public backgroundColor: string;
+  public version: any;
   constructor(public settingService: SettingsService, private router :  Router) {
     this.settingService.getVersion()
     .subscribe(
-      (data) => console.log(data),
+      (data) => {
+        console.log(data);
+        this.version = data},
       (err) => {
         console.log(err),
         this.router.navigate(['/login']);

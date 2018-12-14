@@ -10,15 +10,20 @@ export class SettingsService {
   public sidebarColor = '#003F87';
   public sidebarColorUpdate: EventEmitter<string> = new EventEmitter();
 
-  constructor(public httpAPI: HttpService) {
+  constructor(public httpAPI: HttpService ) {
     console.log('Task Service created.', httpAPI);
-}
+  }
 
   getVersion() {
     return this.httpAPI.get('/api/rt/agent/info/version/')
-    .map((responseData) => {console.log(responseData); return responseData.json() })
+      .map((responseData) => { console.log(responseData); return responseData.json() }
+      )
   }
-  
+
+  logout() {
+    return this.httpAPI.post('/logout', null, null,true)
+  }
+
   getSidebarImageIndex(): number {
     return this.sidebarImageIndex;
   }

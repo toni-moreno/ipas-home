@@ -1,10 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { CoreModule } from './core/core.module'
 import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CustomPipesModule } from './pipes/pipes.module'
-import { HttpService } from  './core/http.service'
+//import { HttpService } from  './core/http.service'
 import { DefaultRequestOptions } from './core/http.service'
 import { routing } from './app.routes';
 import {
@@ -112,6 +113,7 @@ import { DeviceWizardService } from  './dashboard/devices/device-wizard/device-w
     AppCardComponent
   ],
   imports: [
+    CoreModule,
     HttpClientModule,
     BrowserModule,
     FormsModule,
@@ -154,7 +156,7 @@ import { DeviceWizardService } from  './dashboard/devices/device-wizard/device-w
     CustomPipesModule
   ],
   entryComponents: [DialogParamsComponent, DialogListComponent],
-  providers: [DefaultRequestOptions, HttpService, SettingsService, WizardService, DeviceWizardService ],
+  providers: [DefaultRequestOptions, SettingsService, WizardService, DeviceWizardService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
