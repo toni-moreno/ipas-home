@@ -2,8 +2,11 @@ package repo
 
 import (
 	"bytes"
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -15,6 +18,8 @@ import (
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport/client"
+	githttp "gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 
 	//	"gopkg.in/yaml.v2"
 	//https://github.com/go-yaml/yaml/issues/139
@@ -69,11 +74,36 @@ func Init(cfgrepo *config.GitRepo) {
 	var r *git.Repository
 	var err error
 
+	URL, err := url.Parse(cfgrepo.CloneSource)
+	if err != nil {
+		log.Errorf("Error on Git Clone Path ERR: %s", err)
+		return
+	}
+	if URL.Scheme == "https" {
+		log.Info("Detected HTTPS scheme on repo %s ", cfgrepo.CloneSource)
+		// Clustom https
+		customClient := &http.Client{
+			// accept any certificate (might be useful for testing)
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			},
+
+			// 15 second timeout
+			Timeout: 15 * time.Second,
+
+			// don't follow redirect
+			/*CheckRedirect: func(req *http.Request, via []*http.Request) error {
+				return http.ErrUseLastResponse
+			}*/
+		}
+		client.InstallProtocol("https", githttp.NewClient(customClient))
+	}
+
 	// first try to get if exist
 	r, err = git.PlainOpen(cfgrepo.ClonePath)
 	if err != nil {
 		//if not we will clone from source
-		log.Errorf("Error on Open Existing repo %s: Error: %s ", cfgrepo.ClonePath, err)
+		log.Warnf("Can not Open dir %s as a valid Git REPO: Error: %s ", cfgrepo.ClonePath, err)
 
 		r, err = git.PlainClone(cfgrepo.ClonePath, false, &git.CloneOptions{
 			URL:      cfgrepo.CloneSource,
@@ -83,28 +113,30 @@ func Init(cfgrepo *config.GitRepo) {
 			log.Errorf("Error on Clone repo %s: Error: %s ", cfgrepo.CloneSource, err)
 			return
 		}
+		log.Infof("REPO %s successfully cloned ", cfgrepo.CloneSource)
 	}
 	repo = r
 
 	w, err := r.Worktree()
 	if err != nil {
-		log.Errorf("Error on get Repo WorkTree")
+		log.Errorf("Error on get Repo WorkTree %s", err)
 		return
 	}
 
 	wtree = w
 
 	// retrieves the branch pointed by HEAD
-	ref, err := repo.Head()
+	/*ref*/
+	_, err = repo.Head()
 	if err != nil {
-		log.Errorf("Error on get HEAD repo ")
+		log.Errorf("Error on get HEAD repo: %s ", err)
 		return
 	}
 
-	// ... retrieves the commit history
+	/* ... retrieves the commit history
 	cIter, err := repo.Log(&git.LogOptions{From: ref.Hash()})
 	if err != nil {
-		log.Errorf("Error on get commit History ")
+		log.Errorf("Error on get commit History %s", err)
 		return
 	}
 
@@ -112,16 +144,15 @@ func Init(cfgrepo *config.GitRepo) {
 	err = cIter.ForEach(func(c *object.Commit) error {
 		log.Debug(c)
 		return nil
-	})
+	})*/
 
 	// checkout to the working branch
 
 	if cfgrepo.WorkOnBranch != "master" {
 
-		branch := fmt.Sprintf("refs/heads/%s", cfgrepo.WorkOnBranch)
+		branch := fmt.Sprintf("refs/remotes/origin/%s", cfgrepo.WorkOnBranch)
 		//first  checkout
 		err = w.Checkout(&git.CheckoutOptions{
-			//		Hash:   ref.Hash(),
 			Branch: plumbing.ReferenceName(branch),
 			Create: false,
 			Force:  false,
@@ -129,12 +160,27 @@ func Init(cfgrepo *config.GitRepo) {
 		if err != nil {
 			log.Warnf("Can not change to brach %s, Error: %s", cfgrepo.WorkOnBranch, err)
 			err = w.Checkout(&git.CheckoutOptions{
-				//		Hash:   ref.Hash(),
 				Branch: plumbing.ReferenceName(branch),
 				Create: true,
 				Force:  false,
 			})
 			log.Infof("Successfully created Brach:  %s", cfgrepo.WorkOnBranch)
+		} else {
+			b := fmt.Sprintf("refs/heads/%s", cfgrepo.WorkOnBranch)
+			headRef, err := r.Head()
+			if err != nil {
+				log.Warnf("Can not get HEAD ref from current branch: %s : ERR: %s", cfgrepo.WorkOnBranch, err)
+			}
+			ref := plumbing.NewHashReference(plumbing.ReferenceName(b), headRef.Hash())
+			err = r.Storer.SetReference(ref)
+			if err != nil {
+				log.Warnf("Can not save new refence : %s : ERR: %s", b, err)
+			}
+			_ = w.Checkout(&git.CheckoutOptions{
+				Branch: plumbing.ReferenceName(b),
+				Create: false,
+				Force:  false,
+			})
 		}
 		log.Infof("Successfully changed to Brach: %s", cfgrepo.WorkOnBranch)
 	}

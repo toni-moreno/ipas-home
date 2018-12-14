@@ -53,7 +53,7 @@ func initJenkins(cfg *config.JenkinsConfig) error {
 		return err
 	}
 	jenkins = j
-	log.Debugf("JENKNS CREATE OK : %#+v", jenkins)
+	log.Infof("JENKINS CREATE OK : %#+v", jenkins)
 	return nil
 }
 

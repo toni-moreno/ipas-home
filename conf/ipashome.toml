@@ -80,9 +80,9 @@
 ############################
 
 [productrepo]
- clonesource   = "https://ipasdevel:1p4sm0l4@bitbucket.org/everis_ipas/ipas-gva.git"
- clonepath = "/tmp/clone"
- workonbranch = "workhome"
+ clonesource   = "https://ipas_admin:1p4sm0l4@git.mydomain2.org/ipas_admin/ipas-gva.git"
+ clonepath = "/tmp/clone2"
+ workonbranch = "devel"
  name="ipas-home"
  email="ipas-home@ipas.org"
 
