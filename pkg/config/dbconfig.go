@@ -54,9 +54,12 @@ type ServiceCfg struct {
 
 // ProductDBMap a map for products
 type ProductDBMap struct {
-	ID          string `xorm:"'id' unique" binding:"Required"`
-	Database    string `xorm:"database"`
-	ProductTags string `xorm:"product_tags"`
+	ID          string   `xorm:"'id' unique" binding:"Required"`
+	Database    string   `xorm:"database"`
+	ProductTags string   `xorm:"product_tags"`
+	GEngines    []string `xorm:"g_engines"`
+	VEngines    []string `xorm:"v_engines"`
+	AEngines    []string `xorm:"a_engines"`
 }
 
 // TableName go-xorm way to set the Table name to something different to "product_d_b_map"
@@ -76,6 +79,7 @@ type PlatformEngines struct {
 
 type PlatformEngAux struct {
 	Name     string           `json:"name"`
+	Type     string           `json:"type"`
 	Platform *PlatformEngines `json:"platform"`
 }
 
