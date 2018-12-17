@@ -46,6 +46,7 @@ export class ProductComponent {
         console.log(data)
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+        this.viewMode = 'list';
       },
       (err) => console.log(err),
       () => console.log("DONE")
@@ -113,7 +114,7 @@ export class ProductComponent {
       'productData': null,
       'step': null
     };
-    this.viewMode = 'list'
+    this.getAllProducts();
   }
 
 
