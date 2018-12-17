@@ -5,6 +5,7 @@ import (
 	//	"github.com/go-macaron/binding"
 
 	"bytes"
+	"fmt"
 	"mime/multipart"
 
 	"bitbucket.org/everis_ipas/ipas-home/pkg/data/repo"
@@ -84,5 +85,9 @@ func GitRepoCommitFile(ctx *Context, cf CommitFileForm) {
 		repo.AddFile(f.Filename, buf)
 
 	}
-	repo.Commit(cf.Msg)
+	cookedmsg := fmt.Sprintf("[%s]- %s", ctx.SignedInUser, cf.Msg)
+	err := repo.Commit(cookedmsg)
+	if err != nil {
+		log.Errorf("Error con Git Repo Update: Msg %s : %s", cookedmsg, err)
+	}
 }
