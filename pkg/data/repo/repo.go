@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"strings"
 	"time"
 
 	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
@@ -35,6 +36,7 @@ var (
 	clonePath string
 	gitName   string
 	gitEmail  string
+	gitBranch string
 )
 
 // SetConfDir  enable load File Filters from anywhere in the our FS.
@@ -50,6 +52,32 @@ func SetDB(db *config.DatabaseCfg) {
 // SetLogger set output log
 func SetLogger(l *logrus.Logger) {
 	log = l
+}
+
+func GetHistory() []*object.Commit {
+
+	harray := []*object.Commit{}
+	// ... retrieves the commit history
+
+	ref, err := repo.Head()
+	if err != nil {
+		log.Errorf("Error on get HEAD repo: %s ", err)
+		return nil
+	}
+
+	cIter, err := repo.Log(&git.LogOptions{From: ref.Hash()})
+	if err != nil {
+		log.Errorf("Error on get commit History %s", err)
+		return nil
+	}
+
+	// ... just iterates over the commits, printing it
+	err = cIter.ForEach(func(c *object.Commit) error {
+		harray = append(harray, c)
+		log.Debug(c)
+		return nil
+	})
+	return harray
 }
 
 // Init Initialices the Git Repo
@@ -133,24 +161,13 @@ func Init(cfgrepo *config.GitRepo) {
 		return
 	}
 
-	/* ... retrieves the commit history
-	cIter, err := repo.Log(&git.LogOptions{From: ref.Hash()})
-	if err != nil {
-		log.Errorf("Error on get commit History %s", err)
-		return
-	}
-
-	// ... just iterates over the commits, printing it
-	err = cIter.ForEach(func(c *object.Commit) error {
-		log.Debug(c)
-		return nil
-	})*/
+	gitBranch = cfgrepo.WorkOnBranch
 
 	// checkout to the working branch
 
-	if cfgrepo.WorkOnBranch != "master" {
+	if gitBranch != "master" {
 
-		branch := fmt.Sprintf("refs/remotes/origin/%s", cfgrepo.WorkOnBranch)
+		branch := fmt.Sprintf("refs/remotes/origin/%s", gitBranch)
 		//first  checkout
 		err = w.Checkout(&git.CheckoutOptions{
 			Branch: plumbing.ReferenceName(branch),
@@ -158,18 +175,18 @@ func Init(cfgrepo *config.GitRepo) {
 			Force:  false,
 		})
 		if err != nil {
-			log.Warnf("Can not change to brach %s, Error: %s", cfgrepo.WorkOnBranch, err)
+			log.Warnf("Can not change to brach %s, Error: %s", gitBranch, err)
 			err = w.Checkout(&git.CheckoutOptions{
 				Branch: plumbing.ReferenceName(branch),
 				Create: true,
 				Force:  false,
 			})
-			log.Infof("Successfully created Brach:  %s", cfgrepo.WorkOnBranch)
+			log.Infof("Successfully created Brach:  %s", gitBranch)
 		} else {
-			b := fmt.Sprintf("refs/heads/%s", cfgrepo.WorkOnBranch)
+			b := fmt.Sprintf("refs/heads/%s", gitBranch)
 			headRef, err := r.Head()
 			if err != nil {
-				log.Warnf("Can not get HEAD ref from current branch: %s : ERR: %s", cfgrepo.WorkOnBranch, err)
+				log.Warnf("Can not get HEAD ref from current branch: %s : ERR: %s", gitBranch, err)
 			}
 			ref := plumbing.NewHashReference(plumbing.ReferenceName(b), headRef.Hash())
 			err = r.Storer.SetReference(ref)
@@ -182,8 +199,16 @@ func Init(cfgrepo *config.GitRepo) {
 				Force:  false,
 			})
 		}
-		log.Infof("Successfully changed to Brach: %s", cfgrepo.WorkOnBranch)
+		log.Infof("Successfully changed to Brach: %s", gitBranch)
 	}
+	// por si acaso ha cambiado algo...
+	w, err = repo.Worktree()
+	if err != nil {
+		log.Errorf("Error on get Repo WorkTree %s", err)
+		return
+	}
+
+	wtree = w
 }
 
 // ProductStat give us the definition stat for this product
@@ -279,7 +304,7 @@ func GetProductStatus() ([]*ProductStat, error) {
 
 		_, err = dbc.GetProductDBMapByID(ps.Name)
 		if err != nil {
-			log.Warningf("Error on get DB map for proudct %s  , error: %s", ps.Name, err)
+			log.Warningf("Error on get DB map for product %s  , error: %s", ps.Name, err)
 			ps.HasDB = false
 		} else {
 			ps.HasDB = true
@@ -313,15 +338,28 @@ func GetProductDef(id string) (*Product, error) {
 	return p, nil
 }
 
+func trimSlash(s string) string {
+	if !strings.HasPrefix(s, "/") {
+		return s
+	}
+	for i := range s {
+		if i > 0 {
+			return s[i:]
+		}
+	}
+	return s[:0]
+}
+
 // AddFile , add File to repo
 func AddFile(filename string, content *bytes.Buffer) error {
+
 	var err error
 
 	//path := clonePath + filename
 	path := filepath.Join(clonePath, filename)
 	dirname := filepath.Dir(path)
 	if _, err := os.Stat(dirname); os.IsNotExist(err) {
-		log.Info("Path %s does not exist.. creatin...", dirname)
+		log.Infof("Path %s does not exist.. creating...", dirname)
 		os.MkdirAll(dirname, 0775)
 	}
 
@@ -330,21 +368,30 @@ func AddFile(filename string, content *bytes.Buffer) error {
 		log.Errorf("Can not Add File to Repo, Err: %s", err)
 		return err
 	}
-
-	_, err = wtree.Add(filename)
+	relative_filename := trimSlash(filename)
+	h, err := wtree.Add(relative_filename)
 	if err != nil {
 		log.Errorf("Can not Add Filename: Err: %s", err)
+		return err
 	}
+	log.Infof("Added Filename %s in repo with hash: %+v", relative_filename, h)
 	return nil
 }
 
-func Commit(msg string) error {
-
+func PrintStatus() {
 	status, err := wtree.Status()
 	if err != nil {
 		log.Errorf("Can not Get Status: Err: %s", err)
 	}
+	log.Infof("--- GIT STATUS---------------")
 	log.Println(status)
+	log.Infof("--- GIT STATUS----------------")
+}
+
+func Commit(msg string) error {
+
+	PrintStatus()
+	log.Debug("REPO COMMIT INIT-----------")
 	commit, err := wtree.Commit(msg, &git.CommitOptions{
 		Author: &object.Signature{
 			Name:  gitName,
@@ -353,13 +400,26 @@ func Commit(msg string) error {
 		},
 	})
 	if err != nil {
-		return err
-	}
-	obj, err := repo.CommitObject(commit)
-	if err != nil {
-		return err
+		return fmt.Errorf("Error on Get Commit %s Err: %s ", msg, err)
 	}
 
-	log.Println(obj)
+	obj, err := repo.CommitObject(commit)
+	if err != nil {
+		return fmt.Errorf("Error on  Commit Objects: %s ", err)
+	}
+	log.Infof("Commit Done Object: %+v", obj)
+	log.Debug("REPO COMMIT END-----------")
+	PrintStatus()
+	log.Debug("REPO PUSH INIT-----------")
+
+	err = repo.Push(&git.PushOptions{})
+
+	if err != nil {
+		return fmt.Errorf("Error on  Commit Objects %s: %s ", err)
+	}
+
+	log.Infof("Push Done: %+v ", obj)
+	log.Debug("REPO PUSH END-----------")
+	PrintStatus()
 	return nil
 }
