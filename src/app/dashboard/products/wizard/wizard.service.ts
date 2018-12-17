@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { HttpService } from '../../../core/http.service'
 
 declare var _:any;
+import * as _yaml from 'yamljs';
 
 @Injectable()
 export class WizardService {
@@ -20,8 +21,13 @@ export class WizardService {
     };
 
     uploadFiles(url,formGroup: any, files : any) {
+
+        //Creates upload files:
+
         const formData: any = new FormData();        
-        formData.append('Msg','MyCustomMessage' );
+        formData.append('Msg','|AUTOMATED|HOME|'+formGroup.product+'|ADD'+'|STEP' );
+        let rootDir =  '/products/'
+        let product =  formGroup.product+'/'            
         //All engines
         for (let i in files.gather) {
             //All config of iengine
@@ -29,14 +35,19 @@ export class WizardService {
                 //All available configs...
                 for (let p in files.gather[i].config[j]) {
                     //Generate output dir: /products/<PRODUCT_NAME>/<DIR>/<SOURCE>
-                    let rootDir =  '/products/'
-                    let product =  formGroup.product+'/'
                     let dir = formGroup['gather'][i].config[j].dir+'/'
                     let source = formGroup['gather'][i].config[j].config[p].source
                     formData.append("CommitFile", files.gather[i].config[j][p][0], rootDir+product+dir+source);
                 }
             }
         }
+
+        //Creates product YAML from formGroup:
+        console.log(formGroup)
+        let yamlString = _yaml.stringify(formGroup, 999)
+        console.log(yamlString);
+        var blob = new Blob([yamlString], { type: 'application/octet-stream' });
+        formData.append("CommitFile", blob, rootDir+product+'product.yaml');
         return this.httpAPI.post(url, formData)
     }
 

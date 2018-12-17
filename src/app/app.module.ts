@@ -47,6 +47,7 @@ import {HttpClientModule} from '@angular/common/http';
 
 import { DialogParamsComponent } from './shared/dialogparams/dialogparams.component'
 import { DialogListComponent } from './shared/dialoglist/dialoglist.component'
+import { DialogStepsComponent } from './shared/dialogstep/dialogsteps.component'
 import { AppComponent } from './app.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { HomeComponent } from './dashboard/home/home.component';
@@ -86,6 +87,7 @@ import { DeviceWizardService } from  './dashboard/devices/device-wizard/device-w
     AppComponent,
     DialogParamsComponent,
     DialogListComponent,
+    DialogStepsComponent,
     SidebarComponent,
     HomeComponent,
     ProfileComponent,
@@ -155,7 +157,7 @@ import { DeviceWizardService } from  './dashboard/devices/device-wizard/device-w
     ReactiveFormsModule,
     CustomPipesModule
   ],
-  entryComponents: [DialogParamsComponent, DialogListComponent],
+  entryComponents: [DialogParamsComponent, DialogListComponent, DialogStepsComponent],
   providers: [DefaultRequestOptions, SettingsService, WizardService, DeviceWizardService ],
   bootstrap: [AppComponent]
 })

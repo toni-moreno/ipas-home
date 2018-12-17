@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, Input } from '@angular/core';
+import { Component, OnInit, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { EngineSNMPParams } from './wizard.data';
 import { WizardService } from './wizard.service';
@@ -18,6 +18,20 @@ export class WizardComponent implements OnInit {
 
   @Input() mode: boolean = true
   @Input() editData: any;
+  @Input() stepInfo: any = {
+    'productStatus': {
+      hasDB: false,
+      hasG: false,
+      hasV: false,
+      hasA: false
+    },
+    'productData': null,
+    'step': null
+  }
+  @Output() public finishedAction: EventEmitter<any> = new EventEmitter();
+
+
+  lengine = null;
 
   fileArray = {
     gather: [],
@@ -25,15 +39,13 @@ export class WizardComponent implements OnInit {
     alert: []
   }
 
-  isLinear : boolean = false;
-  allowCustomParams  : boolean = false;
-  showDebug : boolean = false
+  isLinear: boolean = false;
+  allowCustomParams: boolean = false;
+  showDebug: boolean = false
   productFormGroup: any;
 
   gather_engines: EngineElement[] = [
-    { name: 'SNMP', type: 'snmpcollector' },
-    { name: 'Telegraf', type: 'telegraf' },
-    { name: 'External', type: 'external' }
+    { name: 'SNMP', type: 'snmpcollector' }
   ];
 
   visual_engines: EngineElement[] = [
@@ -44,12 +56,8 @@ export class WizardComponent implements OnInit {
     { name: 'Resistor', type: 'resistor' }
   ];
 
+  bool_params = [true,false]
 
-  available_engines = [
-    {'id': 'gather', 'desc': 'Gather', 'data': this.gather_engines},
-    {'id': 'visual', 'desc': 'Visual', 'data': this.visual_engines},
-    {'id': 'alert', 'desc': 'Alert', 'data': this.alert_engines},
-  ]
 
   constructor(private _formBuilder: FormBuilder, public wizardService: WizardService, public dialog: MatDialog) { }
 
@@ -59,17 +67,41 @@ export class WizardComponent implements OnInit {
   get visual(): FormArray { return this.productFormGroup.get('visual') as FormArray; }
   get alert(): FormArray { return this.productFormGroup.get('alert') as FormArray; }
 
+
   ngOnInit() {
+    console.log(this.stepInfo.step)
 
     //Initial Form
     this.productFormGroup = this._formBuilder.group({
-      product: "",
-      models: "",
-      description: '',
-      gather: new FormArray([]),
-      visual: new FormArray([]),
-      alert: new FormArray([])
+      product: this.stepInfo.productData ? this.stepInfo.productData.product : "",
+      models: this.stepInfo.productData ? this.stepInfo.productData.models : "",
+      description: this.stepInfo.productData ? this.stepInfo.productData.description : ''
     })
+
+    switch (this.stepInfo.step) {
+      case 'gather':
+        this.lengine = { 'id': 'gather', 'desc': 'Gather', 'data': this.gather_engines };
+        this.productFormGroup.setControl('gather', new FormArray([]))
+        break;
+      case 'visual':
+        this.lengine = { 'id': 'visual', 'desc': 'Visual', 'data': this.visual_engines };
+        this.productFormGroup.setControl('visual', new FormArray([]))
+        break;
+      case 'alert':
+        this.lengine = { 'id': 'alert', 'desc': 'Alert', 'data': this.alert_engines };
+        this.productFormGroup.setControl('alert', new FormArray([]))
+      default:
+        this.productFormGroup.setControl('gather', new FormArray([]))
+        this.productFormGroup.setControl('visual', new FormArray([]))
+        this.productFormGroup.setControl('alert', new FormArray([]))
+        break
+    }
+
+    console.log(this.lengine)
+
+    console.log(this.stepInfo.productData);
+    //this.productFormGroup = this.stepInfo.productData
+
 
     //check if its an edit by property mode
     if (this.mode === true) {
@@ -90,7 +122,7 @@ export class WizardComponent implements OnInit {
   addEngine(step: string, engine: string) {
     if (engine != 'external') {
       if (!this.productFormGroup.controls[step].value.find((element) => { console.log(element); return element.engine === engine })) {
-        this.fileArray[step].push({config: [[]]})
+        this.fileArray[step].push({ config: [[]] })
         switch (step) {
           case 'gather':
             this.gather.push(this.createEngineFormGroup(engine));
@@ -112,7 +144,7 @@ export class WizardComponent implements OnInit {
   deleteEngine(step, i) {
     console.log(step, i);
     this.productFormGroup.controls[step].removeAt(i)
-    this.fileArray[step].splice(i,1)
+    this.fileArray[step].splice(i, 1)
   }
 
   //Creates a form for each selected engine and creates an initialize the engine
@@ -138,7 +170,7 @@ export class WizardComponent implements OnInit {
   deleteConfigEngine(step: string, iengine: number, iconfig: number) {
     console.log(step, iengine, iconfig);
     this.productFormGroup.controls[step].controls[iengine].controls.config.removeAt(iconfig)
-    this.fileArray[step][iengine].config.splice(iconfig,1)
+    this.fileArray[step][iengine].config.splice(iconfig, 1)
   }
 
   /* *********************** */
@@ -151,7 +183,7 @@ export class WizardComponent implements OnInit {
       name: ['', Validators.required],
       models: ['', Validators.required],
       description: ['', Validators.required],
-      dir: ['', Validators.required],
+      dir: ['gather', Validators.required],
       config: new FormArray([]),
       params: new FormGroup(
         {
@@ -167,11 +199,11 @@ export class WizardComponent implements OnInit {
     let test = this._formBuilder.array([])
     let myArray = [] || {};
     if (engine === 'snmpcollector') {
-     myArray = EngineSNMPParams
+      myArray = EngineSNMPParams
     } else {
       this.allowCustomParams = true;
       return new FormControl([]);
-     }
+    }
     console.log(myArray);
     for (let i of myArray[sel_params]) {
       let p = this._formBuilder.group({})
@@ -184,21 +216,22 @@ export class WizardComponent implements OnInit {
   }
 
   createNewProduct() {
-    /*let yamlString = _.stringify(this.productFormGroup.value, 999)
-    console.log(yamlString);
-    this.wizardService.createNewProduct('http://localhost:4200', _.stringify(this.productFormGroup.value, 999, 2))
+    //Merge data from productFormGroup from product:
+    if (this.stepInfo.productData) {
+      this.stepInfo.productData[this.stepInfo.step] = this.productFormGroup.value[this.stepInfo.step]
+    } else {
+      this.stepInfo.productData = this.productFormGroup.value
+    }
+    console.log(this.stepInfo.productData)
+    this.wizardService.uploadFiles('http://localhost:4200/api/rt/gitrepo/commitfile', this.stepInfo.productData, this.fileArray)
       .subscribe(
-      data => console.log(data),
+      data => {
+        console.log(data),
+        this.finishedAction.emit(data)
+      },
       err => console.error(err),
       () => console.log("OK, DONE")
       )
-    */
-    this.wizardService.uploadFiles('http://localhost:4200/api/rt/gitrepo/commitfile', this.productFormGroup.value, this.fileArray )
-    .subscribe( 
-      data => console.log(data),
-      err => console.error(err),
-      () => console.log("OK, DONE")
-    )
   }
 
   /* ********************  */
@@ -217,7 +250,7 @@ export class WizardComponent implements OnInit {
 
   removeConfig(step: string, iengine: number, iconfig: number, ifile: number) {
     this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.config.removeAt(ifile)
-    this.fileArray[step][iengine].config[iconfig].splice(ifile,1)
+    this.fileArray[step][iengine].config[iconfig].splice(ifile, 1)
   }
 
   selectFile(event, step, iengine, iconfig, ifile) {

@@ -7,7 +7,7 @@
     <mat-divider></mat-divider>
     <br>
     <mat-card>
-      <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="viewMode = 'list'">
+      <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="retrieveAllDeviceList()">
         <mat-icon>playlist_play</mat-icon> List Devices
       </button>
       <button mat-raised-button [color]="viewMode === 'new' ? 'accent' : 'primary'" (click)="viewMode = 'new'">

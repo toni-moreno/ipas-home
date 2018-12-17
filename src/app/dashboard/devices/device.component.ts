@@ -44,7 +44,7 @@ export class DeviceComponent {
   }
 
   finishAction() {
-    this.viewMode = 'list'
+    this.retrieveAllDeviceList();
   }
 
   retrieveAllDeviceList(imode?) {
@@ -56,6 +56,7 @@ export class DeviceComponent {
     this.deviceService.getDeviceList('/api/cfg/platformdevices')
       .subscribe(
         (data: any) => {
+          this.viewMode = 'list'
           console.log(data);
           this.dataSource = new MatTableDataSource(data)
           this.dataSource.paginator = this.paginator;

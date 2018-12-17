@@ -1,6 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource, MatSidenav } from '@angular/material';
 import { ProductService } from './product.service';
+import { DialogStepsComponent } from '../../shared/dialogstep/dialogsteps.component';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
   selector: 'product-component',
@@ -15,21 +17,36 @@ export class ProductComponent {
   @ViewChild(MatSidenav) left: MatSidenav;
 
   viewMode: string = 'list';
-  mode : boolean =  false;
-  editData : any;
+  mode: boolean = false;
+  editData: any;
+  stepInfo: any = {
+    'productStatus': {
+      hasDB: false,
+      hasG: false,
+      hasV: false,
+      hasA: false
+    },
+    'productData': null,
+    'step': null
+  };
 
   displayedColumns: string[] = ['actions', 'name', 'hasdb', 'gather', 'visual', 'alert'];
   dataSource: MatTableDataSource<ProductList> = new MatTableDataSource();
 
-  constructor(public productService: ProductService) {
+  constructor(public productService: ProductService, public dialog: MatDialog) {
+    this.getAllProducts();
+  }
+  
 
+  getAllProducts() {
     this.productService.getProducts('/api/rt/gitrepo/product')
       .subscribe(
       (data: ProductList[]) => {
         this.dataSource = new MatTableDataSource(data);
         console.log(data)
         this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;},
+        this.dataSource.sort = this.sort;
+      },
       (err) => console.log(err),
       () => console.log("DONE")
       )
@@ -40,19 +57,64 @@ export class ProductComponent {
       .subscribe(
       (data) => {
         console.log(data);
-        this.mode =  true
+        this.mode = true
         this.viewMode = 'edit'
-        this.editData =  data;
+        this.editData = data;
       },
       (err) => console.log(err),
       () => console.log("DONE")
       )
   }
 
-
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim();
     filterValue = filterValue.toLowerCase();
     this.dataSource.filter = filterValue;
   }
+
+
+  /* *********************  */
+  /* CUSTOM PARAMS SECTION  */
+  /* *********************  */
+
+  openDialog(item): void {
+    let dialogRef = this.dialog.open(DialogStepsComponent, {
+      width: '500px',
+      disableClose: true,
+      data: item,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log(result)
+        this.productService.getProductByID('/api/rt/gitrepo/product/', item.name)
+          .subscribe(
+          (data) => {
+            this.viewMode = 'add';
+            this.stepInfo = {
+              'productStatus': item,
+              'productData': data,
+              'step': result
+            }
+            result;
+          })
+      }
+    });
+  }
+
+  finishAction() {
+    this.stepInfo = {
+      'productStatus': {
+        hasDB: false,
+        hasG: false,
+        hasV: false,
+        hasA: false
+      },
+      'productData': null,
+      'step': null
+    };
+    this.viewMode = 'list'
+  }
+
+
 }

@@ -7,7 +7,7 @@
     <mat-divider></mat-divider>
     <br>
     <mat-card>
-      <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="viewMode = 'list'">
+      <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="getAllProducts()">
         <mat-icon>playlist_play</mat-icon> List Product
       </button>
       <button mat-raised-button [color]="viewMode === 'new' ? 'accent' : 'primary'" (click)="viewMode = 'new'">
@@ -33,12 +33,14 @@
             <mat-header-cell *matHeaderCellDef class="cell-header text-test">Actions</mat-header-cell>
             <!--mat-cell *matCellDef="let element"> {{element.actions}} </mat-cell-->
             <mat-cell *matCellDef="let element">
-              <button mat-icon-button mat-button color="primary">
-                <mat-icon>note_add</mat-icon>
+              <button mat-icon-button mat-button color="primary" (click)="element.hasDB ?  openDialog(element) : ''">
+                <mat-icon 
+                  [ngClass]="element.hasDB === true ? 'text-test' : 'text-empty'" 
+                  [matTooltip]="element.hasDB === true ?  'Add configuration' : 'Pending DB creation for this product'">note_add</mat-icon>
               </button>
-              <button mat-icon-button mat-button color="primary" (click)="viewItem(element.name)">
+              <!--button mat-icon-button mat-button color="primary" (click)="viewItem(element.name)">
                 <mat-icon>edit</mat-icon>
-              </button>
+              </button-->
               <button mat-icon-button mat-button color="primary">
                 <mat-icon>highlight_off</mat-icon>
               </button>
@@ -94,7 +96,7 @@
       </div>
     </ng-template>
     <ng-template ngSwitchDefault>
-      <app-wizard [mode]="mode" [editData]="editData"></app-wizard>
+      <app-wizard [mode]="mode" [editData]="editData" [stepInfo]="stepInfo" (finishedAction)="finishAction()"></app-wizard>
     </ng-template>
   </ng-container>
 </div>

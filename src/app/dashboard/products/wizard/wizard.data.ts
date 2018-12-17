@@ -27,16 +27,14 @@ export const EngineSNMPParams = {
         agent_key: "MeasurementGroups",
         description: 'An array of Measurement Group IDs',
         type: "array",
-        value: ["Juniper_template"]
+        value: [""]
       },
       {
         key: "PRODUCT_MEAS_FILTERS",
         agent_key: "MeasurementFilters",
         description: 'An array of Measurement Filters IDs',
         type: "array",
-        value: ["jnxOperating_Temp",
-          "jnxOperating_RouterEngine_Juniper_CPU",
-          "jnxOperating_Interface_Juniper"]
+        value: [""]
       },
       {
         key: "PRODUCT_DEVICE_TAGNAME",
@@ -131,105 +129,105 @@ export const EngineSNMPParams = {
       {
         key: "DEVICE_ID",
         agent_key: "ID",
-        description: 'TextStringthatuniquelyidentifythedevice,shouldbeuniqueintheconfigdb,itcanbehostname,serialnumberoranyothertextid',
+        description: 'Text String that uniquely identify the device , should be unique in the config db, it can be hostname, serial number or any other text id',
         type: "string",
         value: null
       },
       {
         key: "DEVICE_HOST",
         agent_key: "Host",
-        description: 'TextStringthatuniquelyidentifythedevice,shouldbeuniqueintheconfigdb,itcanbehostname,serialnumberoranyothertextid',
+        description: 'Text String that uniquely identify the device , should be unique in the config db, it can be hostname, serial number or any other text id',
         type: "string",
         value: null
       },
       {
         key: "DEVICE_PORT",
         agent_key: "Port",
-        description: 'Overwritedefaultdeviceport',
+        description: 'Overwrite default device port',
         type: "integer",
         value: null
       },
       {
         key: "DEVICE_ACTIVE",
         agent_key: "Active",
-        description: 'Letdevicebegingatheringprocessonagentbootprocess',
+        description: 'Let device begin gathering process on agent boot process',
         type: "boolean",
         value: true
       },
       {
         key: "DEVICE_SNMPVERSION",
         agent_key: "SnmpVersion",
-        description: 'SNMPversion.Valuesaccepted: [1,2c,3]',
+        description: 'SNMP version. Values accepted: [1,2c,3]',
         type: "string",
         value: null
       },
       {
         key: "DEVICE_COMMUNITY",
         agent_key: "Community",
-        description: 'SNMPversion1/2ccommunity',
+        description: 'SNMP version 1/2c community',
         type: "string",
         value: null
       },
       {
         key: "DEVICE_V3SECLEVEL",
         agent_key: "V3SecLevel",
-        description: 'Definethelevelofsecurityneededfortheconnectionvalidvaluesare(onlyforsnmpv3)NoAuthNoPrivAuthNoPrivAuthPriv',
+        description: 'Define the level of security needed for the connection valid values are (only for snmpv3)- NoAuthNoPriv, AuthNoPriv, AuthPriv',
         type: "string",
         value: null
       },
       {
         key: "DEVICE_V3AUTHUSER",
         agent_key: "V3AuthUser",
-        description: 'Theusernamethatwillestablishthesnmpquery(snmpv3only)',
+        description: 'The username that will establish the snmp query (snmpv3 only)',
         type: "string",
         value: null
       },
       {
         key: "DEVICE_V3AUTHPASS",
         agent_key: "V3AuthPass",
-        description: 'Theauthenticationpassword(snmpv3only)',
+        description: 'The authentication password (snmpv3 only)',
         type: "string",
         value: null
       },
       {
         key: "DEVICE_V3AUTHPROT",
         agent_key: "V3AuthProt",
-        description: 'TheAuthenticationProtocolvaluesshouldbeanyof(snmpv3only)-MD5-SHA',
+        description: 'The Authentication Protocol values should be any of (snmpv3 only) - MD5,SHA',
         type: "string",
         value: null
       },
       {
         key: "DEVICE_V3PRIVPASS",
         agent_key: "V3PrivPass",
-        description: 'Privacypassword(snmpv3only)',
+        description: 'Privacy password (snmpv3 only)',
         type: "string",
         value: null
       },
       {
         key: "DEVICE_V3PRIVPROT",
         agent_key: "V3PrivProt",
-        description: 'PrivacyProtocolvaluesshouldbeanyof["DES","AES"](snmpv3only)',
+        description: 'Privacy Protocol values should be any of [ "DES", "AES"] (snmpv3 only)',
         type: "string",
         value: null
       },
       {
         key: "DEVICE_V3CONTEXTENGINE",
         agent_key: "V3ContextEngineID",
-        description: 'SNMPV3ContextEngineIDinScopedPDU(equivalenttothenet-snmp-Eparamenter)(snmpv3only)',
+        description: 'SNMPV3 ContextEngineID in ScopedPDU (equivalent to the net-snmp -E paramenter) (snmpv3 only)',
         type: "string",
         value: null
       },
       {
         key: "DEVICE_V3CONTEXTNAME",
         agent_key: "V3ContextName",
-        description: 'SNMPV3ContextEngineIDinScopedPDU(equivalenttothenet-snmp-Eparamenter)(snmpv3only)',
+        description: 'SNMPV3 ContextEngineID in ScopedPDU (equivalent to the net-snmp -E paramenter) (snmpv3 only)',
         type: "string",
         value: null
       },
       {
         key: "DEVICE_EXTRATAG_VALUES",
         agent_key: null,
-        description: 'DeviceExtraTagValues',
+        description: 'Device ExtraTag Values',
         type: "string",
         value: null
       }
