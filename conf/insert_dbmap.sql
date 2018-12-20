@@ -20,11 +20,14 @@ values
 
 delete from product_db_map where id='kapacitor';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('kapacitor',
    '_kapacitor',
-   '');
+   '',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='_influxdb';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -44,11 +47,14 @@ values
 
 delete from product_db_map where id='influxdb';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('influxdb',
    '_influxdb',
-   '');
+   '',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='_telegraf';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -68,11 +74,14 @@ values
 
 delete from product_db_map where id='telegraf';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('telegraf',
    '_telegraf',
-   '');
+   '',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='_snmpcollector';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -92,11 +101,14 @@ values
 
 delete from product_db_map where id='snmpcollector';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('snmpcollector',
    '_snmpcollector',
-   '');
+   '',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='_resistor';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -116,11 +128,14 @@ values
 
 delete from product_db_map where id='resistor';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('resistor',
    '_resistor',
-   '');
+   '',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='_sqlcollector';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -140,11 +155,14 @@ values
 
 delete from product_db_map where id='sqlcollector';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('sqlcollector',
    '_sqlcollector',
-   '');
+   '',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='ms_anomalies';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -164,11 +182,14 @@ values
 
 delete from product_db_map where id='ml';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('ml',
    'ms_anomalies',
-   '');
+   '',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='apache_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -188,11 +209,14 @@ values
 
 delete from product_db_map where id='apache';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('apache',
    'apache_metrics',
-   'ap_t1,ap_t2,_ap_t3');
+   'ap_t1,ap_t2,_ap_t3',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='snmp_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -212,11 +236,14 @@ values
 
 delete from product_db_map where id='checkpoint';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('checkpoint',
    'snmp_metrics',
-   'ch_tag1,ch_tag2,ch_tag3');
+   'ch_tag1,ch_tag2,ch_tag3',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='snmp_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -226,21 +253,24 @@ values
    '8086',                           --port
    'snmp_metrics',                     --db
    'ipas_rw_user',             --user
-   '1p4sm0l4',         --password
+   '3',         --password
    'ipas_public_user',             --rduser
    '1p4sm0l4',          --rdpassword
    '365',                    --retentiontime
-   '3',                     --sharding
+   '',                     --sharding
    'DB for product cisco_catalyst');     --description
 
 
 delete from product_db_map where id='cisco_catalyst';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('cisco_catalyst',
    'snmp_metrics',
-   'c_tag1,c_tag2');
+   'c_tag1,c_tag2',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='docker_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -260,11 +290,14 @@ values
 
 delete from product_db_map where id='docker';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('docker',
    'docker_metrics',
-   'dkr_t1,dkr_t2');
+   'dkr_t1,dkr_t2',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='snmp_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -284,11 +317,14 @@ values
 
 delete from product_db_map where id='juniper';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('juniper',
    'snmp_metrics',
-   'jun_tag1,jun_tag2,jun_tag3');
+   'jun_tag1,jun_tag2,jun_tag3',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='snmp_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -308,11 +344,14 @@ values
 
 delete from product_db_map where id='juniper_vpn';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('juniper_vpn',
    'snmp_metrics',
-   'jvpn_tag1,jvpn_tag2');
+   'jvpn_tag1,jvpn_tag2',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='cloud_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -332,11 +371,14 @@ values
 
 delete from product_db_map where id='k8s';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('k8s',
    'cloud_metrics',
-   'k8s_t1,k8s_t2');
+   'k8s_t1,k8s_t2',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='linux_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -356,11 +398,14 @@ values
 
 delete from product_db_map where id='linux';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('linux',
    'linux_metrics',
-   'l_tag1,l_tag2,l_tag3');
+   'l_tag1,l_tag2,l_tag3',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='msiss_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -380,11 +425,14 @@ values
 
 delete from product_db_map where id='msiss';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('msiss',
    'msiss_metrics',
-   'ms_t1,ms_t2');
+   'ms_t1,ms_t2',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='mysql_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -404,11 +452,14 @@ values
 
 delete from product_db_map where id='mysql';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('mysql',
    'mysql_metrics',
-   'my_t1,my_t2,my_t3');
+   'my_t1,my_t2,my_t3',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='nginx_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -428,11 +479,14 @@ values
 
 delete from product_db_map where id='nginx';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('nginx',
    'nginx_metrics',
-   'ng_tag1,ng_tag2');
+   'ng_tag1,ng_tag2',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='oracle_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -452,11 +506,14 @@ values
 
 delete from product_db_map where id='oracle';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('oracle',
    'oracle_metrics',
-   'ora_t1,ora_t2');
+   'ora_t1,ora_t2',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='pgsql_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -476,11 +533,14 @@ values
 
 delete from product_db_map where id='pgsql';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('pgsql',
    'pgsql_metrics',
-   'pg_t1,pg_t2');
+   'pg_t1,pg_t2',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='tomcat_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -500,11 +560,14 @@ values
 
 delete from product_db_map where id='tomcat';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('tomcat',
    'tomcat_metrics',
-   't_t1,t_t2');
+   't_t1,t_t2',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='vsphere_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -524,11 +587,14 @@ values
 
 delete from product_db_map where id='vsphere';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('vsphere',
    'vsphere_metrics',
-   'vs_t1,vs_t2');
+   'vs_t1,vs_t2',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='was_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -548,11 +614,14 @@ values
 
 delete from product_db_map where id='was';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('was',
    'was_metrics',
-   'was_t1,was_t2');
+   'was_t1,was_t2',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='win_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -572,11 +641,14 @@ values
 
 delete from product_db_map where id='windows';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('windows',
    'win_metrics',
-   'w_tag1.w_tag2,w_tag3');
+   'w_tag1.w_tag2,w_tag3',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
 delete from influx_cfg where id='wls_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -596,8 +668,11 @@ values
 
 delete from product_db_map where id='wls';
 insert into product_db_map
-  (id,database,product_tags)
+  (id,database,product_tags,g_engines,v_engines,a_engines)
 values
   ('wls',
    'wls_metrics',
-   'wls_t1,wls_t2');
+   'wls_t1,wls_t2',
+   ["SnmpCollectorPRO"],
+   ["GrafanaPRO"],
+   ["ResistorPRO"]);
