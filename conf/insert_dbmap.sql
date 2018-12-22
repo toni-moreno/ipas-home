@@ -25,9 +25,9 @@ values
   ('kapacitor',
    '_kapacitor',
    '',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='_influxdb';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -52,9 +52,9 @@ values
   ('influxdb',
    '_influxdb',
    '',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN","WAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='_telegraf';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -79,9 +79,9 @@ values
   ('telegraf',
    '_telegraf',
    '',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='_snmpcollector';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -106,9 +106,9 @@ values
   ('snmpcollector',
    '_snmpcollector',
    '',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN","WAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='_resistor';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -133,9 +133,9 @@ values
   ('resistor',
    '_resistor',
    '',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='_sqlcollector';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -160,9 +160,9 @@ values
   ('sqlcollector',
    '_sqlcollector',
    '',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='ms_anomalies';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -187,9 +187,9 @@ values
   ('ml',
    'ms_anomalies',
    '',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='apache_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -214,9 +214,9 @@ values
   ('apache',
    'apache_metrics',
    'ap_t1,ap_t2,_ap_t3',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='snmp_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -241,9 +241,9 @@ values
   ('checkpoint',
    'snmp_metrics',
    'ch_tag1,ch_tag2,ch_tag3',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN","WAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='snmp_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -268,9 +268,9 @@ values
   ('cisco_catalyst',
    'snmp_metrics',
    'c_tag1,c_tag2',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='docker_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -295,9 +295,9 @@ values
   ('docker',
    'docker_metrics',
    'dkr_t1,dkr_t2',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='snmp_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -322,9 +322,9 @@ values
   ('juniper',
    'snmp_metrics',
    'jun_tag1,jun_tag2,jun_tag3',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='snmp_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -349,9 +349,9 @@ values
   ('juniper_vpn',
    'snmp_metrics',
    'jvpn_tag1,jvpn_tag2',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='cloud_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -376,9 +376,9 @@ values
   ('k8s',
    'cloud_metrics',
    'k8s_t1,k8s_t2',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='linux_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -403,9 +403,9 @@ values
   ('linux',
    'linux_metrics',
    'l_tag1,l_tag2,l_tag3',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='msiss_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -430,9 +430,9 @@ values
   ('msiss',
    'msiss_metrics',
    'ms_t1,ms_t2',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='mysql_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -457,9 +457,9 @@ values
   ('mysql',
    'mysql_metrics',
    'my_t1,my_t2,my_t3',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='nginx_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -484,9 +484,9 @@ values
   ('nginx',
    'nginx_metrics',
    'ng_tag1,ng_tag2',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='oracle_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -511,9 +511,9 @@ values
   ('oracle',
    'oracle_metrics',
    'ora_t1,ora_t2',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='pgsql_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -538,9 +538,9 @@ values
   ('pgsql',
    'pgsql_metrics',
    'pg_t1,pg_t2',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='tomcat_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -565,9 +565,9 @@ values
   ('tomcat',
    'tomcat_metrics',
    't_t1,t_t2',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='vsphere_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -592,9 +592,9 @@ values
   ('vsphere',
    'vsphere_metrics',
    'vs_t1,vs_t2',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='was_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -619,9 +619,9 @@ values
   ('was',
    'was_metrics',
    'was_t1,was_t2',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='win_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -646,9 +646,9 @@ values
   ('windows',
    'win_metrics',
    'w_tag1.w_tag2,w_tag3',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');
 delete from influx_cfg where id='wls_metrics';
 insert into influx_cfg 
   (id,host,port,db,rwuser,rwpassword,rduser,rdpassword,retentiontime,shardingtime,description)
@@ -673,6 +673,6 @@ values
   ('wls',
    'wls_metrics',
    'wls_t1,wls_t2',
-   '["SnmpCollectorPRO"]',
-   '["GrafanaPRO"]',
-   '["ResistorPRO"]');
+   '["LAN"]',
+   '["GRAFANA"]',
+   '["RESISTOR"]');

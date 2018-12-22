@@ -213,11 +213,14 @@ func Init(cfgrepo *config.GitRepo) {
 
 // ProductStat give us the definition stat for this product
 type ProductStat struct {
-	Name  string `json:"name"`
-	HasDB bool   `json:"hasDB"`
-	HasG  bool   `json:"hasG"`
-	HasV  bool   `json:"hasV"`
-	HasA  bool   `json:"hasA"`
+	Name     string   `json:"name"`
+	HasDB    bool     `json:"hasDB"`
+	HasG     bool     `json:"hasG"`
+	HasV     bool     `json:"hasV"`
+	HasA     bool     `json:"hasA"`
+	GEngines []string `json:"g_engines"`
+	VEngines []string `json:"v_engines"`
+	AEngines []string `json:"a_engines"`
 }
 
 // EngineConfig get MainConfig this engine
@@ -302,12 +305,15 @@ func GetProductStatus() ([]*ProductStat, error) {
 			ps.HasV = true
 		}
 
-		_, err = dbc.GetProductDBMapByID(ps.Name)
+		dbmap, err := dbc.GetProductDBMapByID(ps.Name)
 		if err != nil {
 			log.Warningf("Error on get DB map for product %s  , error: %s", ps.Name, err)
 			ps.HasDB = false
 		} else {
 			ps.HasDB = true
+			ps.GEngines = dbmap.GEngines
+			ps.VEngines = dbmap.VEngines
+			ps.AEngines = dbmap.AEngines
 		}
 
 		stat = append(stat, ps)
