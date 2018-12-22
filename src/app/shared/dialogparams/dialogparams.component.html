@@ -1,40 +1,40 @@
 <h1 mat-dialog-title>New parameter</h1>
-  <div mat-dialog-content>
+<div mat-dialog-content>
 
   <mat-form-field appearance="outline">
-  <mat-label>Key</mat-label>
-  <input matInput [(ngModel)]="data.key">
-  <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
+    <mat-label>Key</mat-label>
+    <input matInput [(ngModel)]="data.key">
+    <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
   </mat-form-field>
 
 
   <mat-form-field appearance="outline">
-  <mat-label>Agent Key</mat-label>
-  <input matInput [(ngModel)]="data.agent_key">
-  <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
+    <mat-label>Agent Key</mat-label>
+    <input matInput [(ngModel)]="data.agent_key">
+    <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
   </mat-form-field>
 
-  
-  <mat-form-field appearance="outline">
-  <mat-label>Description</mat-label>
-  <input matInput [(ngModel)]="data.description">
-  <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
-  </mat-form-field>
 
   <mat-form-field appearance="outline">
-  <mat-label>Type</mat-label>
-  <input matInput [(ngModel)]="data.type">
-  <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
+    <mat-label>Description</mat-label>
+    <input matInput [(ngModel)]="data.description">
+    <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-  <mat-label>Default Value</mat-label>
-  <input matInput [(ngModel)]="data.value">
-  <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
+    <mat-label>Type</mat-label>
+    <input matInput [(ngModel)]="data.type">
+    <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
   </mat-form-field>
 
-  </div>
-  <div mat-dialog-actions>
-    <button mat-button (click)="onNoClick()">No Thanks</button>
-    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
-  </div>
+  <mat-form-field appearance="outline">
+    <mat-label>Default Value</mat-label>
+    <input matInput [(ngModel)]="data.value">
+    <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
+  </mat-form-field>
+
+</div>
+<div mat-dialog-actions>
+  <button mat-button color="warn" (click)="onNoClick()">Cancel</button>
+  <button mat-button color="primary" [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
+</div>

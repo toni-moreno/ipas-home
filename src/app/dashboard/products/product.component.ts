@@ -30,40 +30,40 @@ export class ProductComponent {
     'step': null
   };
 
-  displayedColumns: string[] = ['actions', 'name', 'hasdb', 'gather', 'visual', 'alert'];
+  displayedColumns: string[] = ['actions', 'name', 'hasDB', 'hasG', 'g_engines', 'hasV', 'v_engines', 'hasA', 'a_engines'];
   dataSource: MatTableDataSource<ProductList> = new MatTableDataSource();
 
   constructor(public productService: ProductService, public dialog: MatDialog) {
     this.getAllProducts();
   }
-  
+
 
   getAllProducts() {
     this.productService.getProducts('/api/rt/gitrepo/product')
       .subscribe(
-      (data: ProductList[]) => {
-        this.dataSource = new MatTableDataSource(data);
-        console.log(data)
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        this.viewMode = 'list';
-      },
-      (err) => console.log(err),
-      () => console.log("DONE")
+        (data: ProductList[]) => {
+          this.dataSource = new MatTableDataSource(data);
+          console.log(data)
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+          this.viewMode = 'list';
+        },
+        (err) => console.log(err),
+        () => console.log("DONE")
       )
   }
 
   viewItem(name: string) {
     this.productService.getProductByID('/api/rt/gitrepo/product/', name)
       .subscribe(
-      (data) => {
-        console.log(data);
-        this.mode = true
-        this.viewMode = 'edit'
-        this.editData = data;
-      },
-      (err) => console.log(err),
-      () => console.log("DONE")
+        (data) => {
+          console.log(data);
+          this.mode = true
+          this.viewMode = 'edit'
+          this.editData = data;
+        },
+        (err) => console.log(err),
+        () => console.log("DONE")
       )
   }
 
@@ -90,15 +90,16 @@ export class ProductComponent {
         console.log(result)
         this.productService.getProductByID('/api/rt/gitrepo/product/', item.name)
           .subscribe(
-          (data) => {
-            this.viewMode = 'add';
-            this.stepInfo = {
-              'productStatus': item,
-              'productData': data,
-              'step': result
-            }
-            result;
-          })
+            (data) => {
+              this.viewMode = 'new';
+              //Extract engines in new property
+              this.stepInfo = {
+                'productStatus': item,
+                'productData': data,
+                'step': result
+              }
+              result;
+            })
       }
     });
   }

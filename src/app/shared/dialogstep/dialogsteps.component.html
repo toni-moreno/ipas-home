@@ -1,22 +1,21 @@
-<h1 mat-dialog-title>Add remaining configuration</h1>
+<h1 mat-dialog-title>Add new configuration</h1>
 <div mat-dialog-content>
   <mat-form-field appearance="outline">
-    <mat-select #config_selection placeholder="Remaining configurations" name="config">
-      <mat-option value="gather">
+    <mat-select #config_selection placeholder="Select available configurations" name="config">
+      <mat-option value="gather" [disabled]="data.g_engines.length === 0">
         Gather
       </mat-option>
-      <mat-option value="visual">
+      <mat-option value="visual" [disabled]="data.v_engines.length === 0">
         Visual
       </mat-option>
-      <mat-option value="alert">
+      <mat-option value="alert" [disabled]="data.a_engines.length === 0">
         Alert
       </mat-option>
     </mat-select>
-    <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
+    <mat-icon matSuffix mat-mini-fab [matTooltip]="'Select configuration to create new product. Configurations without assigned resources will appear as disabled'">help</mat-icon>
   </mat-form-field>
-
 </div>
 <div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()">No Thanks</button>
-  <button mat-button [mat-dialog-close]="config_selection.value" cdkFocusInitial>Ok</button>
+  <button mat-button color="warn" (click)="onNoClick()">Cancel</button>
+  <button mat-button color="primary" [mat-dialog-close]="config_selection.value" cdkFocusInitial>Ok</button>
 </div>

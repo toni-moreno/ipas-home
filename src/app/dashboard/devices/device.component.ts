@@ -43,10 +43,6 @@ export class DeviceComponent {
     this.retrieveAllDeviceList()
   }
 
-  finishAction() {
-    this.retrieveAllDeviceList();
-  }
-
   retrieveAllDeviceList(imode?) {
     //Reset params:
     this.selProd = null;
@@ -56,11 +52,12 @@ export class DeviceComponent {
     this.deviceService.getDeviceList('/api/cfg/platformdevices')
       .subscribe(
         (data: any) => {
-          this.viewMode = 'list'
           console.log(data);
-          this.dataSource = new MatTableDataSource(data)
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
+          if (data) {
+            this.dataSource = new MatTableDataSource(data)
+            this.dataSource.paginator = this.paginator;
+            this.dataSource.sort = this.sort;
+          }
         },
         (err) => console.log(err),
         () => console.log("DONE")
@@ -115,7 +112,6 @@ export class DeviceComponent {
           dialogRef.afterClosed().subscribe(result => {
             if (result) {
               this.dataSource = new MatTableDataSource([]);
-              console.log(result)
               this.selProd = result
               this.retrieveAllDeviceListByProduct(result, imode);
             }
@@ -130,7 +126,7 @@ export class DeviceComponent {
 
   removeDevice(element) {
 
-    console.log("ELEMENT",element);
+    console.log("ELEMENT", element);
     this.mydata = {
       platform: {},
       devices: []
@@ -143,24 +139,23 @@ export class DeviceComponent {
     this.mydata.platform.engine = []
     for (let pengine of element['PlatformEngines']) {
       this.mydata.platform.engine.push(pengine)
-      tmpengines.push({ 'name': pengine.name})
-    }  
-    
+      tmpengines.push({ 'name': pengine.name })
+    }
 
     //Devices part
-    this.mydata.devices.push({'id': element.DeviceID, engine: tmpengines })
-    
+    this.mydata.devices.push({ 'id': element.DeviceID, engine: tmpengines })
+
     console.log(this.mydata);
 
     let t = confirm("Are you sure you  want to remove  product " + element.ProductID + " from  " + element.DeviceID + "?")
     if (t === true) {
       console.log("removing element", element)
       this.deviceService.removeDevice(this.mydata)
-      .subscribe(
-        (data) => console.log(data),
-        (err) =>  console.log(err),
-        () => console.log("DONE")
-      )
+        .subscribe(
+          (data) => console.log(data),
+          (err) => console.log(err),
+          () => console.log("DONE")
+        )
     }
 
   }

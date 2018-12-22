@@ -22,7 +22,7 @@
         <mat-toolbar style="background-color: #e9e9e9;">
           <mat-toolbar-row>
             <mat-form-field style="font-size: 14px">
-              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter Device">
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter Product">
             </mat-form-field>
           </mat-toolbar-row>
         </mat-toolbar>
@@ -34,13 +34,8 @@
             <!--mat-cell *matCellDef="let element"> {{element.actions}} </mat-cell-->
             <mat-cell *matCellDef="let element">
               <button mat-icon-button mat-button color="primary" (click)="element.hasDB ?  openDialog(element) : ''">
-                <mat-icon 
-                  [ngClass]="element.hasDB === true ? 'text-test' : 'text-empty'" 
-                  [matTooltip]="element.hasDB === true ?  'Add configuration' : 'Pending DB creation for this product'">note_add</mat-icon>
+                <mat-icon [ngClass]="element.hasDB === true ? 'text-test' : 'text-empty'" [matTooltip]="element.hasDB === true ?  'Add configuration' : 'Pending DB creation for this product'">note_add</mat-icon>
               </button>
-              <!--button mat-icon-button mat-button color="primary" (click)="viewItem(element.name)">
-                <mat-icon>edit</mat-icon>
-              </button-->
               <button mat-icon-button mat-button color="primary">
                 <mat-icon>highlight_off</mat-icon>
               </button>
@@ -55,7 +50,7 @@
 
 
           <!-- hasdb Column -->
-          <ng-container matColumnDef="hasdb">
+          <ng-container matColumnDef="hasDB">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> HasDB </mat-header-cell>
             <mat-cell *matCellDef="let element">
               <i class="material-icons" [ngClass]="element.hasDB === true ? 'text-test' : 'text-empty'">{{element.hasDB
@@ -64,16 +59,26 @@
           </ng-container>
 
           <!-- gather Column -->
-          <ng-container matColumnDef="gather">
+          <ng-container matColumnDef="hasG">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Gather </mat-header-cell>
             <mat-cell *matCellDef="let element">
               <i class="material-icons" [ngClass]="element.hasG === true ? 'text-test' : 'text-empty'">{{element.hasG
                 === true ? 'check' : 'remove' }} </i>
+
             </mat-cell>
           </ng-container>
 
+          <ng-container matColumnDef="g_engines">
+            <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Gather Engines
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span>{{element.g_engines}}</span>
+            </mat-cell>
+          </ng-container>
+
+
           <!-- HasV Column -->
-          <ng-container matColumnDef="visual">
+          <ng-container matColumnDef="hasV">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Visual </mat-header-cell>
             <mat-cell *matCellDef="let element">
               <i class="material-icons" [ngClass]="element.hasV === true ? 'text-test' : 'text-empty'">{{element.hasV
@@ -81,14 +86,31 @@
             </mat-cell>
           </ng-container>
 
+          <ng-container matColumnDef="v_engines">
+            <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Visual Engines
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span>{{element.v_engines}}</span>
+            </mat-cell>
+          </ng-container>
+
           <!-- Symbol Column -->
-          <ng-container matColumnDef="alert">
+          <ng-container matColumnDef="hasA">
             <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Alert </mat-header-cell>
             <mat-cell *matCellDef="let element">
               <i class="material-icons" [ngClass]="element.hasA === true ? 'text-test' : 'text-empty'">{{element.hasA
                 === true ? 'check' : 'remove' }} </i>
             </mat-cell>
           </ng-container>
+
+          <ng-container matColumnDef="a_engines">
+            <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header> Alert Engines
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span>{{element.a_engines}}</span>
+            </mat-cell>
+          </ng-container>
+
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
           <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
         </mat-table>
