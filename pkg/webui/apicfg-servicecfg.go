@@ -161,14 +161,14 @@ func PingHTTP(cfg *config.ServiceCfg, log *logrus.Logger, apidbg bool) (time.Dur
 			log.Debugf("PING HTTP GET STATUS : %s STATUS OK : %d", cfg.ID, resp.StatusCode)
 			return elapsed, "OK", nil
 		}
-		log.Debugf("PING HTTP GET STATUS : %s STATUS ERROR : %d  not in (%s)", cfg.ID, resp.StatusCode, cfg.StatusValidationValue)
+		log.Warnf("PING HTTP GET STATUS : %s STATUS ERROR : %d  not in (%s)", cfg.ID, resp.StatusCode, cfg.StatusValidationValue)
 		return elapsed, "ERROR", fmt.Errorf("Got Status %d not in (%s)", resp.StatusCode, cfg.StatusValidationValue)
 	case "content":
 
 		body, err := ioutil.ReadAll(resp.Body)
 		elapsed := time.Since(start)
 		if err != nil {
-			log.Debugf("PING HTTP GET STATUS error : %s", err)
+			log.Warnf("PING HTTP GET STATUS error : %s", err)
 			return elapsed, "ERROR", fmt.Errorf("ERROR: %s", err)
 		}
 
@@ -177,10 +177,11 @@ func PingHTTP(cfg *config.ServiceCfg, log *logrus.Logger, apidbg bool) (time.Dur
 			log.Debugf("BODY: %s", body)
 			return elapsed, "OK", nil
 		}
+		log.Warn("PING HTTP GET Body size 0")
 		return elapsed, "ERROR", errors.New("ERROR in body: size 0")
 	default:
 		elapsed := time.Since(start)
-		log.Debugf("Unknown Validation Mode %s", cfg.StatusValidationMode)
+		log.Errorf("Unknown Validation Mode %s", cfg.StatusValidationMode)
 		return elapsed, "ERROR", fmt.Errorf("Unknown Validation Mode %s", cfg.StatusValidationMode)
 	}
 	elapsed := time.Since(start)
