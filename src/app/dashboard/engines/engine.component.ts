@@ -11,7 +11,9 @@ export interface EngineElement {
 const ELEMENT_DATA: EngineElement[] = [
   { name: 'SNMPCollector', type: 'Gather' },
   { name: 'Telegraf', type: 'Gather' },
-  { name: 'Grafana', type: 'Visual' }
+  { name: 'Grafana', type: 'Visual' },
+  { name: 'InfluxDB', type: 'Store' },
+  { name: 'Resistor', type: 'Alert' }
 ];
 
 @Component({

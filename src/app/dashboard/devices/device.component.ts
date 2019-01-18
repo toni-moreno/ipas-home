@@ -57,6 +57,8 @@ export class DeviceComponent {
             this.dataSource = new MatTableDataSource(data)
             this.dataSource.paginator = this.paginator;
             this.dataSource.sort = this.sort;
+            this.viewMode = 'list';
+
           }
         },
         (err) => console.log(err),

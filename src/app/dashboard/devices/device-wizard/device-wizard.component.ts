@@ -6,7 +6,6 @@ import { ProductService } from '../../products/product.service'
 import { HomeService } from '../../home/home.service'
 import { MatTableDataSource, MatTabGroup } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
-import { FormArrayName } from '@angular/forms/src/directives/reactive_directives/form_group_name';
 
 export const mySuperServices = [
   {
@@ -57,8 +56,8 @@ export class DeviceWizardComponent implements OnInit {
   filteredServices: any = [];
   mapDBInfo: any = null;
   dbMapList: any = null;
-  productTags: any = null;
   platformEngines: any;
+  gEngines: any;
 
   //Section 1:
   selectedProduct = null;
@@ -88,11 +87,10 @@ export class DeviceWizardComponent implements OnInit {
     //Retrive all Platform Engines:
     this.wizardService.getPlatformEngines('/api/cfg/platformengines')
       .subscribe(
-        (data: MatTableDataSource<any>) => { this.platformEngines = data; console.log(this.platformEngines) },
+        (data) => { this.platformEngines = data; console.log(this.platformEngines) },
         (err) => console.log(err),
         () => console.log("DONE")
       )
-
 
     //Create initial deviceForm Form
     this.deviceFormGroup = this._formBuilder.group({
@@ -141,27 +139,29 @@ export class DeviceWizardComponent implements OnInit {
       this.productService.getPlatformEngines('/api/cfg/productdbmap/' + product)
         .subscribe(
           (data) => {
-            this.productTags = data['ProductTags'].split(',');
             //Add as a Form... on Tags?
             let tags_array = new FormArray([]);
-            for (let k of this.productTags) {
+            for (let k of data['ProductTags'].split(',')) {
               let tags = this._formBuilder.group({})
               tags.addControl('key', new FormControl(k))
               tags.addControl('value', new FormControl(''))
               tags_array.push(tags);
             }
+            //Filter as available services only the assigned with the product. Maybe should retrieve data from it?
+            this.platformEngines = this.platformEngines.filter(element => {
+              for (let g of  data['GEngines']) {
+                if (g === element.ID) { 
+                  console.log(g, element.ID)
+                  return element
+                }
+              }
+            });
+
+            //console.log(_lodash.filter(this.platformEngines, {'ID': data['GEngines']}))
+            console.log(this.platformEngines);
             this.platformFormGroup.setControl('tags', tags_array);
           },
           (err) => { console.log(err); this.platformFormGroup.setControl('tags', new FormArray([])) },
-          () => console.log("DONE")
-        )
-
-      this.productService.getPlatformEngines('/api/cfg/platformengines/')
-        .subscribe(
-          (data) => {
-            console.log(data)
-          },
-          (err) => console.log(err),
           () => console.log("DONE")
         )
     }
@@ -187,7 +187,10 @@ export class DeviceWizardComponent implements OnInit {
   changeEngine(event) {
     //filterAvailableServices based on selected engine
     //engine is retrieved by event.tab.textLabel
-    this.filteredServices = new MatTableDataSource(this.platformEngines.filter((element) => event.tab.textLabel === element.EngineID))
+
+    //Need double filter --> First retrieve the ID available for platforms....
+
+    this.filteredServices = new MatTableDataSource(this.platformEngines.filter((element) =>  event.tab.textLabel === element.EngineID))
   }
 
   loadEngineConfig(engines): AbstractControl {
