@@ -2,13 +2,13 @@
 <div mat-dialog-content>
   <mat-form-field appearance="outline">
     <mat-select #config_selection placeholder="Select available configurations" name="config">
-      <mat-option value="gather" [disabled]="data.g_engines.length === 0">
+      <mat-option value="gather" [disabled]="!data.g_engines">
         Gather
       </mat-option>
-      <mat-option value="visual" [disabled]="data.v_engines.length === 0">
+      <mat-option value="visual" [disabled]="!data.v_engines">
         Visual
       </mat-option>
-      <mat-option value="alert" [disabled]="data.a_engines.length === 0">
+      <mat-option value="alert" [disabled]="!data.a_engines">
         Alert
       </mat-option>
     </mat-select>

@@ -1,5 +1,5 @@
 <div class="container">
-  <app-navbar title="Products Management > {{viewMode | uppercase}}">
+  <app-navbar title="Products Management > {{viewMode | uppercase}}{{(stepInfo.step ? ' > ' + stepInfo.step: '') | uppercase}}">
   </app-navbar>
 
   <div class="row">
@@ -7,7 +7,7 @@
     <mat-divider></mat-divider>
     <br>
     <mat-card>
-      <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="getAllProducts()">
+      <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="finishAction()">
         <mat-icon>playlist_play</mat-icon> List Product
       </button>
       <button mat-raised-button [color]="viewMode === 'new' ? 'accent' : 'primary'" (click)="viewMode = 'new'">
