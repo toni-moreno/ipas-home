@@ -27,11 +27,15 @@ export class DeviceWizardService {
         let dev = JSON.parse(JSON.stringify(device))
         let pTags = [];
         if (platform.tags.length > 0) {
-            let pTags = platform.tags.map((element) => { return element.key + '=' + element.value })
+            pTags = platform.tags.map((element) => { return element.key + '=' + element.value })
         }
         let ie = dev.engine.findIndex((engine) => engine.name === 'snmpcollector')
         let iparam = dev.engine[ie].params.findIndex((param) => param.key === 'DEVICE_EXTRATAG_VALUES')
-        dev.engine[ie].params[iparam].value = dev.engine[ie].params[iparam].value.split(',').concat(pTags)
+        if (dev.engine[ie].params[iparam].value != '' && dev.engine[ie].params[iparam].value != null) {
+          dev.engine[ie].params[iparam].value = dev.engine[ie].params[iparam].value.split(',').concat(pTags)
+        } else {
+          dev.engine[ie].params[iparam].value = pTags;
+        }
 
         //Make an split for each "array" type
 
