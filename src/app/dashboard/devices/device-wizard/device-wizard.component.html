@@ -1,3 +1,4 @@
+<div #blocker></div>
 <div class="container">
   <!--INIT - stepper-->
   <div class="row">
@@ -187,7 +188,7 @@
                   </ng-template>
                   <h4>Tags</h4>
                   <ng-container *ngIf="platformFormGroup.controls.tags">
-                    <ng-container formArrayName="tags">
+                    <ng-container formArrayName="tags" *ngIf="platformFormGroup.controls.tags.controls.length > 0">
                       <ng-container *ngFor="let e of platformFormGroup.controls.tags.controls; index as itag">
                         <ng-container [formArrayName]="itag">
                           <mat-form-field appearance="outline">
@@ -199,7 +200,11 @@
                         </ng-container>
                       </ng-container>
                     </ng-container>
+                    <ng-container *ngIf="platformFormGroup.controls.tags.length === 0">
+                        No tags are available
+                      </ng-container>
                   </ng-container>
+                  
                 </form>
               </mat-step>
             </mat-horizontal-stepper>

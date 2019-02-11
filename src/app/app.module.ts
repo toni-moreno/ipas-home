@@ -82,11 +82,13 @@ import { WizardComponent } from './dashboard/products/wizard/wizard.component';
 import { WizardService } from  './dashboard/products/wizard/wizard.service';
 import { DeviceWizardComponent } from './dashboard/devices/device-wizard/device-wizard.component';
 import { DeviceWizardService } from  './dashboard/devices/device-wizard/device-wizard.service';
+import { BlockUIComponent } from './shared/blockui/blockui-component'
 
 
 @NgModule({
   declarations: [
     AppComponent,
+    BlockUIComponent,
     DialogParamsComponent,
     DialogListComponent,
     DialogStepsComponent,
@@ -160,7 +162,7 @@ import { DeviceWizardService } from  './dashboard/devices/device-wizard/device-w
     ReactiveFormsModule,
     CustomPipesModule
   ],
-  entryComponents: [DialogParamsComponent, DialogListComponent, DialogStepsComponent, DialogResultComponent],
+  entryComponents: [DialogParamsComponent, DialogListComponent, DialogStepsComponent, DialogResultComponent, BlockUIComponent],
   providers: [DefaultRequestOptions, SettingsService, WizardService, DeviceWizardService ],
   bootstrap: [AppComponent]
 })

@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Inject, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, ViewContainerRef, Input } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { EngineSNMPParams } from './device-wizard.data';
 import { DeviceWizardService } from './device-wizard.service';
@@ -6,6 +6,8 @@ import { ProductService } from '../../products/product.service'
 import { HomeService } from '../../home/home.service'
 import { MatTableDataSource, MatTabGroup } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
+import { BlockUIService } from '../../../shared/blockui/blockui-service';
+
 
 export const mySuperServices = [
   {
@@ -36,12 +38,13 @@ export const mySuperMap: any = {
 @Component({
   selector: 'device-wizard',
   templateUrl: './device-wizard.component.html',
-  providers: [HomeService, DeviceWizardService, ProductService],
+  providers: [HomeService, DeviceWizardService, ProductService, BlockUIService],
   styleUrls: ['./device-wizard.component.css']
 })
 
 export class DeviceWizardComponent implements OnInit {
 
+  @ViewChild('blocker', { read: ViewContainerRef }) container: ViewContainerRef;
   @Input() mode: boolean = true
   @Input() editData: any;
   @Output() public finishedAction: EventEmitter<any> = new EventEmitter();
@@ -65,7 +68,7 @@ export class DeviceWizardComponent implements OnInit {
 
   bool_params = [true, false];
 
-  constructor(private _formBuilder: FormBuilder, public homeService: HomeService, public wizardService: DeviceWizardService, public productService: ProductService) { }
+  constructor(private _formBuilder: FormBuilder, public homeService: HomeService, public wizardService: DeviceWizardService, public productService: ProductService, public _blocker: BlockUIService) { }
 
 
   //Set core config vars as formarrays, it will be easier to go over them
@@ -148,7 +151,8 @@ export class DeviceWizardComponent implements OnInit {
               tags_array.push(tags);
             }
             //Filter as available services only the assigned with the product. Maybe should retrieve data from it?
-            this.platformEngines = this.platformEngines.filter(element => {
+            if (data['GEngines']) {
+              this.platformEngines = this.platformEngines.filter(element => {
               for (let g of  data['GEngines']) {
                 if (g === element.ID) { 
                   console.log(g, element.ID)
@@ -156,7 +160,7 @@ export class DeviceWizardComponent implements OnInit {
                 }
               }
             });
-
+            }
             //console.log(_lodash.filter(this.platformEngines, {'ID': data['GEngines']}))
             console.log(this.platformEngines);
             this.platformFormGroup.setControl('tags', tags_array);
@@ -277,10 +281,10 @@ export class DeviceWizardComponent implements OnInit {
   //FINISH 
 
   sendNewDeviceRequest() {
-
+    this._blocker.start(this.container, "Adding new device...");
     this.wizardService.newDevice(this.platformFormGroup.value, this.deviceFormGroup.value).subscribe(
-      (data) => { console.log(data), this.finishedAction.emit(data) },
-      (err) => { console.log("ERROR, ", err) },
+      (data) => { console.log(data),this._blocker.stop(), this.finishedAction.emit(data)},
+      (err) => { console.log("ERROR, ", err), this._blocker.stop() },
       () => { console.log("DONE") }
     )
 
