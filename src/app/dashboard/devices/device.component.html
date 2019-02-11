@@ -1,6 +1,12 @@
+
+
 <div class="container">
   <app-navbar title="Device Management > {{viewMode | uppercase}}">
   </app-navbar>
+
+
+  
+
 
   <div class="row">
     <br>
@@ -15,6 +21,7 @@
       </button>
     </mat-card>
   </div>
+
   <ng-container [ngSwitch]="viewMode">
     <ng-template ngSwitchCase="list">
       <mat-spinner [mode]="'indeterminate'" *ngIf="!dataSource"></mat-spinner>
@@ -76,6 +83,10 @@
                 <span *ngIf="element.LastState === 'SUCCESS'" style="color:green">{{element.LastState}}</span>
                 <span *ngIf="element.LastState === 'PENDING'" style="color:orange">{{element.LastState}}</span>
                 <span *ngIf="element.LastState === 'FAILURE'" style="color:red">{{element.LastState}}</span>
+                <button mat-icon-button color="primary" (click)="openResultDialog(element)">
+                    <mat-icon>keyboard_arrow_down</mat-icon>
+                </button>
+                  
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="selectedListMode.displayedColumns"></mat-header-row>
@@ -86,7 +97,7 @@
       </ng-container>
     </ng-template>
     <ng-template ngSwitchDefault>
-      <device-wizard (finishedAction)="finishAction()"></device-wizard>
+      <device-wizard (finishedAction)="retrieveAllDeviceList()"></device-wizard>
     </ng-template>
   </ng-container>
 </div>

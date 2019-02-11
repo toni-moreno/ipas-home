@@ -5,6 +5,7 @@ import { DeviceService } from './device.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { DialogListComponent } from '../../shared/dialoglist/dialoglist.component'
 import { ProductService } from '..//products/product.service'
+import { DialogResultComponent } from 'app/shared/dialogresult/dialogresult.component';
 
 @Component({
   selector: 'device-component',
@@ -124,6 +125,17 @@ export class DeviceComponent {
         () => console.log("DONE")
       )
   }
+
+
+  openResultDialog(data): void {
+          let dialogRef = this.dialog.open(DialogResultComponent, {
+            width: '500px',
+            disableClose: true,
+            data: data,
+          });
+  }
+
+
 
 
   removeDevice(element) {
