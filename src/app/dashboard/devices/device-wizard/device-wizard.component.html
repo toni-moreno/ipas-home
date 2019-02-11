@@ -2,7 +2,7 @@
   <!--INIT - stepper-->
   <div class="row">
     <div class="col-md-4">
-      <mat-vertical-stepper [linear]="isLinear" #stepper>
+      <mat-vertical-stepper [linear]='true' #stepper>
         <!--INIT - stepper - firstStep -->
         <mat-step [stepControl]="deviceFormGroup">
           <form [formGroup]="deviceFormGroup">
@@ -11,7 +11,7 @@
               <p>Fill device properties</p>
             </ng-template>
             <mat-form-field>
-              <input matInput placeholder="Device name" formControlName="id" required>
+              <input matInput placeholder="Device name" formControlName="id">
             </mat-form-field>
             <div>
               <button mat-raised-button color="accent" matStepperNext type="button">Next</button>
@@ -19,7 +19,7 @@
           </form>
         </mat-step>
 
-        <mat-step [stepControl]="deviceFormGroup">
+        <mat-step [stepControl]="deviceFormGroup.controls.id">
           <form [formGroup]="deviceFormGroup">
             <ng-template matStepLabel>
               <h4>Product config</h4>
@@ -40,7 +40,7 @@
             </div>
           </form>
         </mat-step>
-        <mat-step>
+        <mat-step [stepControl]="platformFormGroup">
           <ng-template matStepLabel>
             <h4>Finish configuration</h4>
             <p>Finish and submit a new product</p>
@@ -83,7 +83,9 @@
                   <mat-form-field>
                     <mat-select #config_selection placeholder="Available configs" name="config">
                       <mat-option *ngFor="let config of kengine.config; index as iconfig" [value]="iconfig">
-                        {{config.name}}
+                          <span  [matTooltip]="config.description">
+                              {{config.name}}
+                          </span>
                       </mat-option>
                     </mat-select>
                   </mat-form-field>

@@ -94,7 +94,7 @@ export class DeviceWizardComponent implements OnInit {
 
     //Create initial deviceForm Form
     this.deviceFormGroup = this._formBuilder.group({
-      id: '',
+      id: ['',Validators.required] ,
       //productid: "",
     })
 
