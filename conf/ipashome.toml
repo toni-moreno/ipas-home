@@ -93,6 +93,7 @@
 
 [jenkins]
  url   = "http://localhost:8080"
+ public_url = "https://jenkins.mydomain2.org"
  user = "ipas_admin"
  password = "1p4sm0l4"
  timeout = "300s"

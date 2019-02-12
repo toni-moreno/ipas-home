@@ -15,6 +15,8 @@ var (
 	dbc         *config.DatabaseCfg //Needed to get Custom Filter  data
 	downloadDir string
 	jenkins     *gojenkins.Jenkins
+	url         string
+	publicUrl   string
 )
 
 // SetConfDir  enable load File Filters from anywhere in the our FS.
@@ -40,6 +42,8 @@ func SetLogger(l *logrus.Logger) {
 // initJenkins
 func initJenkins(cfg *config.JenkinsConfig) error {
 	log.Debugf("JENKNS CREATE for %+v", cfg)
+	url = cfg.URL
+	publicUrl = cfg.PublicURL
 	client := &http.Client{
 		Timeout: cfg.Timeout,
 	}

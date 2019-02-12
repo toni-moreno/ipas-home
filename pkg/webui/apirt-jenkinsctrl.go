@@ -52,6 +52,7 @@ func JenkinsSendBuild(ctx *Context, cf CommitFileForm) {
 		buf.ReadFrom(file)
 		s := buf.String()
 		log.Debugf("FILE DATA: %s", s)
+		log.Debugf("SEND SUBJECT: %s ACTION: %s", subject, action)
 		err = jenkins.Send(subject, action, f.Filename, buf)
 		if err != nil {
 			log.Warningf("Error on JOB Execution: %s", err)

@@ -101,6 +101,7 @@
 
 [jenkins]
  url   = "http://localhost:8080"
+ public_url = "https://mypublicjenkins.com"
  user = "jenkins_admin"
  password = "jenkins_password"
  timeout = "300s"

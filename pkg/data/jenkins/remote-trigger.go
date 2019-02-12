@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
+	"bitbucket.org/everis_ipas/ipas-home/pkg/data/repo"
 )
 
 type AnsibleInventory struct {
@@ -45,12 +47,17 @@ type DeviceData struct {
 	Engine []EngineConfig `json:"engine"`
 }
 
-type JobData struct {
+type JobDeviceData struct {
 	Platform PlatformData `json:"platform"`
 	Devices  []DeviceData `json:"devices"`
 }
 
-func GetGlobalVarKeysByEngine(data *JobData, engine string) map[string]interface{} {
+type JobProductData struct {
+	Platform PlatformData `json:"platform"`
+	Product  repo.Product `json:"product"`
+}
+
+func GetGlobalVarKeysByEngine(data *JobDeviceData, engine string) map[string]interface{} {
 	switch engine {
 	case "snmpcollector":
 		return map[string]interface{}{
@@ -72,7 +79,7 @@ type JobEngineConfig struct {
 	PRO map[string]interface{} `json:"pro"`
 }
 
-func CreateJobEngineConfig(data *JobData, engine string) *JobEngineConfig {
+func CreateJobEngineConfig(data *JobDeviceData, engine string) *JobEngineConfig {
 	var jecfg JobEngineConfig
 	for _, eng := range data.Platform.Engine {
 		if eng.Name == engine {
@@ -137,7 +144,7 @@ func CreateJobEngineConfig(data *JobData, engine string) *JobEngineConfig {
 	return &jecfg
 }
 
-func CreateAnsibleInventory(data *JobData, engine string) *AnsibleInventory {
+func CreateAnsibleInventory(data *JobDeviceData, engine string) *AnsibleInventory {
 	inv := &AnsibleInventory{}
 	// las variables globales dependeran del producto
 	inv.All.Vars = GetGlobalVarKeysByEngine(data, engine)
@@ -162,7 +169,7 @@ func CreateAnsibleInventory(data *JobData, engine string) *AnsibleInventory {
 	return inv
 }
 
-func SaveConfigFiles(data *JobData, engine string) (string, string) {
+func SaveConfigFiles(data *JobDeviceData, engine string) (string, string) {
 
 	invData := CreateAnsibleInventory(data, engine)
 	jecData := CreateJobEngineConfig(data, engine)
@@ -201,15 +208,130 @@ func SaveConfigFiles(data *JobData, engine string) (string, string) {
 
 func SendDeviceAction(subject string, action string, filename string, content *bytes.Buffer) error {
 	//Unmarshall file into Job Data
-	var jobdt JobData
+	var jobdt JobDeviceData
 
 	if err := json.Unmarshal(content.Bytes(), &jobdt); err != nil {
-		log.Errorf("error on unmarshall JobData %s", err)
+		log.Errorf("error on unmarshall JobDeviceData %s", err)
 		return err
 	}
 	log.Debugf("DATA %#+v", jobdt)
 
 	taskmap := make(map[int64]*config.TaskStatus)
+
+	for _, engine := range jobdt.Platform.Engine {
+
+		id := subject + "_" + action + "_" + engine.Name
+
+		log.Infof("Triggering Jenkins job %s", id)
+
+		job, err := jenkins.GetJob(id)
+		if err != nil {
+			log.Errorf("Error on get Job. Error %s ", err)
+			return err
+		}
+
+		purl, durl := SaveConfigFiles(&jobdt, engine.Name)
+
+		var params = map[string]string{
+			"PLATFORM_CONFIG_URL": purl,
+			"DEVICE_CONFIG_URL":   durl,
+		}
+
+		jid, err := job.InvokeSimple(params)
+		if err != nil {
+			log.Errorf("Some error triggered while invoking job  %s for engine %s Error %s", id, engine.Name, err)
+			continue
+		}
+
+		log.Infof("Invoked job with number %d", jid)
+
+		//waiting for job info
+		for {
+			t, err := jenkins.GetQueueItem(jid)
+			if err != nil {
+				log.Errorf("Some error triggered while invoking queue  %s for engine %s Error %s", id, engine.Name, err)
+				continue
+			}
+			time.Sleep(5 * time.Second)
+			log.Debugf("QUEUE  RAW %#+v", t.Raw)
+			if len(t.Raw.Why) > 0 {
+				log.Infof("Waiting while task in queue:%s", t.Raw.Why)
+				time.Sleep(5 * time.Second)
+			} else {
+				log.Debugf("QUEUE  RAW %#+v", t.Raw)
+				bid := t.Raw.Executable.Number
+
+				purl := t.Raw.Executable.URL
+				if len(publicUrl) > 0 {
+					log.Infof("setting public URL to %s", publicUrl)
+					purl = strings.Replace(t.Raw.Executable.URL, url, publicUrl, -1)
+				}
+
+				taskmap[jid] = &config.TaskStatus{
+					JobName:    id,
+					TaskID:     jid,
+					ExecID:     t.Raw.Executable.Number,
+					IsFinished: false,
+					ExecURL:    purl,
+					Launched:   time.Now(),
+					LastUpdate: time.Now(),
+				}
+				log.Infof("Set Executable  %d : Orig %s | Final %s", bid, t.Raw.Executable.URL, purl)
+				break
+			}
+		}
+
+		//Updating
+
+	}
+
+	for _, d := range jobdt.Devices {
+
+		PfmDevice := config.PlatformDevices{
+			ProductID:       jobdt.Platform.ProductID,
+			DeviceID:        d.ID,
+			PlatformEngines: jobdt.Platform.Engine,
+			LastState:       "PENDING",
+			TaskStat:        taskmap,
+		}
+
+		_, err := dbc.AddOrUpdatePlatformDevices(PfmDevice)
+		if err != nil {
+			log.Errorf("While trying to insert data into PlatformDevices: %+v Error: %s", PfmDevice, err)
+		}
+
+		for _, e := range d.Engine {
+			for _, p := range e.Params {
+				dcParams := config.DeviceConfigParams{
+					ProductID: jobdt.Platform.ProductID,
+					DeviceID:  d.ID,
+					EngineID:  e.Name,
+					Key:       p.Key,
+					Value:     p.Value,
+				}
+				_, err := dbc.AddOrUpdateDeviceConfigParams(dcParams)
+				if err != nil {
+					log.Errorf("While trying to insert data into DeviceConfigParams: %+v Error: %s", dcParams, err)
+				}
+
+			}
+		}
+	}
+
+	return nil
+}
+
+func SendProductAction(subject string, action string, filename string, content *bytes.Buffer) error {
+	//Unmarshall file into Job Data
+	var jobdt JobProductData
+
+	if err := json.Unmarshal(content.Bytes(), &jobdt); err != nil {
+		log.Errorf("error on unmarshall Job Product Data %s", err)
+		return err
+	}
+	log.Debugf("DATA PRODUCT %#+v", jobdt)
+
+	/*taskmap := make(map[int64]*config.TaskStatus)
 
 	for _, engine := range jobdt.Platform.Engine {
 
@@ -270,40 +392,7 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 
 		//Updating
 
-	}
-
-	for _, d := range jobdt.Devices {
-
-		PfmDevice := config.PlatformDevices{
-			ProductID:       jobdt.Platform.ProductID,
-			DeviceID:        d.ID,
-			PlatformEngines: jobdt.Platform.Engine,
-			LastState:       "PENDING",
-			TaskStat:        taskmap,
-		}
-
-		_, err := dbc.AddOrUpdatePlatformDevices(PfmDevice)
-		if err != nil {
-			log.Errorf("While trying to insert data into PlatformDevices: %+v Error: %s", PfmDevice, err)
-		}
-
-		for _, e := range d.Engine {
-			for _, p := range e.Params {
-				dcParams := config.DeviceConfigParams{
-					ProductID: jobdt.Platform.ProductID,
-					DeviceID:  d.ID,
-					EngineID:  e.Name,
-					Key:       p.Key,
-					Value:     p.Value,
-				}
-				_, err := dbc.AddOrUpdateDeviceConfigParams(dcParams)
-				if err != nil {
-					log.Errorf("While trying to insert data into DeviceConfigParams: %+v Error: %s", dcParams, err)
-				}
-
-			}
-		}
-	}
+	}*/
 
 	return nil
 }
@@ -314,7 +403,7 @@ func Send(subject string, action string, filename string, content *bytes.Buffer)
 	case "device":
 		return SendDeviceAction(subject, action, filename, content)
 	case "product":
-		log.Warning("There is not product jobs ,yet")
+		return SendProductAction(subject, action, filename, content)
 	case "engine":
 		log.Warning("There is not engine jobs, yet")
 	default:

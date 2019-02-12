@@ -117,6 +117,8 @@ func init() {
 		log.Errorf("Fatal error config file: %s \n", err)
 		os.Exit(1)
 	}
+	log.Infof("CONFIG : %+v", &agent.MainConfig)
+
 	cfg := &agent.MainConfig
 
 	if len(cfg.General.LogDir) > 0 {
