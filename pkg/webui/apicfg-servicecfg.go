@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 
 	"io/ioutil"
 	"net/http"
@@ -231,26 +232,38 @@ func PingServiceCfg(ctx *Context) {
 	}
 	var outputarray []*ServiceStatus
 
-	for _, s := range cfgarray {
-		log.Infof("trying to ping Service  %s : %+v", s.ID, s)
-		elapsed, message, err := PingHTTP(s, log, true)
-		var ss *ServiceStatus
-		if err != nil {
-			ss = &ServiceStatus{
-				Cfg:            s,
-				ServiceStat:    message,
-				ServiceElapsed: elapsed,
-				ServiceError:   err.Error(),
-			}
-		} else {
-			ss = &ServiceStatus{
-				Cfg:            s,
-				ServiceStat:    message,
-				ServiceElapsed: elapsed,
-			}
-		}
+	var wg sync.WaitGroup
+	wg.Add(len(cfgarray))
 
-		outputarray = append(outputarray, ss)
+	retServStat := make(chan *ServiceStatus, len(cfgarray))
+
+	for _, s := range cfgarray {
+		go func(s *config.ServiceCfg) {
+			defer wg.Done()
+			log.Infof("trying to ping Service  %s : %+v", s.ID, s)
+			elapsed, message, err := PingHTTP(s, log, true)
+			var ss *ServiceStatus
+			if err != nil {
+				ss = &ServiceStatus{
+					Cfg:            s,
+					ServiceStat:    message,
+					ServiceElapsed: elapsed,
+					ServiceError:   err.Error(),
+				}
+			} else {
+				ss = &ServiceStatus{
+					Cfg:            s,
+					ServiceStat:    message,
+					ServiceElapsed: elapsed,
+				}
+			}
+			retServStat <- ss
+		}(s)
+
+		wg.Wait()
+		for ss := range retServStat {
+			outputarray = append(outputarray, ss)
+		}
 	}
 	ctx.JSON(200, outputarray)
 }
