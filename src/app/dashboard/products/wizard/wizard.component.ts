@@ -295,7 +295,7 @@ export class WizardComponent implements OnInit {
       this.stepInfo.productData = this.productFormGroup.value
     }
     console.log(this.stepInfo.productData)
-    this.wizardService.uploadFiles('http://localhost:4200/api/rt/gitrepo/commitfile', this.stepInfo.productData, this.fileArray, this.stepInfo.step)
+    this.wizardService.uploadFiles('/api/rt/gitrepo/commitfile', this.stepInfo.productData, this.fileArray, this.stepInfo.step)
       .subscribe(
         data => {
           console.log(data),

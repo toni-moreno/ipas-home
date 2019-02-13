@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ViewContainerRef, } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource, MatSidenav } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { DeviceService } from './device.service';
@@ -6,15 +6,18 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { DialogListComponent } from '../../shared/dialoglist/dialoglist.component'
 import { ProductService } from '..//products/product.service'
 import { DialogResultComponent } from 'app/shared/dialogresult/dialogresult.component';
+import { BlockUIService } from '../../shared/blockui/blockui-service';
+
 
 @Component({
   selector: 'device-component',
   styleUrls: ['device.component.css'],
   templateUrl: 'device.component.html',
-  providers: [DeviceService, ProductService],
+  providers: [DeviceService, ProductService, BlockUIService],
 })
 export class DeviceComponent {
 
+  @ViewChild('blocker', { read: ViewContainerRef }) container: ViewContainerRef;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSidenav) left: MatSidenav;
@@ -36,7 +39,7 @@ export class DeviceComponent {
   }
 
 
-  constructor(public deviceService: DeviceService, public productService: ProductService, public dialog: MatDialog) {
+  constructor(public deviceService: DeviceService, public productService: ProductService, public dialog: MatDialog, public _blocker: BlockUIService) {
     //Default, show all devices:
     this.selectedListMode = this.listMode[0];
 
@@ -164,10 +167,11 @@ export class DeviceComponent {
     let t = confirm("Are you sure you  want to remove  product " + element.ProductID + " from  " + element.DeviceID + "?")
     if (t === true) {
       console.log("removing element", element)
+      this._blocker.start(this.container, "Removing device...");
       this.deviceService.removeDevice(this.mydata)
         .subscribe(
-          (data) => console.log(data),
-          (err) => console.log(err),
+          (data) => {console.log(data), this._blocker.stop(), this.retrieveAllDeviceList()},
+          (err) => {console.log(err), this._blocker.stop(), this.retrieveAllDeviceList()},
           () => console.log("DONE")
         )
     }
