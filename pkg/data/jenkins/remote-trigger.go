@@ -301,16 +301,23 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 		}
 
 		for _, e := range d.Engine {
+
 			for _, p := range e.Params {
+				jsvalue, err := json.Marshal(p.Value)
+				if err != nil {
+					log.Errorf("Error on marshalling parameter value %d : value  [ %+v ]: ERROR %s", p.Key, p.Value, err)
+					continue
+				}
 				dcParams := config.DeviceConfigParams{
 					ProductID: jobdt.Platform.ProductID,
 					DeviceID:  d.ID,
 					EngineID:  e.Name,
 					Key:       p.Key,
-					Value:     p.Value,
+					//Value:     p.Value,
+					Value: string(jsvalue),
 				}
-				_, err := dbc.AddOrUpdateDeviceConfigParams(dcParams)
-				if err != nil {
+				_, err2 := dbc.AddOrUpdateDeviceConfigParams(dcParams)
+				if err2 != nil {
 					log.Errorf("While trying to insert data into DeviceConfigParams: %+v Error: %s", dcParams, err)
 				}
 
