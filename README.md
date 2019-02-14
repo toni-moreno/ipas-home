@@ -2,6 +2,34 @@
 
 Main HOME page for administration of the IPAS platform
 
+## What exactly means IPAS?
+
+ I: Infraestructure
+ P: Performance
+ A: Analitics
+ S: System
+
+ Is a set of tools to help IT related companies on Gather , Store , Visualize and analize metris from its infraestructure.
+ 
+ IPAS-home is the main Web-UI to manage all our components.
+
+ As a components we can use
+
+ | Component | Type | URL |
+ |-----------|------|-----|
+ | Gitea     | Git Repo |
+ | Jenkins   | Flow execution Tool ||
+ | InfluxDB  | Metric Storate | |
+ | Telegraf  | Metric Gather tool 
+ | SnmpCollector | Metric Gather tool | | 
+ | DomainHealth  | Metric Gather Tool | | 
+ | CellHealth | Metric Gather Tool | | 
+ | Grafana | Metric Visualization Tool |
+ | Kapacitor | Metric Analisis tool| |
+ | Resistor | Frontend for Kapacitor  | |
+
+
+
 If you wish to compile from source code you can follow the next steps
 
 ## Run from master
@@ -15,9 +43,9 @@ If you want to build a package yourself, or contribute. Here is a guide for how 
 ### Get Code
 
 ```bash
-mkdir -p $GOPATH/src/bitbucket.org/everis_ipas/ipas-home
-cd $GOPATH/src/bitbucket.org/everis_ipas/ipas-home
-git clone https://ipasdevel@bitbucket.org/everis_ipas/ipas-home.git
+mkdir -p $GOPATH/src/github.com/toni-moreno/ipas-home
+cd $GOPATH/src/github.com/toni-moreno/ipas-home
+git clone https://github.com/toni-moreno/ipas-home.git
 export PATH=$PATH:$GOPATH/bin/
 ```
 

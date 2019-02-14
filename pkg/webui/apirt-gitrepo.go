@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"mime/multipart"
 
-	"bitbucket.org/everis_ipas/ipas-home/pkg/data/repo"
+	"github.com/toni-moreno/ipas-home/pkg/data/repo"
 	"github.com/go-macaron/binding"
 
 	//	"time"

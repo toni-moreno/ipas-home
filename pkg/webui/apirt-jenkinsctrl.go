@@ -6,7 +6,7 @@ import (
 
 	"bytes"
 
-	"bitbucket.org/everis_ipas/ipas-home/pkg/data/jenkins"
+	"github.com/toni-moreno/ipas-home/pkg/data/jenkins"
 	"github.com/go-macaron/binding"
 
 	//	"time"

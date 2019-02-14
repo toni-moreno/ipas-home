@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
-	"bitbucket.org/everis_ipas/ipas-home/pkg/data/repo"
+	"github.com/toni-moreno/ipas-home/pkg/config"
+	"github.com/toni-moreno/ipas-home/pkg/data/repo"
 )
 
 type AnsibleInventory struct {

@@ -13,14 +13,14 @@ import (
 	"strconv"
 	"time"
 
-	"bitbucket.org/everis_ipas/ipas-home/pkg/agent"
-	"bitbucket.org/everis_ipas/ipas-home/pkg/agent/output"
-	"bitbucket.org/everis_ipas/ipas-home/pkg/agent/selfmon"
-	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
-	"bitbucket.org/everis_ipas/ipas-home/pkg/data/impexp"
-	"bitbucket.org/everis_ipas/ipas-home/pkg/data/jenkins"
-	"bitbucket.org/everis_ipas/ipas-home/pkg/data/repo"
-	"bitbucket.org/everis_ipas/ipas-home/pkg/webui"
+	"github.com/toni-moreno/ipas-home/pkg/agent"
+	"github.com/toni-moreno/ipas-home/pkg/agent/output"
+	"github.com/toni-moreno/ipas-home/pkg/agent/selfmon"
+	"github.com/toni-moreno/ipas-home/pkg/config"
+	"github.com/toni-moreno/ipas-home/pkg/data/impexp"
+	"github.com/toni-moreno/ipas-home/pkg/data/jenkins"
+	"github.com/toni-moreno/ipas-home/pkg/data/repo"
+	"github.com/toni-moreno/ipas-home/pkg/webui"
 )
 
 var (

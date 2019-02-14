@@ -3,7 +3,7 @@ package jenkins
 import (
 	"time"
 
-	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
+	"github.com/toni-moreno/ipas-home/pkg/config"
 )
 
 func updateTaskFromID(task *config.TaskStatus) error {

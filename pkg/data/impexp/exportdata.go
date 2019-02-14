@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"bitbucket.org/everis_ipas/ipas-home/pkg/agent"
-	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
+	"github.com/toni-moreno/ipas-home/pkg/agent"
+	"github.com/toni-moreno/ipas-home/pkg/config"
 	"github.com/Sirupsen/logrus"
 )
 

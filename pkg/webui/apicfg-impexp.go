@@ -7,7 +7,7 @@ import (
 	"mime/multipart"
 	"os"
 
-	"bitbucket.org/everis_ipas/ipas-home/pkg/data/impexp"
+	"github.com/toni-moreno/ipas-home/pkg/data/impexp"
 	"github.com/go-macaron/binding"
 	macaron "gopkg.in/macaron.v1"
 )

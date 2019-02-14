@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"bitbucket.org/everis_ipas/ipas-home/pkg/agent"
+	"github.com/toni-moreno/ipas-home/pkg/agent"
 	//	"time"
 	macaron "gopkg.in/macaron.v1"
 )

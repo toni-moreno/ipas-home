@@ -262,7 +262,7 @@ func createFpmPackage(options linuxPackageOptions) {
 		"--description", "An HTTP Alert WebHook filter for the InfluxData/Kapacitor system ",
 		"-C", packageRoot,
 		"--vendor", "ipashome",
-		"--url", "https://bitbucket.org/everis_ipas/ipas-home",
+		"--url", "https://github.com/toni-moreno/ipas-home",
 		"--license", "",
 		"--maintainer", "toni.moreno@gmail.com",
 		"--config-files", options.configFilePath,
@@ -366,9 +366,9 @@ func build(pkg string, tags []string, flags []string) {
 func ldflags(flags []string) string {
 	var b bytes.Buffer
 	b.WriteString("-w")
-	b.WriteString(fmt.Sprintf(" -X bitbucket.org/everis_ipas/ipas-home/src/master/pkg/agent.Version=%s", version))
-	b.WriteString(fmt.Sprintf(" -X bitbucket.org/everis_ipas/ipas-home/src/master/pkg/agent.Commit=%s", getGitSha()))
-	b.WriteString(fmt.Sprintf(" -X bitbucket.org/everis_ipas/ipas-home/src/master/pkg/agent.BuildStamp=%d", buildStamp()))
+	b.WriteString(fmt.Sprintf(" -X github.com/toni-moreno/ipas-home/src/master/pkg/agent.Version=%s", version))
+	b.WriteString(fmt.Sprintf(" -X github.com/toni-moreno/ipas-home/src/master/pkg/agent.Commit=%s", getGitSha()))
+	b.WriteString(fmt.Sprintf(" -X github.com/toni-moreno/ipas-home/src/master/pkg/agent.BuildStamp=%d", buildStamp()))
 	for _, f := range flags {
 		b.WriteString(fmt.Sprintf(" %s", f))
 	}

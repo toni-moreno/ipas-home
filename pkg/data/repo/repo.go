@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
+	"github.com/toni-moreno/ipas-home/pkg/config"
 	"github.com/Sirupsen/logrus"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"

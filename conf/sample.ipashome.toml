@@ -89,7 +89,7 @@
 ############################
 
 [productrepo]
- clonesource   = "https://ipasdevel:1p4sm0l4@bitbucket.org/everis_ipas/ipas-gva.git"
+ clonesource   = "https://someuser:somepassword@github.com/mycompany/metric_products.git"
  clonepath = "/tmp/clone"
  workonbranch = "workhome"
  name="ipas-home"

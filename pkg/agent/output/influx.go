@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"bitbucket.org/everis_ipas/ipas-home/pkg/config"
-	"bitbucket.org/everis_ipas/ipas-home/pkg/data/utils"
+	"github.com/toni-moreno/ipas-home/pkg/config"
+	"github.com/toni-moreno/ipas-home/pkg/data/utils"
 	"github.com/Sirupsen/logrus"
 	client "github.com/influxdata/influxdb/client/v2"
 )
