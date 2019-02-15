@@ -106,3 +106,4 @@
  password = "jenkins_password"
  timeout = "300s"
  updatefreq = "1m"
+ email_notif = "ipas-home@ipas.org"

@@ -62,6 +62,7 @@ type JenkinsConfig struct {
 	Password   string        `mapstructure:"password"`
 	Timeout    time.Duration `mapstructure:"timeout"`
 	UpdateFreq time.Duration `mapstructure:"updatefreq"`
+	EmailNotif string        `mapstructure:"email_notif"`
 }
 
 // Config All resitor configuration

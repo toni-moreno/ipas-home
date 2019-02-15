@@ -4,9 +4,9 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/toni-moreno/ipas-home/pkg/config"
 	"github.com/Sirupsen/logrus"
 	"github.com/bndr/gojenkins"
+	"github.com/toni-moreno/ipas-home/pkg/config"
 )
 
 var (
@@ -17,6 +17,7 @@ var (
 	jenkins     *gojenkins.Jenkins
 	url         string
 	publicUrl   string
+	emailNotif  string
 )
 
 // SetConfDir  enable load File Filters from anywhere in the our FS.
@@ -43,6 +44,7 @@ func SetLogger(l *logrus.Logger) {
 func initJenkins(cfg *config.JenkinsConfig) error {
 	log.Debugf("JENKNS CREATE for %+v", cfg)
 	url = cfg.URL
+	emailNotif = cfg.EmailNotif
 	publicUrl = cfg.PublicURL
 	client := &http.Client{
 		Timeout: cfg.Timeout,

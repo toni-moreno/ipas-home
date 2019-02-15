@@ -235,6 +235,7 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 		var params = map[string]string{
 			"PLATFORM_CONFIG_URL": purl,
 			"DEVICE_CONFIG_URL":   durl,
+			"EMAIL_NOTIFICATION":  emailNotif,
 		}
 
 		jid, err := job.InvokeSimple(params)
