@@ -20,6 +20,7 @@ import (
 	"github.com/toni-moreno/ipas-home/pkg/data/impexp"
 	"github.com/toni-moreno/ipas-home/pkg/data/jenkins"
 	"github.com/toni-moreno/ipas-home/pkg/data/repo"
+	"github.com/toni-moreno/ipas-home/pkg/login"
 	"github.com/toni-moreno/ipas-home/pkg/webui"
 )
 
@@ -118,6 +119,11 @@ func init() {
 		os.Exit(1)
 	}
 	log.Infof("CONFIG : %+v", &agent.MainConfig)
+	if agent.MainConfig.AuthLDAP.Enabled {
+		for _, ldapcfg := range agent.MainConfig.AuthLDAP.Servers {
+			log.Infof("LDAP CONFIG : %+v", ldapcfg)
+		}
+	}
 
 	cfg := &agent.MainConfig
 
@@ -158,6 +164,8 @@ func init() {
 	output.SetLogger(log)
 	selfmon.SetLogger(log)
 
+	login.SetLogger(log)
+
 	webui.SetLogger(log)
 	webui.SetLogDir(logDir)
 	webui.SetConfDir(confDir)
@@ -192,7 +200,8 @@ func main() {
 
 	agent.LoadConf()
 
-	//agent.DeviceProcessStart()
+	login.SetSuperAdminCred(agent.MainConfig.HTTP.AdminUser, agent.MainConfig.HTTP.AdminPassword)
+	login.SetAuthLdap(&agent.MainConfig.AuthLDAP)
 
 	webui.WebServer(filepath.Join(homeDir, "public"), httpPort, &agent.MainConfig.HTTP, agent.MainConfig.General.InstanceID)
 

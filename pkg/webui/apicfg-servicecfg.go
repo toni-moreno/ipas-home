@@ -12,10 +12,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/toni-moreno/ipas-home/pkg/agent"
-	"github.com/toni-moreno/ipas-home/pkg/config"
 	"github.com/Sirupsen/logrus"
 	"github.com/go-macaron/binding"
+	"github.com/toni-moreno/ipas-home/pkg/agent"
+	"github.com/toni-moreno/ipas-home/pkg/config"
+	"github.com/toni-moreno/ipas-home/pkg/login"
 	"gopkg.in/macaron.v1"
 )
 
@@ -25,14 +26,14 @@ func NewAPICfgService(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/services", func() {
-		m.Get("/", reqSignedIn, GetServiceCfg)
-		m.Post("/", reqSignedIn, bind(config.ServiceCfg{}), AddServiceCfg)
-		m.Put("/:id", reqSignedIn, bind(config.ServiceCfg{}), UpdateServiceCfg)
-		m.Delete("/:id", reqSignedIn, DeleteServiceCfg)
-		m.Get("/:id", reqSignedIn, GetServiceCfgByID)
-		m.Get("/checkondel/:id", reqSignedIn, GetServiceCfgAffectOnDel)
-		m.Get("/ping/", reqSignedIn, PingServiceCfg)
-		m.Get("/ping/:id", reqSignedIn, PingServiceCfgByID)
+		m.Get("/", login.ReqSignedIn, GetServiceCfg)
+		m.Post("/", login.ReqSignedIn, bind(config.ServiceCfg{}), AddServiceCfg)
+		m.Put("/:id", login.ReqSignedIn, bind(config.ServiceCfg{}), UpdateServiceCfg)
+		m.Delete("/:id", login.ReqSignedIn, DeleteServiceCfg)
+		m.Get("/:id", login.ReqSignedIn, GetServiceCfgByID)
+		m.Get("/checkondel/:id", login.ReqSignedIn, GetServiceCfgAffectOnDel)
+		m.Get("/ping/", login.ReqSignedIn, PingServiceCfg)
+		m.Get("/ping/:id", login.ReqSignedIn, PingServiceCfgByID)
 	})
 
 	return nil

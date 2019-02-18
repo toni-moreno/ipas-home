@@ -1,4 +1,4 @@
-package webui
+package login
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ func accessForbidden(ctx *Context) {
 	//c.Redirect("/login")
 }
 
-var reqSignedIn = func(ctx *Context) {
+var ReqSignedIn = func(ctx *Context) {
 	if !ctx.IsSignedIn {
 		accessForbidden(ctx)
 		log.Infof("CONTEXT %+v", ctx)

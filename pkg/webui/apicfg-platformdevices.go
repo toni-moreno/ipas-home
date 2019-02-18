@@ -1,9 +1,10 @@
 package webui
 
 import (
+	"github.com/go-macaron/binding"
 	"github.com/toni-moreno/ipas-home/pkg/agent"
 	"github.com/toni-moreno/ipas-home/pkg/config"
-	"github.com/go-macaron/binding"
+	"github.com/toni-moreno/ipas-home/pkg/login"
 	"gopkg.in/macaron.v1"
 )
 
@@ -13,13 +14,13 @@ func NewAPICfgPlatformDevices(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/platformdevices", func() {
-		m.Get("/", reqSignedIn, GetPlatformDevices)
-		m.Get("/byproduct/:productid", reqSignedIn, GetPlatformDevicesByProduct)
-		m.Post("/", reqSignedIn, bind(config.PlatformDevices{}), AddPlatformDevices)
-		m.Put("/", reqSignedIn, bind(config.PlatformDevices{}), UpdatePlatformDevices)
-		m.Delete("/:productid/:deviceid", reqSignedIn, DeletePlatformDevices)
-		m.Get("/:productid/:deviceid", reqSignedIn, GetPlatformDevicesByID)
-		m.Get("/checkondel/:id", reqSignedIn, GetPlatformDevicesAffectOnDel)
+		m.Get("/", login.ReqSignedIn, GetPlatformDevices)
+		m.Get("/byproduct/:productid", login.ReqSignedIn, GetPlatformDevicesByProduct)
+		m.Post("/", login.ReqSignedIn, bind(config.PlatformDevices{}), AddPlatformDevices)
+		m.Put("/", login.ReqSignedIn, bind(config.PlatformDevices{}), UpdatePlatformDevices)
+		m.Delete("/:productid/:deviceid", login.ReqSignedIn, DeletePlatformDevices)
+		m.Get("/:productid/:deviceid", login.ReqSignedIn, GetPlatformDevicesByID)
+		m.Get("/checkondel/:id", login.ReqSignedIn, GetPlatformDevicesAffectOnDel)
 	})
 
 	return nil

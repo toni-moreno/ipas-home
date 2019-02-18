@@ -1,4 +1,4 @@
-package webui
+package login
 
 import (
 	"math/rand"

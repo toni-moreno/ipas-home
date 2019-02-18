@@ -7,8 +7,9 @@ import (
 	"mime/multipart"
 	"os"
 
-	"github.com/toni-moreno/ipas-home/pkg/data/impexp"
 	"github.com/go-macaron/binding"
+	"github.com/toni-moreno/ipas-home/pkg/data/impexp"
+	"github.com/toni-moreno/ipas-home/pkg/login"
 	macaron "gopkg.in/macaron.v1"
 )
 
@@ -25,16 +26,16 @@ func NewAPICfgImportExport(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/export", func() {
-		m.Get("/:objtype/:id", reqSignedIn, ExportObject)
-		m.Post("/:objtype/:id", reqSignedIn, bind(impexp.ExportInfo{}), ExportObjectToFile)
+		m.Get("/:objtype/:id", login.ReqSignedIn, ExportObject)
+		m.Post("/:objtype/:id", login.ReqSignedIn, bind(impexp.ExportInfo{}), ExportObjectToFile)
 	})
 
 	m.Group("/api/cfg/bulkexport", func() {
-		m.Post("/", reqSignedIn, binding.Json(impexp.ExportData{}), BulkExportObjectToFile)
+		m.Post("/", login.ReqSignedIn, binding.Json(impexp.ExportData{}), BulkExportObjectToFile)
 	})
 
 	m.Group("/api/cfg/import", func() {
-		m.Post("/", reqSignedIn, binding.MultipartForm(UploadForm{}), ImportDataFile)
+		m.Post("/", login.ReqSignedIn, binding.MultipartForm(UploadForm{}), ImportDataFile)
 	})
 	return nil
 }

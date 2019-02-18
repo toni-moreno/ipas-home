@@ -3,10 +3,11 @@ package webui
 import (
 	"time"
 
+	"github.com/go-macaron/binding"
 	"github.com/toni-moreno/ipas-home/pkg/agent"
 	"github.com/toni-moreno/ipas-home/pkg/agent/output"
 	"github.com/toni-moreno/ipas-home/pkg/config"
-	"github.com/go-macaron/binding"
+	"github.com/toni-moreno/ipas-home/pkg/login"
 	"gopkg.in/macaron.v1"
 )
 
@@ -16,13 +17,13 @@ func NewAPICfgInfluxServer(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/influxservers", func() {
-		m.Get("/", reqSignedIn, GetInfluxServer)
-		m.Post("/", reqSignedIn, bind(config.InfluxCfg{}), AddInfluxServer)
-		m.Put("/:id", reqSignedIn, bind(config.InfluxCfg{}), UpdateInfluxServer)
-		m.Delete("/:id", reqSignedIn, DeleteInfluxServer)
-		m.Get("/:id", reqSignedIn, GetInfluxServerByID)
-		m.Get("/checkondel/:id", reqSignedIn, GetInfluxAffectOnDel)
-		m.Post("/ping/", reqSignedIn, bind(config.InfluxCfg{}), PingInfluxServer)
+		m.Get("/", login.ReqSignedIn, GetInfluxServer)
+		m.Post("/", login.ReqSignedIn, bind(config.InfluxCfg{}), AddInfluxServer)
+		m.Put("/:id", login.ReqSignedIn, bind(config.InfluxCfg{}), UpdateInfluxServer)
+		m.Delete("/:id", login.ReqSignedIn, DeleteInfluxServer)
+		m.Get("/:id", login.ReqSignedIn, GetInfluxServerByID)
+		m.Get("/checkondel/:id", login.ReqSignedIn, GetInfluxAffectOnDel)
+		m.Post("/ping/", login.ReqSignedIn, bind(config.InfluxCfg{}), PingInfluxServer)
 	})
 
 	return nil

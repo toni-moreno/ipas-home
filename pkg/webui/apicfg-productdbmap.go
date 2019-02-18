@@ -1,9 +1,10 @@
 package webui
 
 import (
+	"github.com/go-macaron/binding"
 	"github.com/toni-moreno/ipas-home/pkg/agent"
 	"github.com/toni-moreno/ipas-home/pkg/config"
-	"github.com/go-macaron/binding"
+	"github.com/toni-moreno/ipas-home/pkg/login"
 	"gopkg.in/macaron.v1"
 )
 
@@ -13,12 +14,12 @@ func NewAPICfgProductDBMap(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/productdbmap", func() {
-		m.Get("/", reqSignedIn, GetProductDBMap)
-		m.Post("/", reqSignedIn, bind(config.ProductDBMap{}), AddProductDBMap)
+		m.Get("/", login.ReqSignedIn, GetProductDBMap)
+		m.Post("/", login.ReqSignedIn, bind(config.ProductDBMap{}), AddProductDBMap)
 		m.Put("/:id", bind(config.ProductDBMap{}), UpdateProductDBMap)
-		m.Delete("/:id", reqSignedIn, DeleteProductDBMap)
-		m.Get("/:id", reqSignedIn, GetProductDBMapByID)
-		m.Get("/checkondel/:id", reqSignedIn, GetProductDBMapAffectOnDel)
+		m.Delete("/:id", login.ReqSignedIn, DeleteProductDBMap)
+		m.Get("/:id", login.ReqSignedIn, GetProductDBMapByID)
+		m.Get("/checkondel/:id", login.ReqSignedIn, GetProductDBMapAffectOnDel)
 	})
 
 	return nil

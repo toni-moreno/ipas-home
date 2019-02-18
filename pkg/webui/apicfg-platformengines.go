@@ -1,9 +1,10 @@
 package webui
 
 import (
+	"github.com/go-macaron/binding"
 	"github.com/toni-moreno/ipas-home/pkg/agent"
 	"github.com/toni-moreno/ipas-home/pkg/config"
-	"github.com/go-macaron/binding"
+	"github.com/toni-moreno/ipas-home/pkg/login"
 	"gopkg.in/macaron.v1"
 )
 
@@ -13,12 +14,12 @@ func NewAPICfgPlatformEngines(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/platformengines", func() {
-		m.Get("/", reqSignedIn, GetPlatformEngines)
-		m.Post("/", reqSignedIn, bind(config.PlatformEngines{}), AddPlatformEngines)
-		m.Put("/:id", reqSignedIn, bind(config.PlatformEngines{}), UpdatePlatformEngines)
-		m.Delete("/:id", reqSignedIn, DeletePlatformEngines)
-		m.Get("/:id", reqSignedIn, GetPlatformEnginesByID)
-		m.Get("/checkondel/:id", reqSignedIn, GetPlatformEnginesAffectOnDel)
+		m.Get("/", login.ReqSignedIn, GetPlatformEngines)
+		m.Post("/", login.ReqSignedIn, bind(config.PlatformEngines{}), AddPlatformEngines)
+		m.Put("/:id", login.ReqSignedIn, bind(config.PlatformEngines{}), UpdatePlatformEngines)
+		m.Delete("/:id", login.ReqSignedIn, DeletePlatformEngines)
+		m.Get("/:id", login.ReqSignedIn, GetPlatformEnginesByID)
+		m.Get("/checkondel/:id", login.ReqSignedIn, GetPlatformEnginesAffectOnDel)
 	})
 
 	return nil

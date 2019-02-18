@@ -8,8 +8,9 @@ import (
 	"fmt"
 	"mime/multipart"
 
-	"github.com/toni-moreno/ipas-home/pkg/data/repo"
 	"github.com/go-macaron/binding"
+	"github.com/toni-moreno/ipas-home/pkg/data/repo"
+	"github.com/toni-moreno/ipas-home/pkg/login"
 
 	//	"time"
 	macaron "gopkg.in/macaron.v1"
@@ -27,9 +28,9 @@ func NewAPIRtGitRepo(m *macaron.Macaron) error {
 	//	bind := binding.Bind
 
 	m.Group("/api/rt/gitrepo", func() {
-		m.Get("/product/", reqSignedIn, GitRepoGetProducts)
-		m.Get("/product/:id", reqSignedIn, GitRepoGetProductByID)
-		m.Post("/commitfile", reqSignedIn, binding.MultipartForm(CommitFileForm{}), GitRepoCommitFile)
+		m.Get("/product/", login.ReqSignedIn, GitRepoGetProducts)
+		m.Get("/product/:id", login.ReqSignedIn, GitRepoGetProductByID)
+		m.Post("/commitfile", login.ReqSignedIn, binding.MultipartForm(CommitFileForm{}), GitRepoCommitFile)
 	})
 
 	return nil

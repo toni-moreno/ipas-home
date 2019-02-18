@@ -12,8 +12,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/toni-moreno/ipas-home/pkg/config"
 	"github.com/Sirupsen/logrus"
+	"github.com/toni-moreno/ipas-home/pkg/config"
+	"github.com/toni-moreno/ipas-home/pkg/login"
 )
 
 var (
@@ -42,12 +43,6 @@ func SetConfDir(dir string) {
 // SetLogger set output log
 func SetLogger(l *logrus.Logger) {
 	log = l
-}
-
-//UserLogin for login purposes
-type UserLogin struct {
-	UserName string `form:"username" binding:"Required"`
-	Password string `form:"password" binding:"Required"`
 }
 
 var cookie string
@@ -81,7 +76,7 @@ func WebServer(publicPath string, httpPort int, cfg *config.HTTPConfig, id strin
 	m.Use(macaron.Recovery())
 	m.Use(toolbox.Toolboxer(m))
 	// register middleware
-	m.Use(GetContextHandler())
+	m.Use(login.GetContextHandler())
 	//	m.Use(gzip.Gziper())
 	log.Infof("setting HTML Static Path to %s", publicPath)
 	m.Use(macaron.Static(publicPath,
@@ -107,7 +102,7 @@ func WebServer(publicPath string, httpPort int, cfg *config.HTTPConfig, id strin
 		cookie = fmt.Sprintf("%x", currentsum)
 	}
 
-	m.Use(Sessioner(session.Options{
+	m.Use(login.Sessioner(session.Options{
 		// Name of provider. Default is "memory".
 		Provider: "memory",
 		// Provider configuration, it's corresponding to provider.
@@ -173,7 +168,7 @@ func WebServer(publicPath string, httpPort int, cfg *config.HTTPConfig, id strin
 			Section: "cache",
 		}))*/
 
-	m.Post("/login", bind(UserLogin{}), myLoginHandler)
+	m.Post("/login", bind(login.UserLogin{}), myLoginHandler)
 	m.Post("/logout", myLogoutHandler)
 
 	NewAPIRtAgent(m)
@@ -200,18 +195,15 @@ func WebServer(publicPath string, httpPort int, cfg *config.HTTPConfig, id strin
 /*LOGIN
 /****************/
 
-func myLoginHandler(ctx *Context, user UserLogin) {
-	//fmt.Printf("USER LOGIN: USER: +%#v (Config: %#v)", user, confHTTP)
-	if user.UserName == confHTTP.AdminUser && user.Password == confHTTP.AdminPassword {
-		ctx.SignedInUser = user.UserName
-		ctx.IsSignedIn = true
-		ctx.Session.Set(SessKeyUserID, user.UserName)
-		log.Println("Admin login OK")
-		ctx.JSON(200, cookie)
-	} else {
-		log.Println("Admin login ERROR")
-		ctx.JSON(400, "ERROR user or password not match")
+type Context = login.Context
+
+func myLoginHandler(ctx *Context, user login.UserLogin) {
+
+	err := login.AuthenticateUser(ctx, user)
+	if err != nil {
+		ctx.JSON(400, err.Error())
 	}
+	ctx.JSON(200, cookie)
 }
 
 func myLogoutHandler(ctx *Context) {

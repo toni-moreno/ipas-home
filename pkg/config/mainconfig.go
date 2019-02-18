@@ -65,14 +65,67 @@ type JenkinsConfig struct {
 	EmailNotif string        `mapstructure:"email_notif"`
 }
 
+type LdapConfig struct {
+	Enabled     bool              `mapstructure:"enabled"`
+	AllowSignUp bool              `mapstructure:"allow_sign_up"`
+	Servers     []*LdapServerConf `mapstructure:"servers"`
+}
+
+type LdapServerConf struct {
+	Host          string           `mapstructure:"host"`
+	Port          int              `mapstructure:"port"`
+	UseSSL        bool             `mapstructure:"use_ssl"`
+	StartTLS      bool             `mapstructure:"start_tls"`
+	SkipVerifySSL bool             `mapstructure:"ssl_skip_verify"`
+	RootCACert    string           `mapstructure:"root_ca_cert"`
+	ClientCert    string           `mapstructure:"client_cert"`
+	ClientKey     string           `mapstructure:"client_key"`
+	BindDN        string           `mapstructure:"bind_dn"`
+	BindPassword  string           `mapstructure:"bind_password"`
+	Attr          LdapAttributeMap `mapstructure:"attributes"`
+
+	SearchFilter  string   `mapstructure:"search_filter"`
+	SearchBaseDNs []string `mapstructure:"search_base_dns"`
+
+	GroupSearchFilter              string   `mapstructure:"group_search_filter"`
+	GroupSearchFilterUserAttribute string   `mapstructure:"group_search_filter_user_attribute"`
+	GroupSearchBaseDNs             []string `mapstructure:"group_search_base_dns"`
+
+	LdapGroups []*LdapGroupToOrgRole `mapstructure:"group_mappings"`
+}
+
+type LdapAttributeMap struct {
+	Username string `mapstructure:"username"`
+	Name     string `mapstructure:"name"`
+	Surname  string `mapstructure:"surname"`
+	Email    string `mapstructure:"email"`
+	MemberOf string `mapstructure:"member_of"`
+}
+
+type RoleType string
+
+const (
+	ROLE_VIEWER RoleType = "Viewer"
+	ROLE_EDITOR RoleType = "Editor"
+	ROLE_ADMIN  RoleType = "Admin"
+)
+
+type LdapGroupToOrgRole struct {
+	GroupDN      string   `mapstructure:"group_dn"`
+	OrgId        int64    `mapstructure:"org_id"`
+	IsSuperAdmin *bool    `mapstructure:"super_admin"` // This is a pointer to know if it was set or not (for backwards compatibility)
+	OrgRole      RoleType `mapstructure:"org_role"`
+}
+
 // Config All resitor configuration
 type Config struct {
-	General     GeneralConfig
-	Database    DatabaseCfg
-	Selfmon     SelfMonConfig
-	HTTP        HTTPConfig
-	ProductRepo GitRepo
-	Jenkins     JenkinsConfig
+	General     GeneralConfig `mapstructure:"general"`
+	Database    DatabaseCfg   `mapstructure:"database"`
+	Selfmon     SelfMonConfig `mapstructure:"selfmon"`
+	HTTP        HTTPConfig    `mapstructure:"http"`
+	ProductRepo GitRepo       `mapstructure:"productrepo"`
+	Jenkins     JenkinsConfig `mapstructure:"jenkins"`
+	AuthLDAP    LdapConfig    `mapstructure:"auth_ldap"`
 }
 
 //var MainConfig Config

@@ -1,9 +1,10 @@
 package webui
 
 import (
+	"github.com/go-macaron/binding"
 	"github.com/toni-moreno/ipas-home/pkg/agent"
 	"github.com/toni-moreno/ipas-home/pkg/config"
-	"github.com/go-macaron/binding"
+	"github.com/toni-moreno/ipas-home/pkg/login"
 	"gopkg.in/macaron.v1"
 )
 
@@ -13,14 +14,14 @@ func NewAPICfgDeviceConfigParams(m *macaron.Macaron) error {
 	bind := binding.Bind
 
 	m.Group("/api/cfg/deviceconfigparams", func() {
-		m.Get("/", reqSignedIn, GetDeviceConfigParams)
-		m.Get("/byproduct/:productid", reqSignedIn, GetDeviceConfigParamsByProduct)
-		m.Get("/bydevice/:productid/:deviceid", reqSignedIn, GetDeviceConfigParamsByDevice)
-		m.Post("/", reqSignedIn, bind(config.DeviceConfigParams{}), AddDeviceConfigParams)
-		m.Put("/", reqSignedIn, bind(config.DeviceConfigParams{}), UpdateDeviceConfigParams)
-		m.Delete("/:productid/:deviceid/:engineid/:key", reqSignedIn, DeleteDeviceConfigParams)
-		m.Get("/:productid/:deviceid/:engineid/:key", reqSignedIn, GetDeviceConfigParamsByID)
-		m.Get("/checkondel/:id", reqSignedIn, GetDeviceConfigParamsAffectOnDel)
+		m.Get("/", login.ReqSignedIn, GetDeviceConfigParams)
+		m.Get("/byproduct/:productid", login.ReqSignedIn, GetDeviceConfigParamsByProduct)
+		m.Get("/bydevice/:productid/:deviceid", login.ReqSignedIn, GetDeviceConfigParamsByDevice)
+		m.Post("/", login.ReqSignedIn, bind(config.DeviceConfigParams{}), AddDeviceConfigParams)
+		m.Put("/", login.ReqSignedIn, bind(config.DeviceConfigParams{}), UpdateDeviceConfigParams)
+		m.Delete("/:productid/:deviceid/:engineid/:key", login.ReqSignedIn, DeleteDeviceConfigParams)
+		m.Get("/:productid/:deviceid/:engineid/:key", login.ReqSignedIn, GetDeviceConfigParamsByID)
+		m.Get("/checkondel/:id", login.ReqSignedIn, GetDeviceConfigParamsAffectOnDel)
 	})
 
 	return nil

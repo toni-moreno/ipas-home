@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/toni-moreno/ipas-home/pkg/agent"
+	"github.com/toni-moreno/ipas-home/pkg/login"
 	//	"time"
 	macaron "gopkg.in/macaron.v1"
 )
@@ -16,9 +17,9 @@ func NewAPIRtAgent(m *macaron.Macaron) error {
 	//	bind := binding.Bind
 
 	m.Group("/api/rt/agent", func() {
-		m.Get("/info/version/", reqSignedIn, RTGetVersion)
-		m.Get("/reload/", reqSignedIn, AgentReloadConf)
-		m.Get("/download/:id" /*, reqSignedIn*/, AgentDownloadFile)
+		m.Get("/info/version/", login.ReqSignedIn, RTGetVersion)
+		m.Get("/reload/", login.ReqSignedIn, AgentReloadConf)
+		m.Get("/download/:id" /*, login.ReqSignedIn*/, AgentDownloadFile)
 	})
 
 	return nil
