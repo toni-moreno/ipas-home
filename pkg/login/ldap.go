@@ -48,6 +48,7 @@ func (a *ldapAuther) Dial() error {
 		for _, caCertFile := range strings.Split(a.server.RootCACert, " ") {
 			pem, err := ioutil.ReadFile(caCertFile)
 			if err != nil {
+				log.Debugf("Error On Read Cerfificate: %s", err)
 				return err
 			}
 			if !certPool.AppendCertsFromPEM(pem) {
@@ -59,6 +60,7 @@ func (a *ldapAuther) Dial() error {
 	if a.server.ClientCert != "" && a.server.ClientKey != "" {
 		clientCert, err = tls.LoadX509KeyPair(a.server.ClientCert, a.server.ClientKey)
 		if err != nil {
+			log.Debugf("LDAP DIAL ERR: %s", err)
 			return err
 		}
 	}
@@ -97,18 +99,21 @@ func (a *ldapAuther) Dial() error {
 func (a *ldapAuther) Login(ctx *Context, user UserLogin) (*ExternalUserInfo, error) {
 	// connect to ldap server
 	if err := a.Dial(); err != nil {
+		log.Errorf("Error on Dialing LDAP Server %#+v, ERROR %s", a.server, err)
 		return nil, err
 	}
 	defer a.conn.Close()
 
 	// perform initial authentication
 	if err := a.initialBind(user.UserName, user.Password); err != nil {
+		log.Errorf("Error on Initial Bind %s", err)
 		return nil, err
 	}
 
 	// find user entry & attributes
 	ldapUser, err := a.searchForUser(user.UserName)
 	if err != nil {
+		log.Errorf("Error on Search For user %s", err)
 		return nil, err
 	}
 
@@ -118,6 +123,7 @@ func (a *ldapAuther) Login(ctx *Context, user UserLogin) (*ExternalUserInfo, err
 	if a.requireSecondBind {
 		err = a.secondBind(ldapUser, user.Password)
 		if err != nil {
+			log.Errorf("Error on  Second Bind %s", err)
 			return nil, err
 		}
 	}

@@ -63,16 +63,23 @@ func loginUsingLdap(ctx *Context, user UserLogin) (bool, error) {
 	for _, server := range confLDAP.Servers {
 		author := NewLdapAuthenticator(server)
 		euser, err := author.Login(ctx, user)
-		if err == nil || err != ErrInvalidCredentials {
-			log.Infof("LDAP USER: %s Log in OK", euser.Login)
-			ctx.SignedInUser = euser.Login
-			ctx.IsSignedIn = true
-			ctx.Session.Set(SessKeyUserID, euser.Login)
-			log.Debugf("LDAP USER: %s", spew.Sdump(euser))
-			return true, err
+		if err != nil {
+			log.Warnf("LDAP USER: %s Log ERROR : %s", user.UserName, err)
+			return false, err
 		}
-	}
+		if euser == nil {
+			log.Warnf("LDAN USER: %s UnkNown ERROR", user.UserName)
+			return false, errors.New("Unknown Error")
+		}
 
+		log.Infof("LDAP USER: %s  Log in  as %s OK", user.UserName, euser.Login)
+		ctx.SignedInUser = euser.Login
+		ctx.IsSignedIn = true
+		ctx.Session.Set(SessKeyUserID, euser.Login)
+		log.Debugf("LDAP USER: %s", spew.Sdump(euser))
+		return true, err
+	}
+	log.Warnf("LDAP USER: %s Log nof found in any LDAP server ", user.UserName)
 	return true, ErrInvalidCredentials
 }
 
