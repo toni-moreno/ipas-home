@@ -277,7 +277,7 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 					Launched:   time.Now(),
 					LastUpdate: time.Now(),
 				}
-				log.Infof("Set Executable  %d : Orig %s | Final %s", bid, t.Raw.Executable.URL, purl)
+				log.Infof("Set Executable  %d : URL Orig %s | URL  Final %s", bid, t.Raw.Executable.URL, purl)
 				break
 			}
 		}
