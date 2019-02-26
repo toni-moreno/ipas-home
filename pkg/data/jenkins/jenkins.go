@@ -14,7 +14,7 @@ var (
 	confDir     string              //Needed to get File Filters data
 	dbc         *config.DatabaseCfg //Needed to get Custom Filter  data
 	downloadDir string
-	jenkins     *gojenkins.Jenkins
+	jnks        *gojenkins.Jenkins
 	url         string
 	publicUrl   string
 	emailNotif  string
@@ -58,8 +58,8 @@ func initJenkins(cfg *config.JenkinsConfig) error {
 		log.Errorf("Something Went Wrong when trying to initialize Jenkins URL %s, User: %s, Password %s: Error: %s", cfg.URL, cfg.User, cfg.Password, err)
 		return err
 	}
-	jenkins = j
-	log.Infof("JENKINS CREATE OK : %#+v", jenkins)
+	jnks = j
+	log.Infof("JENKINS CREATE OK : %#+v", jnks)
 	return nil
 }
 

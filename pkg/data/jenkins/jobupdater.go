@@ -9,12 +9,13 @@ import (
 func updateTaskFromID(task *config.TaskStatus) error {
 	//waiting for job info
 
-	b, err := jenkins.GetBuild(task.JobName, task.ExecID)
+	b, err := jnks.GetBuild(task.JobName, task.ExecID)
 	if err != nil {
 		log.Errorf("Some error triggered while invoking build  %s -#%d Error %s", task.JobName, task.ExecID, err)
+		log.Debugf("JENKINS OBJECT: #+v", jnks)
 		return err
 	}
-	//log.Debugf("BUILD : %+v", b.Raw.Building)
+	log.Debugf("BUILD : %+v", b.Raw.Building)
 	if b.Raw.Building {
 		task.IsFinished = false
 	} else {

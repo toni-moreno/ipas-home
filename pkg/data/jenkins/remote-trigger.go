@@ -224,7 +224,7 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 
 		log.Infof("Triggering Jenkins job %s", id)
 
-		job, err := jenkins.GetJob(id)
+		job, err := jnks.GetJob(id)
 		if err != nil {
 			log.Errorf("Error on get Job. Error %s ", err)
 			return err
@@ -248,7 +248,7 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 
 		//waiting for job info
 		for {
-			t, err := jenkins.GetQueueItem(jid)
+			t, err := jnks.GetQueueItem(jid)
 			if err != nil {
 				log.Errorf("Some error triggered while invoking queue  %s for engine %s Error %s", id, engine.Name, err)
 				continue
@@ -347,7 +347,7 @@ func SendProductAction(subject string, action string, filename string, content *
 
 		log.Infof("Triggering Jenkins job %s", id)
 
-		job, err := jenkins.GetJob(id)
+		job, err := jnks.GetJob(id)
 		if err != nil {
 			log.Errorf("Error on get Job. Error %s ", err)
 			return err
@@ -370,7 +370,7 @@ func SendProductAction(subject string, action string, filename string, content *
 
 		//waiting for job info
 		for {
-			t, err := jenkins.GetQueueItem(jid)
+			t, err := jnks.GetQueueItem(jid)
 			if err != nil {
 				log.Errorf("Some error triggered while invoking queue  %s for engine %s Error %s", id, engine.Name, err)
 				continue
