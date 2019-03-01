@@ -125,9 +125,11 @@ values
 
 delete from service_cfg where id='InfluxDBPRO';
 insert into service_cfg 
-  (id,label,description,header_icon,linear_color,foot_content,footer_icon,link,status_mode,status_url,status_content_type,status_validation_mode,status_validation_value)
+  (id,adm_user,adm_passwd,label,description,header_icon,linear_color,foot_content,footer_icon,link,status_mode,status_url,status_content_type,status_validation_mode,status_validation_value)
 values
   ('InfluxDBPRO',                      --id
+   'ipas_admin',              --adm_user
+   '1p4sm0l4',           --adm_passwd
    'InfluxDB',                        --label
    'InfluxDB server',     --description
    'data_usage"',                        --header_icon

@@ -12,6 +12,16 @@ values
    'SnmpCollectorPRO',           --pre_svc_id
    'SnmpCollectorPRO');          --pro_svc_id
 
+delete from platform_engines where id='TELEGRAF';
+insert into platform_engines 
+  (id,engineid,lab_svc_id,tst_svc_id,pre_svc_id,pro_svc_id)
+values
+  ('TELEGRAF',                     --id
+   'telegraf',               --engineid
+   'InfluxDBPRO',           --lab_svc_id
+   'InfluxDBPRO',           --tst_svc_id
+   'InfluxDBPRO',           --pre_svc_id
+   'InfluxDBPRO');          --pro_svc_id
 
 delete from platform_engines where id='WAN';
 insert into platform_engines 

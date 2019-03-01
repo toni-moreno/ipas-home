@@ -57,19 +57,32 @@ type JobProductData struct {
 	Product  repo.Product `json:"product"`
 }
 
-func GetGlobalVarKeysByEngine(data *JobDeviceData, engine string) map[string]interface{} {
+func GetGlobalVarKeysByEngine(data *JobDeviceData, engine string, svc config.ServiceCfg) map[string]interface{} {
 	switch engine {
 	case "snmpcollector":
 		return map[string]interface{}{
-			"snmpcollector_user":   "admin",
-			"snmpcollector_pass":   "admin",
-			"snmpcollector_server": "http://snmpcollector:8090",
+			"snmpcollector_user":   svc.AdmUser,
+			"snmpcollector_pass":   svc.AdmPasswd,
+			"snmpcollector_server": svc.Link,
 			"product_name":         data.Platform.ProductID,
+		}
+	case "telegraf":
+		return map[string]interface{}{
+			"influx_rw_user":    svc.AdmUser,
+			"influx_rw_passwd":  svc.AdmPasswd,
+			"influx_server_url": svc.Link,
+			"product_name":      data.Platform.ProductID,
 		}
 	default:
 		log.Warnf("There is no global keys definitions for engine %s", engine)
 	}
 	return nil
+}
+
+func GetGlobalVarKeys(data *JobDeviceData, engine string) map[string]interface{} {
+	return map[string]interface{}{
+		"product_name": data.Platform.ProductID,
+	}
 }
 
 type JobEngineConfig struct {
@@ -88,24 +101,17 @@ func CreateJobEngineConfig(data *JobDeviceData, engine string) *JobEngineConfig 
 			if len(labQid) > 0 {
 				svc, err := dbc.GetServiceCfgByID(labQid)
 				if err == nil {
-					jecfg.Lab = GetGlobalVarKeysByEngine(data, engine)
-					jecfg.Lab["snmpcollector_user"] = svc.AdmUser
-					jecfg.Lab["snmpcollector_pass"] = svc.AdmPasswd
-					jecfg.Lab["snmpcollector_server"] = svc.Link
+					jecfg.Lab = GetGlobalVarKeysByEngine(data, engine, svc)
 				} else {
 					log.Errorf("Error on get Service %s", err)
 				}
-
 			}
 			//TST
 			tstQid := eng.Platform.TstSvcID
 			if len(tstQid) > 0 {
 				svc, err := dbc.GetServiceCfgByID(tstQid)
 				if err == nil {
-					jecfg.TST = GetGlobalVarKeysByEngine(data, engine)
-					jecfg.TST["snmpcollector_user"] = svc.AdmUser
-					jecfg.TST["snmpcollector_pass"] = svc.AdmPasswd
-					jecfg.TST["snmpcollector_server"] = svc.Link
+					jecfg.TST = GetGlobalVarKeysByEngine(data, engine, svc)
 				} else {
 					log.Errorf("Error on get Service %s", err)
 				}
@@ -115,28 +121,20 @@ func CreateJobEngineConfig(data *JobDeviceData, engine string) *JobEngineConfig 
 			if len(preQid) > 0 {
 				svc, err := dbc.GetServiceCfgByID(preQid)
 				if err == nil {
-					jecfg.PRE = GetGlobalVarKeysByEngine(data, engine)
-					jecfg.PRE["snmpcollector_user"] = svc.AdmUser
-					jecfg.PRE["snmpcollector_pass"] = svc.AdmPasswd
-					jecfg.PRE["snmpcollector_server"] = svc.Link
+					jecfg.PRE = GetGlobalVarKeysByEngine(data, engine, svc)
 				} else {
 					log.Errorf("Error on get Service %s", err)
 				}
 			}
-
+			//PRO
 			proQid := eng.Platform.ProSvcID
-
 			if len(proQid) > 0 {
 				svc, err := dbc.GetServiceCfgByID(proQid)
 				if err == nil {
-					jecfg.PRO = GetGlobalVarKeysByEngine(data, engine)
-					jecfg.PRO["snmpcollector_user"] = svc.AdmUser
-					jecfg.PRO["snmpcollector_pass"] = svc.AdmPasswd
-					jecfg.PRO["snmpcollector_server"] = svc.Link
+					jecfg.PRO = GetGlobalVarKeysByEngine(data, engine, svc)
 				} else {
 					log.Errorf("Error on get Service %s", err)
 				}
-
 			}
 		}
 	}
@@ -147,8 +145,8 @@ func CreateJobEngineConfig(data *JobDeviceData, engine string) *JobEngineConfig 
 func CreateAnsibleInventory(data *JobDeviceData, engine string) *AnsibleInventory {
 	inv := &AnsibleInventory{}
 	// las variables globales dependeran del producto
-	inv.All.Vars = GetGlobalVarKeysByEngine(data, engine)
-	// host parámeters are
+	inv.All.Vars = GetGlobalVarKeys(data, engine)
+	// host parameters are
 	inv.All.Hosts = make(map[string]map[string]interface{})
 	for _, dev := range data.Devices {
 		for _, eng := range dev.Engine {
@@ -224,18 +222,18 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 
 		log.Infof("Triggering Jenkins job %s", id)
 
-		job, err := jnks.GetJob(id)
-		if err != nil {
-			log.Errorf("Error on get Job. Error %s ", err)
-			return err
-		}
-
 		purl, durl := SaveConfigFiles(&jobdt, engine.Name)
 
 		var params = map[string]string{
 			"PLATFORM_CONFIG_URL": purl,
 			"DEVICE_CONFIG_URL":   durl,
 			"EMAIL_NOTIFICATION":  emailNotif,
+		}
+
+		job, err := jnks.GetJob(id)
+		if err != nil {
+			log.Errorf("Error on get Job. Error %s ", err)
+			return err
 		}
 
 		jid, err := job.InvokeSimple(params)

@@ -403,7 +403,7 @@ values
   ('linux',
    'linux_metrics',
    'l_tag1,l_tag2,l_tag3',
-   '["LAN"]',
+   '["TELEGRAF"]',
    '["GRAFANA"]',
    '["RESISTOR"]');
 delete from influx_cfg where id='msiss_metrics';
@@ -646,7 +646,7 @@ values
   ('windows',
    'win_metrics',
    'w_tag1.w_tag2,w_tag3',
-   '["LAN"]',
+   '["TELEGRAF"]',
    '["GRAFANA"]',
    '["RESISTOR"]');
 delete from influx_cfg where id='wls_metrics';
