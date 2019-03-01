@@ -23,27 +23,36 @@ export class DeviceWizardService {
     newDevice(platform: any, device: any): any {
 
         //Generate EXTRATAGS:
-        console.log("DEVICEE", device);
         let dev = JSON.parse(JSON.stringify(device))
         let pTags = [];
         if (platform.tags.length > 0) {
             pTags = platform.tags.map((element) => { return element.key + '=' + element.value })
         }
-        let ie = dev.engine.findIndex((engine) => engine.name === 'snmpcollector')
-        let iparam = dev.engine[ie].params.findIndex((param) => param.key === 'DEVICE_EXTRATAG_VALUES')
-        if (dev.engine[ie].params[iparam].value != '' && dev.engine[ie].params[iparam].value != null) {
-          dev.engine[ie].params[iparam].value = dev.engine[ie].params[iparam].value.split(',').concat(pTags)
-        } else {
-          dev.engine[ie].params[iparam].value = pTags;
-        }
-
-        //Make an split for each "array" type
-
-        dev.engine[ie].params.forEach(element => {
+        for (let ie in dev.engine) {
+          //Check for dev engine:
+          let iparam = null;
+          switch(dev.engine[ie].name) {
+            case 'snmpcollector':
+              iparam = dev.engine[ie].params.findIndex((param) => param.key === 'DEVICE_EXTRATAG_VALUES')
+            break;
+            case 'telegraf':
+              iparam = dev.engine[ie].params.findIndex((param) => param.key === 'DEVICE_GLOBAL_TAGS')
+            break;
+          }
+          if (iparam != null) {
+            if (dev.engine[ie].params[iparam].value != '' && dev.engine[ie].params[iparam].value != null) {
+              dev.engine[ie].params[iparam].value = dev.engine[ie].params[iparam].value.split(',').concat(pTags)
+            } else {
+              dev.engine[ie].params[iparam].value = pTags;
+            }
+          }
+          //Make an split for each "array" type
+          dev.engine[ie].params.forEach(element => {
             if (element.type === "array" && element.value !== null && element.value !== 'null' && !Array.isArray(element.value)) {
                 element.value = element.value.split(',')
             }
-        });
+          });
+        }
 
         //Prepare structure to be sent:
         let finalForm = { 'platform': platform, 'devices': [dev] }
@@ -58,7 +67,6 @@ export class DeviceWizardService {
         return this.httpAPI.postFile('/api/rt/jenkins/build/device/add', formData)
         .map((responseData) => { console.log(responseData); return responseData.json() }
         )
-
     }
 
     getPlatformEngines(url: string) {

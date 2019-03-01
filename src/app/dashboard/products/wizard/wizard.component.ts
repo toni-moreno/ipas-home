@@ -274,7 +274,7 @@ export class WizardComponent implements OnInit {
       myArray = EngineSNMPParams
     } else {
       this.allowCustomParams = true;
-      return new FormControl([]);
+      return new FormArray([]);
     }
     console.log(myArray);
     for (let i of myArray[sel_params]) {

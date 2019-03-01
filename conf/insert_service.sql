@@ -134,7 +134,7 @@ values
    '#0BB5FF',                        --linear_color
    '',   --foot_content
    'public',                         --footer_icon
-   '',   --link
+   'http://influxdb.mydomain2.org:8086',   --link
    'GET',                            --status_mode
    'http://localhost:8086/ping', --status_url
    '',                           --status_content_type

@@ -219,29 +219,37 @@ export class DeviceWizardComponent implements OnInit {
     //Set config name:
     this.deviceFormGroup.controls.engine.controls[iengine].controls.config.setValue(configname)
     //Load params:
-    this.deviceFormGroup.controls.engine.controls[iengine].addControl('params', this.createParamsFromEngine(params))
+    this.deviceFormGroup.controls.engine.controls[iengine].addControl('params', params ?  this.createParamsFromEngine(params) : null)
   }
 
   //Creates the specific param section in order to play with params (maybe a product can not have device params)
   createParamsFromEngine(params: any): AbstractControl {
     let test = new FormArray([])
     console.log("PARAMS LOADED: ", params);
-    for (let i of params['product_params']) {
-      let p = this._formBuilder.group({})
-      for (let k in i) {
-        p.addControl(k, new FormControl(i[k]))
+    //ensure it exists
+    if (params['product_params']) {
+      for (let i of params['product_params']) {
+        let p = this._formBuilder.group({})
+        for (let k in i) {
+          p.addControl(k, new FormControl(i[k]))
+        }
+        p['param_disabled'] = true;
+        test.push(p);
       }
-      p['param_disabled'] = true;
-      test.push(p);
     }
-    for (let i of params['platform_params']) {
-      let p = this._formBuilder.group({})
-      for (let k in i) {
-        p.addControl(k, new FormControl(i[k]))
+    //ensure it exists
+    if (params['platform_params']) {
+      for (let i of params['platform_params']) {
+        let p = this._formBuilder.group({})
+        for (let k in i) {
+          p.addControl(k, new FormControl(i[k]))
+        }
+        p['param_disabled'] = true;
+        test.push(p);
       }
-      p['param_disabled'] = true;
-      test.push(p);
     }
+    //ensure it exists
+    if (params['device_params']) {
     for (let i of params['device_params']) {
       let p = this._formBuilder.group({})
       for (let k in i) {
@@ -250,6 +258,7 @@ export class DeviceWizardComponent implements OnInit {
       p['param_disabled'] = false;
       test.push(p);
     }
+  }
 
     return test
   }
