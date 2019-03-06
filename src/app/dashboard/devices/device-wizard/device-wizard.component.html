@@ -5,7 +5,7 @@
     <div class="col-md-4">
       <mat-vertical-stepper [linear]='true' #stepper>
         <!--INIT - stepper - firstStep -->
-        <mat-step [stepControl]="deviceFormGroup">
+        <mat-step [stepControl]="deviceFormGroup.controls.id">
           <form [formGroup]="deviceFormGroup">
             <ng-template matStepLabel>
               <h4>Device properties</h4>
@@ -20,7 +20,7 @@
           </form>
         </mat-step>
 
-        <mat-step [stepControl]="deviceFormGroup.controls.id">
+        <mat-step [stepControl]="platformFormGroup.controls.engine">
           <form [formGroup]="deviceFormGroup">
             <ng-template matStepLabel>
               <h4>Product config</h4>
@@ -41,7 +41,7 @@
             </div>
           </form>
         </mat-step>
-        <mat-step [stepControl]="platformFormGroup">
+        <mat-step [stepControl]="platformFormGroup.controls.engine">
           <ng-template matStepLabel>
             <h4>Finish configuration</h4>
             <p>Finish and submit a new product</p>
@@ -90,7 +90,7 @@
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <button mat-mini-fab color="primary" [disabled]="config_selection.value == null" (click)="loadEngineConfigParams(iengine, kengine.config[config_selection.value].name,kengine.config[config_selection.value].params)">
+                  <button mat-mini-fab color="primary" [disabled]="config_selection.value == null" (click)="loadEngineConfigParams(iengine, kengine.config[config_selection.value].name,kengine.config[config_selection.value].params,kengine.engine)">
                     <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
                   </button>
                   <div formArrayName='engine'>
@@ -106,7 +106,7 @@
                                 <div class="col-md-6">
                                   <ng-container *ngIf="single_param.value.type === 'boolean'">
                                     <mat-form-field [color]="'accent'" appearance="outline" style="padding-right: 30px !important;  display: block;">
-                                      <mat-label>{{this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key}}
+                                      <mat-label>{{this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.label ? this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.label : this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key}}
                                       </mat-label>
                                       <mat-select formControlName="value">
                                         <mat-option *ngFor="let bool_param of bool_params" [value]="bool_param">
@@ -118,9 +118,10 @@
                                   </ng-container>
                                   <ng-container *ngIf="single_param.value.type !== 'boolean'">
                                     <mat-form-field [color]="'accent'" appearance="outline" style="padding-right: 30px !important;  display: block;">
-                                      <mat-label>{{this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key}}
+                                      <mat-label>{{this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.label ? this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.label : this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key}}
                                       </mat-label>
-                                      <input matInput [type]="single_param.value.type === 'integer' ? 'number' : 'text'" formControlName="value">
+                                      <input matInput *ngIf="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key === 'DEVICE_ID'" [value]="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key === 'DEVICE_ID' ? this.deviceFormGroup.controls.id.value : ''" readonly formControlName="value">
+                                      <input matInput *ngIf="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key !== 'DEVICE_ID'" [type]="single_param.value.type === 'integer' ? 'number' : 'text'" formControlName="value">
                                       <mat-icon style="font-size: 16px" matSuffix mat-mini-fab color='primary' [matTooltip]="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.description">help</mat-icon>
                                     </mat-form-field>
                                   </ng-container>

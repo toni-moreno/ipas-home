@@ -36,10 +36,10 @@ export class DeviceWizardService {
               iparam = dev.engine[ie].params.findIndex((param) => param.key === 'DEVICE_EXTRATAG_VALUES')
             break;
             case 'telegraf':
-              iparam = dev.engine[ie].params.findIndex((param) => param.key === 'DEVICE_GLOBAL_TAGS')
+              iparam = dev.engine[ie].params.findIndex((param) => param.key === 'global_tags')
             break;
           }
-          if (iparam != null) {
+          if (iparam != null || iparam < 0) {
             if (dev.engine[ie].params[iparam].value != '' && dev.engine[ie].params[iparam].value != null) {
               dev.engine[ie].params[iparam].value = dev.engine[ie].params[iparam].value.split(',').concat(pTags)
             } else {
