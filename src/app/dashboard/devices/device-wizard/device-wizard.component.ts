@@ -8,33 +8,6 @@ import { MatTableDataSource, MatTabGroup } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { BlockUIService } from '../../../shared/blockui/blockui-service';
 
-
-export const mySuperServices = [
-  {
-    ID: 'snmpcollector-WAN',
-    Description: 'my Service 1',
-    Service: 'snmpcollector'
-  },
-  {
-    ID: 'snmpcollector-SAN',
-    Description: 'my Service 1',
-    Service: 'san'
-  },
-  {
-    ID: 'snmpcollector-SAN',
-    Description: 'my Service 1',
-    Service: 'snmpcollector'
-  }
-]
-
-export const mySuperMap: any = {
-
-  id: 'a10',
-  database: 'snmp_metrics',
-  tags: 'tag1,tag2,tag3,tag4',
-}
-
-
 @Component({
   selector: 'device-wizard',
   templateUrl: './device-wizard.component.html',
@@ -50,9 +23,9 @@ export class DeviceWizardComponent implements OnInit {
   @Output() public finishedAction: EventEmitter<any> = new EventEmitter();
 
   selection = new SelectionModel<Element>(false, []);
-  isLinear: boolean = false;
-  allowCustomParams: boolean = false;
-  showDebug: boolean = false
+  isLinear = false;
+  allowCustomParams = false;
+  showDebug = false
   deviceFormGroup: any;
   platformFormGroup: any;
   product_info: any = null;
@@ -60,6 +33,7 @@ export class DeviceWizardComponent implements OnInit {
   mapDBInfo: any = null;
   dbMapList: any = null;
   platformEngines: any;
+  allPlatformEngines: any;
   gEngines: any;
 
   //Section 1:
@@ -90,7 +64,7 @@ export class DeviceWizardComponent implements OnInit {
     //Retrive all Platform Engines:
     this.wizardService.getPlatformEngines('/api/cfg/platformengines')
       .subscribe(
-        (data) => { this.platformEngines = data; console.log(this.platformEngines) },
+        (data) => { this.allPlatformEngines = data; console.log(this.allPlatformEngines) },
         (err) => console.log(err),
         () => console.log("DONE")
       )
@@ -102,9 +76,10 @@ export class DeviceWizardComponent implements OnInit {
     })
 
     this.platformFormGroup = this._formBuilder.group({
-      productid: "",
+      productid: ['', Validators.required],
       engine: new FormArray([])
     })
+
   }
 
   /* *****************/
@@ -134,9 +109,9 @@ export class DeviceWizardComponent implements OnInit {
 
       //ProductID:
       this.selectedProduct = product;
-      this.platformFormGroup.setControl('productid', new FormControl(product))
+      this.platformFormGroup.setControl('productid', new FormControl(product), Validators.required)
       //Engines:
-      this.deviceFormGroup.setControl('engine', this.loadEngineConfig(engines))
+      this.deviceFormGroup.setControl('engine', this.loadEngineConfig(engines), Validators.required)
 
 
       this.productService.getPlatformEngines('/api/cfg/productdbmap/' + product)
@@ -152,16 +127,17 @@ export class DeviceWizardComponent implements OnInit {
             }
             //Filter as available services only the assigned with the product. Maybe should retrieve data from it?
             if (data['GEngines']) {
-              this.platformEngines = this.platformEngines.filter(element => {
-              for (let g of  data['GEngines']) {
-                if (g === element.ID) { 
-                  console.log(g, element.ID)
-                  return element
+              this.platformEngines = [];
+              for (let el of this.allPlatformEngines) {
+                for (let g of  data['GEngines']) {
+                  console.log("G",g);
+                  if (g === el.ID) {
+                    console.log(g, el.ID)
+                    this.platformEngines.push(el);
+                  }
                 }
               }
-            });
             }
-            //console.log(_lodash.filter(this.platformEngines, {'ID': data['GEngines']}))
             console.log(this.platformEngines);
             this.platformFormGroup.setControl('tags', tags_array);
           },
@@ -193,7 +169,6 @@ export class DeviceWizardComponent implements OnInit {
     //engine is retrieved by event.tab.textLabel
 
     //Need double filter --> First retrieve the ID available for platforms....
-
     this.filteredServices = new MatTableDataSource(this.platformEngines.filter((element) =>  event.tab.textLabel === element.EngineID))
   }
 
@@ -202,7 +177,7 @@ export class DeviceWizardComponent implements OnInit {
     for (let ieng in engines) {
       let engineConfig = this._formBuilder.group({})
       engineConfig.addControl('name', new FormControl(engines[ieng]))
-      engineConfig.addControl('config', new FormControl(''));
+      engineConfig.addControl('config', new FormControl(""));
       engine.push(engineConfig)
     }
     return engine;
@@ -215,16 +190,16 @@ export class DeviceWizardComponent implements OnInit {
     return p;
   }
 
-  loadEngineConfigParams(iengine: number, configname: string, params: any) {
+  loadEngineConfigParams(iengine: number, configname: string, params: any, enginename: string) {
     //Set config name:
     this.deviceFormGroup.controls.engine.controls[iengine].controls.config.setValue(configname)
     //Load params:
-    this.deviceFormGroup.controls.engine.controls[iengine].addControl('params', params ?  this.createParamsFromEngine(params) : null)
+    this.deviceFormGroup.controls.engine.controls[iengine].addControl('params', params ?  this.createParamsFromEngine(params,enginename) : null)
   }
 
   //Creates the specific param section in order to play with params (maybe a product can not have device params)
-  createParamsFromEngine(params: any): AbstractControl {
-    let test = new FormArray([])
+  createParamsFromEngine(params: any, enginename: string): AbstractControl {
+    let pArray : FormArray = new FormArray([])
     console.log("PARAMS LOADED: ", params);
     //ensure it exists
     if (params['product_params']) {
@@ -234,7 +209,7 @@ export class DeviceWizardComponent implements OnInit {
           p.addControl(k, new FormControl(i[k]))
         }
         p['param_disabled'] = true;
-        test.push(p);
+        pArray.push(p);
       }
     }
     //ensure it exists
@@ -245,22 +220,22 @@ export class DeviceWizardComponent implements OnInit {
           p.addControl(k, new FormControl(i[k]))
         }
         p['param_disabled'] = true;
-        test.push(p);
+        pArray.push(p);
       }
     }
     //ensure it exists
     if (params['device_params']) {
     for (let i of params['device_params']) {
-      let p = this._formBuilder.group({})
+      let p : FormGroup = this._formBuilder.group({})
       for (let k in i) {
         p.addControl(k, new FormControl(i[k]))
       }
       p['param_disabled'] = false;
-      test.push(p);
+      pArray.push(p);
     }
   }
 
-    return test
+    return pArray;
   }
 
 
