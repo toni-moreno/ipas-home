@@ -67,10 +67,16 @@ func GetGlobalVarKeysByEngine(data *JobDeviceData, engine string, svc config.Ser
 			"product_name":         data.Platform.ProductID,
 		}
 	case "telegraf":
+		dbmap, err := dbc.GetProductDBMapByID(data.Platform.ProductID)
+		if err != nil {
+			log.Warnf("There is no database MAP defined for Product: %s ERR: %s", data.Platform.ProductID, err)
+			return nil
+		}
 		return map[string]interface{}{
 			"influx_rw_user":    svc.AdmUser,
 			"influx_rw_passwd":  svc.AdmPasswd,
 			"influx_server_url": svc.Link,
+			"influx_database":   dbmap.Database,
 			"product_name":      data.Platform.ProductID,
 		}
 	default:
