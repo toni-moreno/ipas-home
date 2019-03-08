@@ -267,9 +267,9 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 				bid := t.Raw.Executable.Number
 
 				purl := t.Raw.Executable.URL
-				if len(publicUrl) > 0 {
-					log.Infof("setting public URL to %s", publicUrl)
-					purl = strings.Replace(t.Raw.Executable.URL, url, publicUrl, -1)
+				if len(publicURL) > 0 {
+					log.Infof("setting public URL to %s", publicURL)
+					purl = strings.Replace(t.Raw.Executable.URL, url, publicURL, -1)
 				}
 
 				taskmap[jid] = &config.TaskStatus{
@@ -310,7 +310,7 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 			for _, p := range e.Params {
 				jsvalue, err := json.Marshal(p.Value)
 				if err != nil {
-					log.Errorf("Error on marshalling parameter value %d : value  [ %+v ]: ERROR %s", p.Key, p.Value, err)
+					log.Errorf("Error on marshalling parameter value %s : value  [ %+v ]: ERROR %s", p.Key, p.Value, err)
 					continue
 				}
 				dcParams := config.DeviceConfigParams{

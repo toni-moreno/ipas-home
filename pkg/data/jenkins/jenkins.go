@@ -16,7 +16,7 @@ var (
 	downloadDir string
 	jnks        *gojenkins.Jenkins
 	url         string
-	publicUrl   string
+	publicURL   string
 	emailNotif  string
 )
 
@@ -25,7 +25,7 @@ func SetConfDir(dir string) {
 	confDir = dir
 }
 
-// SetConfDir  enable load File Filters from anywhere in the our FS.
+// SetDownloadDir  enable load File Filters from anywhere in the our FS.
 func SetDownloadDir(dir string) {
 	downloadDir = dir
 }
@@ -45,7 +45,7 @@ func initJenkins(cfg *config.JenkinsConfig) error {
 	log.Debugf("JENKNS CREATE for %+v", cfg)
 	url = cfg.URL
 	emailNotif = cfg.EmailNotif
-	publicUrl = cfg.PublicURL
+	publicURL = cfg.PublicURL
 	client := &http.Client{
 		Timeout: cfg.Timeout,
 	}
@@ -63,12 +63,13 @@ func initJenkins(cfg *config.JenkinsConfig) error {
 	return nil
 }
 
+// Init initialize jenkins
 func Init(cfg *config.JenkinsConfig) {
 	initJenkins(cfg)
 	initJobUpdater(cfg)
 }
 
-// Get preferred outbound ip of this machine
+// GetOutboundIP Get preferred outbound ip of this machine
 func GetOutboundIP() string {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {

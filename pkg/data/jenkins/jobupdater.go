@@ -12,7 +12,7 @@ func updateTaskFromID(task *config.TaskStatus) error {
 	b, err := jnks.GetBuild(task.JobName, task.ExecID)
 	if err != nil {
 		log.Errorf("Some error triggered while invoking build  %s -#%d Error %s", task.JobName, task.ExecID, err)
-		log.Debugf("JENKINS OBJECT: #+v", jnks)
+		log.Debugf("JENKINS OBJECT: %#+v", jnks)
 		return err
 	}
 	log.Debugf("BUILD : %+v", b.Raw.Building)
