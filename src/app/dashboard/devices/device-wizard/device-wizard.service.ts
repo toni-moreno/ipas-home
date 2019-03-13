@@ -13,39 +13,11 @@ export class DeviceWizardService {
         console.log('Task Service created.', httpAPI);
     }
 
-    createNewProduct(url: string, dev: any) {
-        console.log(url, dev)
-        return this.httpAPI.post(url, dev)
-            .map((responseData) => { console.log(responseData); return responseData.json() }
-            )
-    };
-
     newDevice(platform: any, device: any): any {
-
         //Generate EXTRATAGS:
         let dev = JSON.parse(JSON.stringify(device))
-        let pTags = [];
-        if (platform.tags.length > 0) {
-            pTags = platform.tags.map((element) => { return element.key + '=' + element.value })
-        }
+
         for (let ie in dev.engine) {
-          //Check for dev engine:
-          let iparam = null;
-          switch(dev.engine[ie].name) {
-            case 'snmpcollector':
-              iparam = dev.engine[ie].params.findIndex((param) => param.key === 'DEVICE_EXTRATAG_VALUES')
-            break;
-            case 'telegraf':
-              iparam = dev.engine[ie].params.findIndex((param) => param.key === 'global_tags')
-            break;
-          }
-          if (iparam != null || iparam < 0) {
-            if (dev.engine[ie].params[iparam].value != '' && dev.engine[ie].params[iparam].value != null) {
-              dev.engine[ie].params[iparam].value = dev.engine[ie].params[iparam].value.split(',').concat(pTags)
-            } else {
-              dev.engine[ie].params[iparam].value = pTags;
-            }
-          }
           //Make an split for each "array" type
           dev.engine[ie].params.forEach(element => {
             if (element.type === "array" && element.value !== null && element.value !== 'null' && !Array.isArray(element.value)) {
@@ -68,6 +40,64 @@ export class DeviceWizardService {
         .map((responseData) => { console.log(responseData); return responseData.json() }
         )
     }
+
+    updateDevice(platform: any, device: any): any {
+      //Generate EXTRATAGS:
+      let dev = JSON.parse(JSON.stringify(device))
+
+      for (let ie in dev.engine) {
+        //Make an split for each "array" type
+        dev.engine[ie].params.forEach(element => {
+          if (element.type === "array" && element.value !== null && element.value !== 'null' && !Array.isArray(element.value)) {
+              element.value = element.value.split(',')
+          }
+        });
+      }
+
+      //Prepare structure to be sent:
+      let finalForm = { 'platform': platform, 'devices': [dev] }
+      console.log(finalForm);
+
+      //Create file form:
+      var blob = new Blob([JSON.stringify(finalForm)], { type: 'application/octet-stream' });
+      const formData: any = new FormData()
+
+      formData.append('Msg', 'MyCustomMessage');
+      formData.append("CommitFile", blob);
+      return this.httpAPI.postFile('/api/rt/jenkins/build/device/update', formData)
+      .map((responseData) => { console.log(responseData); return responseData.json() }
+      )
+  }
+
+    deleteDevice(platform: any, device: any): any {
+
+      //Generate EXTRATAGS:
+      let dev = JSON.parse(JSON.stringify(device))
+
+      for (let ie in dev.engine) {
+
+        //Ensure split for each "array" type
+        dev.engine[ie].params.forEach(element => {
+          if (element.type === "array" && element.value !== null && element.value !== 'null' && !Array.isArray(element.value)) {
+              element.value = element.value.split(',')
+          }
+        });
+      }
+
+      //Prepare structure to be sent:
+      let finalForm = { 'platform': platform, 'devices': [dev] }
+      console.log(finalForm);
+
+      //Create file form:
+      var blob = new Blob([JSON.stringify(finalForm)], { type: 'application/octet-stream' });
+      const formData: any = new FormData()
+
+      formData.append('Msg', 'MyCustomMessage');
+      formData.append("CommitFile", blob);
+      return this.httpAPI.postFile('/api/rt/jenkins/build/device/delete', formData)
+      .map((responseData) => { console.log(responseData); return responseData.json() }
+      )
+  }
 
     getPlatformEngines(url: string) {
         return this.httpAPI.get(url)

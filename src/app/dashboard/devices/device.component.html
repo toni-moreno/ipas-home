@@ -45,7 +45,7 @@
             <ng-container matColumnDef="actions">
               <mat-header-cell *matHeaderCellDef class="cell-header text-test">Actions</mat-header-cell>
               <mat-cell *matCellDef="let element">
-                <button mat-icon-button mat-button color="primary">
+                <button mat-icon-button mat-button color="primary" (click)="editDevice(element)">
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button mat-icon-button mat-button color="primary" (click)="removeDevice(element)">
@@ -91,7 +91,7 @@
       </ng-container>
     </ng-template>
     <ng-template ngSwitchDefault>
-      <device-wizard (finishedAction)="retrieveAllDeviceList()"></device-wizard>
+      <device-wizard [editData]="editData" [viewMode]="viewMode" (finishedAction)="retrieveAllDeviceList()"></device-wizard>
     </ng-template>
   </ng-container>
 </div>

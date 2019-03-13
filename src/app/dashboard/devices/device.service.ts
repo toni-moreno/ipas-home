@@ -24,6 +24,12 @@ export class DeviceService {
       )
     }
 
+    getDeviceConfigParams(url) {
+      return this.httpAPI.get(url)
+      .map((responseData) => {console.log(responseData); return responseData.json() } 
+      )
+    }
+
     removeDevice(data) {
         //Create file form:
         var blob = new Blob([JSON.stringify(data)], { type: 'application/octet-stream' });

@@ -18,40 +18,48 @@ import { BlockUIService } from '../../../shared/blockui/blockui-service';
 export class DeviceWizardComponent implements OnInit {
 
   @ViewChild('blocker', { read: ViewContainerRef }) container: ViewContainerRef;
+  @ViewChild('product_selection') public product_selection: any;
+  @ViewChild('config_selection') public config_selection: any;
+
   @Input() mode: boolean = true
+  @Input() viewMode: string;
   @Input() editData: any;
   @Output() public finishedAction: EventEmitter<any> = new EventEmitter();
 
-  selection = new SelectionModel<Element>(false, []);
+  //Table params
+  selection = new SelectionModel<Element>(false, null);
+  displayedColumns: string[] = ['select', 'ID', 'EngineID'];
+  filteredServices: any = [];
+
+  //Stepper params
   isLinear = false;
-  allowCustomParams = false;
+
+  //Debug info
   showDebug = false
+
+  //Forms
   deviceFormGroup: any;
   platformFormGroup: any;
+
+  //Forms available params
+  bool_params = [true, false];
+
+  //Provided data
   product_info: any = null;
-  filteredServices: any = [];
-  mapDBInfo: any = null;
-  dbMapList: any = null;
   platformEngines: any;
   allPlatformEngines: any;
-  gEngines: any;
+  productList: ProductList[]
+  servicesList: any;
 
-  //Section 1:
+  //Save selector vars to do not bind into forms (reduce logic on edit+remove)
   selectedProduct = null;
   selectedEnvironment = null;
-
-  bool_params = [true, false];
+  selectedConfig = null;
 
   constructor(private _formBuilder: FormBuilder, public homeService: HomeService, public wizardService: DeviceWizardService, public productService: ProductService, public _blocker: BlockUIService) { }
 
-
   //Set core config vars as formarrays, it will be easier to go over them
   get product(): FormGroup { return this.deviceFormGroup.get('engine') as FormGroup; }
-
-  public productList: ProductList[]
-  public servicesList: any;
-
-  displayedColumns: string[] = ['select', 'ID', 'EngineID'];
 
   ngOnInit() {
     //Retrive all Products:
@@ -69,16 +77,26 @@ export class DeviceWizardComponent implements OnInit {
         () => console.log("DONE")
       )
 
-    //Create initial deviceForm Form
-    this.deviceFormGroup = this._formBuilder.group({
-      id: ['',Validators.required] ,
-      //productid: "",
-    })
-
     this.platformFormGroup = this._formBuilder.group({
       productid: ['', Validators.required],
       engine: new FormArray([])
     })
+    //Check if editData is provided
+    if (this.editData) {
+      //Load ID
+      this.deviceFormGroup = this._formBuilder.group({
+        id: [this.editData.DeviceID, Validators.required],
+      })
+
+      //Start the steps --> Select product + config + platform + params
+      this.retrieveProductInfo(this.editData.ProductID)
+    } else {
+      //Create initial deviceForm Form
+      this.deviceFormGroup = this._formBuilder.group({
+        id: ['', Validators.required]
+        //productid: "",
+      })
+    }
 
   }
 
@@ -110,27 +128,60 @@ export class DeviceWizardComponent implements OnInit {
       //ProductID:
       this.selectedProduct = product;
       this.platformFormGroup.setControl('productid', new FormControl(product), Validators.required)
-      //Engines:
+
+      //Engines, initialize empty one
       this.deviceFormGroup.setControl('engine', this.loadEngineConfig(engines), Validators.required)
 
+      //If edit, fill config + params
+
+      if (this.editData) {
+
+        this.product_selection.value = this.editData.ProductID
+
+        //For each product engine
+        for (let sengine of this.editData.Engines) {
+
+          //Need the real engine index provided by the product
+          let iengine = engines.findIndex(element => element === sengine.EngineID);
+
+          //Needs the real config index provided by the product
+          let iconfig = this.product_info.gather[iengine].config.findIndex(element => element.name === sengine.ConfigID);
+          this.selectedConfig = iconfig;
+
+          for (let pengine of sengine.Params) {
+            if (this.product_info.gather[iengine].config[iconfig].params.product_params) {
+              this.product_info.gather[iengine].config[iconfig].params.device_params.map((element => { if (element['key'] === pengine.Key) element['value'] = pengine.Value }))
+            }
+            if (this.product_info.gather[iengine].config[iconfig].params.platform_params) {
+              this.product_info.gather[iengine].config[iconfig].params.device_params.map((element => { if (element['key'] === pengine.Key) element['value'] = pengine.Value }))
+            }
+            if (this.product_info.gather[iengine].config[iconfig].params.device_params) {
+              this.product_info.gather[iengine].config[iconfig].params.device_params.map((element => { if (element['key'] === pengine.Key) element['value'] = pengine.Value }))
+            }
+          }
+
+          //Load Config params
+          this.loadEngineConfigParams(iengine, sengine.ConfigID, this.product_info.gather[iengine].config[iconfig].params, sengine.EngineID);
+        }
+
+        //Need to add to platform for each engine!
+        for (let eplatform of this.editData.Platform) {
+          this.selectService(eplatform.platform, eplatform.name);
+        }
+
+      } else {
+        this.deviceFormGroup.setControl('engine', this.loadEngineConfig(engines), Validators.required)
+      }
 
       this.productService.getPlatformEngines('/api/cfg/productdbmap/' + product)
         .subscribe(
           (data) => {
-            //Add as a Form... on Tags?
-            let tags_array = new FormArray([]);
-            for (let k of data['ProductTags'].split(',')) {
-              let tags = this._formBuilder.group({})
-              tags.addControl('key', new FormControl(k))
-              tags.addControl('value', new FormControl(''))
-              tags_array.push(tags);
-            }
             //Filter as available services only the assigned with the product. Maybe should retrieve data from it?
             if (data['GEngines']) {
               this.platformEngines = [];
               for (let el of this.allPlatformEngines) {
-                for (let g of  data['GEngines']) {
-                  console.log("G",g);
+                for (let g of data['GEngines']) {
+                  console.log("G", g);
                   if (g === el.ID) {
                     console.log(g, el.ID)
                     this.platformEngines.push(el);
@@ -139,7 +190,6 @@ export class DeviceWizardComponent implements OnInit {
               }
             }
             console.log(this.platformEngines);
-            this.platformFormGroup.setControl('tags', tags_array);
           },
           (err) => { console.log(err); this.platformFormGroup.setControl('tags', new FormArray([])) },
           () => console.log("DONE")
@@ -151,6 +201,7 @@ export class DeviceWizardComponent implements OnInit {
   removeProduct() {
     this.product_info = null;
     this.selectedProduct = null;
+    this.selectedConfig = null;
     this.deviceFormGroup.removeControl('engine')
 
     //Platform relations
@@ -167,9 +218,13 @@ export class DeviceWizardComponent implements OnInit {
   changeEngine(event) {
     //filterAvailableServices based on selected engine
     //engine is retrieved by event.tab.textLabel
+    if (this.config_selection) {
+      this.config_selection.value = this.selectedConfig;
+    }
 
     //Need double filter --> First retrieve the ID available for platforms....
-    this.filteredServices = new MatTableDataSource(this.platformEngines.filter((element) =>  event.tab.textLabel === element.EngineID))
+    this.filteredServices = new MatTableDataSource(this.platformEngines.filter((element) => event.tab.textLabel === element.EngineID))
+
   }
 
   loadEngineConfig(engines): AbstractControl {
@@ -194,12 +249,12 @@ export class DeviceWizardComponent implements OnInit {
     //Set config name:
     this.deviceFormGroup.controls.engine.controls[iengine].controls.config.setValue(configname)
     //Load params:
-    this.deviceFormGroup.controls.engine.controls[iengine].addControl('params', params ?  this.createParamsFromEngine(params,enginename) : null)
+    this.deviceFormGroup.controls.engine.controls[iengine].addControl('params', params ? this.createParamsFromEngine(params, enginename) : null)
   }
 
   //Creates the specific param section in order to play with params (maybe a product can not have device params)
   createParamsFromEngine(params: any, enginename: string): AbstractControl {
-    let pArray : FormArray = new FormArray([])
+    let pArray: FormArray = new FormArray([])
     console.log("PARAMS LOADED: ", params);
     //ensure it exists
     if (params['product_params']) {
@@ -225,15 +280,15 @@ export class DeviceWizardComponent implements OnInit {
     }
     //ensure it exists
     if (params['device_params']) {
-    for (let i of params['device_params']) {
-      let p : FormGroup = this._formBuilder.group({})
-      for (let k in i) {
-        p.addControl(k, new FormControl(i[k]))
+      for (let i of params['device_params']) {
+        let p: FormGroup = this._formBuilder.group({})
+        for (let k in i) {
+          p.addControl(k, new FormControl(i[k]))
+        }
+        p['param_disabled'] = false;
+        pArray.push(p);
       }
-      p['param_disabled'] = false;
-      pArray.push(p);
     }
-  }
 
     return pArray;
   }
@@ -244,7 +299,7 @@ export class DeviceWizardComponent implements OnInit {
   /* **************************  */
 
   selectService(event, engine) {
-    this.selection.toggle(event)
+    this.selection.select(event);
     let n = this._formBuilder.group({
       'name': engine,
       'type': 'gather',
@@ -262,16 +317,54 @@ export class DeviceWizardComponent implements OnInit {
     this.servicesList.filter = filterValue;
   }
 
-  //FINISH 
+  //Finish form STEP  
+
+  submitForm() {
+    switch (this.viewMode) {
+      case 'edit':
+        this.sendUpdateDeviceRequest();
+        break;
+      case 'delete':
+        this.sendDeleteRequest();
+        break;
+      default:
+        this.sendNewDeviceRequest();
+        break;
+    }
+  }
+
+  cancelForm() {
+    this.finishedAction.emit('cancel')
+  }
 
   sendNewDeviceRequest() {
     this._blocker.start(this.container, "Adding new device...");
     this.wizardService.newDevice(this.platformFormGroup.value, this.deviceFormGroup.value).subscribe(
-      (data) => { console.log(data),this._blocker.stop(), this.finishedAction.emit(data)},
+      (data) => { console.log(data), this._blocker.stop(), this.finishedAction.emit(data) },
       (err) => { console.log("ERROR, ", err), this._blocker.stop() },
       () => { console.log("DONE") }
     )
-
   }
 
+  sendUpdateDeviceRequest() {
+    this._blocker.start(this.container, "Updating "+ this.platformFormGroup.value.productid + " from device...");
+    this.wizardService.updateDevice(this.platformFormGroup.value, this.deviceFormGroup.value).subscribe(
+      (data) => { console.log(data), this._blocker.stop(), this.finishedAction.emit(data) },
+      (err) => { console.log("ERROR, ", err), this._blocker.stop() },
+      () => { console.log("DONE") }
+    )
+  }
+
+  sendDeleteRequest() {
+    let t = confirm("Are you sure you want to delete product " + this.platformFormGroup.value.productid + " from " + this.deviceFormGroup.value.id + "?")
+    if (t === true) {
+
+      this._blocker.start(this.container, "Removing " + this.platformFormGroup.value.productid + " from device...");
+      this.wizardService.deleteDevice(this.platformFormGroup.value, this.deviceFormGroup.value).subscribe(
+        (data) => { console.log(data), this._blocker.stop(), this.finishedAction.emit(data) },
+        (err) => { console.log("ERROR, ", err), this._blocker.stop() },
+        () => { console.log("DONE") }
+      )
+    }
+  }
 }

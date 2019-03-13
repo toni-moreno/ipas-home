@@ -29,7 +29,7 @@
             <!--INIT - Engine selector to load all related params"-->
             <div class="col-md-6">
               <mat-form-field>
-                <mat-select #product_selection placeholder="Available products" name="product">
+                <mat-select #product_selection placeholder="Available products" name="product" [disabled]='editData'>
                   <mat-option *ngFor="let product of productList" [value]="product.name">
                     {{product.name}}
                   </mat-option>
@@ -46,11 +46,10 @@
             <h4>Finish configuration</h4>
             <p>Finish and submit a new product</p>
           </ng-template>
-          You are now done. Review your definition:
+          You are now done.
           <div>
-            <button mat-raised-button color="accent" matStepperPrevious>Back</button>
-            <button mat-raised-button color="accent">Cancel</button>
-            <button mat-raised-button color="accent" (click)="sendNewDeviceRequest()" [disabled]="!deviceFormGroup.controls.engine">Finish</button>
+            <button mat-raised-button color="primary" (click)="cancelForm()">Cancel</button>
+            <button mat-raised-button color="accent" (click)="submitForm()" [disabled]="!deviceFormGroup.controls.engine">{{viewMode | uppercase}} device</button>
           </div>
         </mat-step>
       </mat-vertical-stepper>
@@ -82,7 +81,7 @@
               <mat-step [stepControl]="deviceFormGroup">
                 <form [formGroup]="deviceFormGroup">
                   <mat-form-field>
-                    <mat-select #config_selection placeholder="Available configs" name="config">
+                    <mat-select #config_selection placeholder="Available configs" name="config" [disabled]='editData'>
                       <mat-option *ngFor="let config of kengine.config; index as iconfig" [value]="iconfig">
                           <span  [matTooltip]="config.description">
                               {{config.name}}
@@ -151,15 +150,11 @@
                         <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter Device">
                       </mat-form-field>
                     </div>
-                    {{selection | json}}
                     <ng-container matColumnDef="select">
                       <mat-header-cell *matHeaderCellDef>
-                        <!--mat-checkbox [indeterminate]="selection.isSelected()">
-                      </mat-checkbox-->
-                        --
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row">
-                        <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selectService(row,kengine.engine) : null" [checked]="selection.isSelected(row)">
+                        <mat-checkbox (change)="$event ? selectService(row,kengine.engine) : null" [checked]="checkSelected(row)">
                         </mat-checkbox>
                       </mat-cell>
                     </ng-container>
@@ -180,33 +175,6 @@
                     <p class="text-center">No services related with</p>
                   </h1>
                 </ng-template>
-              </mat-step>
-              <mat-step>
-                <form [formGroup]="platformFormGroup">
-                  <ng-template matStepLabel>
-                    <h4>Platform configs params</h4>
-                    <p>Fill service configs</p>
-                  </ng-template>
-                  <h4>Tags</h4>
-                  <ng-container *ngIf="platformFormGroup.controls.tags">
-                    <ng-container formArrayName="tags" *ngIf="platformFormGroup.controls.tags.controls.length > 0">
-                      <ng-container *ngFor="let e of platformFormGroup.controls.tags.controls; index as itag">
-                        <ng-container [formArrayName]="itag">
-                          <mat-form-field appearance="outline">
-                            <mat-label>{{e.value.key}}
-                            </mat-label>
-                            <input matInput formControlName="value">
-                            <!--mat-icon matSuffix mat-mini-fab [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value.description">help</mat-icon-->
-                          </mat-form-field>
-                        </ng-container>
-                      </ng-container>
-                    </ng-container>
-                    <ng-container *ngIf="platformFormGroup.controls.tags.length === 0">
-                        No tags are available
-                      </ng-container>
-                  </ng-container>
-                  
-                </form>
               </mat-step>
             </mat-horizontal-stepper>
           </mat-tab>

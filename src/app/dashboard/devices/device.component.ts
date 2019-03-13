@@ -8,7 +8,6 @@ import { ProductService } from '..//products/product.service'
 import { DialogResultComponent } from 'app/shared/dialogresult/dialogresult.component';
 import { BlockUIService } from '../../shared/blockui/blockui-service';
 
-
 @Component({
   selector: 'device-component',
   styleUrls: ['device.component.css'],
@@ -38,6 +37,7 @@ export class DeviceComponent {
     devices: [{}]
   }
 
+  editData: any;
 
   constructor(public deviceService: DeviceService, public productService: ProductService, public dialog: MatDialog, public _blocker: BlockUIService) {
     //Default, show all devices:
@@ -50,6 +50,8 @@ export class DeviceComponent {
   retrieveAllDeviceList(imode?) {
     //Reset params:
     this.selProd = null;
+    //Ensure reset edit params
+    this.editData = null;
     this.selectedListMode = this.listMode[imode || 0]
 
     //Retrieve all devices
@@ -62,7 +64,6 @@ export class DeviceComponent {
             this.dataSource.paginator = this.paginator;
             this.dataSource.sort = this.sort;
             this.viewMode = 'list';
-
           }
         },
         (err) => console.log(err),
@@ -131,50 +132,61 @@ export class DeviceComponent {
 
 
   openResultDialog(data): void {
-          let dialogRef = this.dialog.open(DialogResultComponent, {
-            width: '500px',
-            disableClose: true,
-            data: data,
-          });
+    let dialogRef = this.dialog.open(DialogResultComponent, {
+      width: '500px',
+      disableClose: true,
+      data: data,
+    });
   }
 
+  prepareEditData(data) {
+    let lengine = {};
 
+    //Extract all engines, we don't need ProductID or DeviceID a
+    for (let engine of data) {
+      lengine[engine.EngineID] = engine.EngineID
+    }
 
+    //Initialize emtpy object in order to being filled by each engine
+    //TODO: create a type...
+    let engineArray = []
+    for (let i in lengine) {
+      let engineData = { Params: [] }
+      for (let a of data) {
+        if (a.EngineID === i) {
+          engineData["EngineID"] = a.EngineID
+          engineData["ConfigID"] = a.ConfigID
+          engineData["Params"].push({ 'Key': a.Key, 'Value': a.Value })
+        }
+      }
+      engineArray.push(engineData);
+    }
+    return engineArray;
+  }
+
+  editDevice(element, action?) {
+    let devAction = action || 'edit'
+    this.deviceService.getDeviceConfigParams('/api/cfg/deviceconfigparams/bydevice/' + element.ProductID + '/' + element.DeviceID)
+      .subscribe(
+        (data) => {
+          console.log(data);
+          let deviceData = {
+            ProductID: element.ProductID,
+            DeviceID: element.DeviceID,
+            Engines: [],
+            Platform: element.PlatformEngines
+          };
+          deviceData.Engines = this.prepareEditData(data);
+          this.editData = deviceData,
+            this.viewMode = devAction
+        },
+
+        (err) => console.log(err),
+        () => console.log("DONE")
+      )
+  }
 
   removeDevice(element) {
-
-    console.log("ELEMENT", element);
-    this.mydata = {
-      platform: {},
-      devices: []
-    }
-
-    let tmpengines = [];
-
-    //Platform part
-    this.mydata.platform.productid = element.ProductID
-    this.mydata.platform.engine = []
-    for (let pengine of element['PlatformEngines']) {
-      this.mydata.platform.engine.push(pengine)
-      tmpengines.push({ 'name': pengine.name })
-    }
-
-    //Devices part
-    this.mydata.devices.push({ 'id': element.DeviceID, engine: tmpengines })
-
-    console.log(this.mydata);
-
-    let t = confirm("Are you sure you  want to remove  product " + element.ProductID + " from  " + element.DeviceID + "?")
-    if (t === true) {
-      console.log("removing element", element)
-      this._blocker.start(this.container, "Removing device...");
-      this.deviceService.removeDevice(this.mydata)
-        .subscribe(
-          (data) => {console.log(data), this._blocker.stop(), this.retrieveAllDeviceList()},
-          (err) => {console.log(err), this._blocker.stop(), this.retrieveAllDeviceList()},
-          () => console.log("DONE")
-        )
-    }
-
+    this.editDevice(element, 'delete')
   }
 }
