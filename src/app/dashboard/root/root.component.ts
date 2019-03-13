@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SettingsService } from '../../services/settings.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-root',
@@ -11,8 +12,10 @@ export class RootComponent implements OnInit, OnDestroy {
   public id: number;
   public backgroundColor: string;
   public version: any;
+  public subscriber : Subscription;
+
   constructor(public settingService: SettingsService, private router :  Router) {
-    this.settingService.getVersion()
+    this.subscriber = this.settingService.getVersion()
     .subscribe(
       (data) => {
         console.log(data);
@@ -28,16 +31,9 @@ export class RootComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.settingService.sidebarImageIndexUpdate.subscribe((id: number) => {
-      this.id = id + 1;
-    });
-    this.settingService.sidebarColorUpdate.subscribe((color: string) => {
-      this.backgroundColor = color;
-    });
+   
   }
-
   ngOnDestroy() {
-    this.settingService.sidebarImageIndexUpdate.unsubscribe();
-    this.settingService.sidebarColorUpdate.unsubscribe();
+    this.subscriber.unsubscribe();
   }
 }
