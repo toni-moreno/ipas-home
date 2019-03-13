@@ -95,7 +95,7 @@ func GetPlatformDevicesByID(ctx *Context) {
 	deviceid := ctx.Params(":deviceid")
 	dev, err := agent.MainConfig.Database.GetPlatformDevicesByID(productid, deviceid)
 	if err != nil {
-		log.Warningf("Error on get device  ProductID: %s DeviceID: %s data for device %s  , error: %s", productid, deviceid, err)
+		log.Warningf("Error on get device  ProductID: %s DeviceID: %s  , error: %s", productid, deviceid, err)
 		ctx.JSON(404, err.Error())
 	} else {
 		ctx.JSON(200, &dev)

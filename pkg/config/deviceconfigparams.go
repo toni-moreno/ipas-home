@@ -14,8 +14,8 @@ import "fmt"
 ***********************************/
 
 /*GetDeviceConfigParamsByID get device data by id*/
-func (dbc *DatabaseCfg) GetDeviceConfigParamsByID(productid string, deviceid string, engineid string, key string) (DeviceConfigParams, error) {
-	cfgarray, err := dbc.GetDeviceConfigParamsArray("productid == '" + productid + "' and  deviceid == '" + deviceid + "' and engineid == '" + engineid + "' and  key== '" + key + "'")
+func (dbc *DatabaseCfg) GetDeviceConfigParamsByID(productid string, deviceid string, engineid string, configid string, key string) (DeviceConfigParams, error) {
+	cfgarray, err := dbc.GetDeviceConfigParamsArray("productid == '" + productid + "' and  deviceid == '" + deviceid + "' and engineid == '" + engineid + "' and configid == '" + configid + "' and  key== '" + key + "'")
 	if err != nil {
 		return DeviceConfigParams{}, err
 	}
@@ -62,7 +62,7 @@ func (dbc *DatabaseCfg) GetDeviceConfigParamsArray(filter string) ([]*DeviceConf
 func (dbc *DatabaseCfg) AddOrUpdateDeviceConfigParams(dev DeviceConfigParams) (int64, error) {
 	log.Debugf("ADD OR UPDATE %+v", dev)
 	//check if exist
-	m, err := dbc.GetDeviceConfigParamsArray("productid == '" + dev.ProductID + "' and  deviceid == '" + dev.DeviceID + "' and engineid == '" + dev.EngineID + "' and  key == '" + dev.Key + "'")
+	m, err := dbc.GetDeviceConfigParamsArray("productid == '" + dev.ProductID + "' and  deviceid == '" + dev.DeviceID + "' and engineid == '" + dev.EngineID + "' and configid == '" + dev.ConfigID + "' and  key == '" + dev.Key + "'")
 	if err != nil {
 		return 0, err
 	}
@@ -96,13 +96,13 @@ func (dbc *DatabaseCfg) AddDeviceConfigParams(dev DeviceConfigParams) (int64, er
 	if err != nil {
 		return 0, err
 	}
-	log.Infof("Added new Config Params Successfully with id %s ", dev.ProductID)
+	log.Infof("Added new DeviceConfigParams Successfully with id %s ", dev.ProductID)
 	dbc.addChanges(affected)
 	return affected, nil
 }
 
 /*DelDeviceConfigParams for deleting Services databases from ID*/
-func (dbc *DatabaseCfg) DelDeviceConfigParams(productid string, deviceid string, engineid string, key string) (int64, error) {
+func (dbc *DatabaseCfg) DelDeviceConfigParams(productid string, deviceid string, engineid string, configid string, key string) (int64, error) {
 	var affecteddev, affected int64
 	var err error
 
@@ -116,7 +116,7 @@ func (dbc *DatabaseCfg) DelDeviceConfigParams(productid string, deviceid string,
 		return 0, fmt.Errorf("Error on Delete Service with id on delete HMCCfg with id: %s, error: %s", id, err)
 	}*/
 
-	affected, err = session.Where("productid == '" + productid + "' and  deviceid == '" + deviceid + "' engineid == '" + engineid + "' and  key == '" + key + "'").Delete(&DeviceConfigParams{})
+	affected, err = session.Where("productid == '" + productid + "' and  deviceid == '" + deviceid + "' and engineid == '" + engineid + "' and configid == '" + configid + "' and  key == '" + key + "'").Delete(&DeviceConfigParams{})
 	if err != nil {
 		session.Rollback()
 		return 0, err
@@ -126,13 +126,13 @@ func (dbc *DatabaseCfg) DelDeviceConfigParams(productid string, deviceid string,
 	if err != nil {
 		return 0, err
 	}
-	log.Infof("Deleted Successfully Services db with Product ID: %s Device ID: %s [ %d Services Affected  ]", productid, deviceid, affecteddev)
+	log.Infof("Deleted Successfully DeviceConfigParams with Product ID: %s Device ID: %s [ %d Services Affected  ]", productid, deviceid, affecteddev)
 	dbc.addChanges(affected + affecteddev)
 	return affected, nil
 }
 
 /*UpdateDeviceConfigParamsBase for adding new Services from Scanned products , don't change current configurations*/
-func (dbc *DatabaseCfg) UpdateDeviceConfigParamsBase(productid string, deviceid string, dev DeviceConfigParams) (int64, error) {
+/*func (dbc *DatabaseCfg) UpdateDeviceConfigParamsBase(productid string, deviceid string, dev DeviceConfigParams) (int64, error) {
 	var affecteddev, affected int64
 	var err error
 	session := dbc.x.NewSession()
@@ -148,22 +148,21 @@ func (dbc *DatabaseCfg) UpdateDeviceConfigParamsBase(productid string, deviceid 
 		return 0, err
 	}
 
-	log.Infof("Updated Service  Base Config Successfully with ProductID %s and DeviceID %s and data:%+v, affected", productid, deviceid, dev)
+	log.Infof("Updated DeviceConfigParams  Base Config Successfully with ProductID %s and DeviceID %s and data:%+v, affected", productid, deviceid, dev)
 	dbc.addChanges(affected + affecteddev)
 	return affected, nil
-}
+}*/
 
 /*UpdateDeviceConfigParams for adding new Services*/
 func (dbc *DatabaseCfg) UpdateDeviceConfigParams(dev DeviceConfigParams) (int64, error) {
 	var affecteddev, affected int64
 	var err error
-	productid := dev.ProductID
-	deviceid := dev.DeviceID
+
 	session := dbc.x.NewSession()
 	defer session.Close()
 
-	log.Debugf("Updating Service %#+v", dev)
-	affected, err = session.Where("productid == '" + productid + "' and  deviceid == '" + deviceid + "'").UseBool().AllCols().Update(dev)
+	log.Debugf("Updating DeviceConfigParams %#+v", dev)
+	affected, err = session.Where("productid == '" + dev.ProductID + "' and  deviceid == '" + dev.DeviceID + "' and engineid == '" + dev.EngineID + "' and configid == '" + dev.ConfigID + "' and  key == '" + dev.Key + "'").UseBool().AllCols().Update(dev)
 	if err != nil {
 		session.Rollback()
 		return 0, err
@@ -173,7 +172,7 @@ func (dbc *DatabaseCfg) UpdateDeviceConfigParams(dev DeviceConfigParams) (int64,
 		return 0, err
 	}
 
-	log.Infof("Updated Service Config Successfully with ProductID %s and DeviceID %s and data:%+v, affected", productid, deviceid, dev)
+	log.Infof("Updated DeviceConfigParams Successfully with ProductID %s and DeviceID %s and data:%+v, affected", dev.ProductID, dev.DeviceID, dev)
 	dbc.addChanges(affected + affecteddev)
 	return affected, nil
 }

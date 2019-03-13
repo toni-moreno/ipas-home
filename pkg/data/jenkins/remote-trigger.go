@@ -324,7 +324,7 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 				}
 				_, err2 := dbc.AddOrUpdateDeviceConfigParams(dcParams)
 				if err2 != nil {
-					log.Errorf("While trying to insert data into DeviceConfigParams: %+v Error: %s", dcParams, err)
+					log.Errorf("While trying to insert data into DeviceConfigParams: %+v Error: %s", dcParams, err2)
 				}
 
 			}
