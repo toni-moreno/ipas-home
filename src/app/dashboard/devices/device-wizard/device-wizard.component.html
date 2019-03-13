@@ -154,7 +154,7 @@
                       <mat-header-cell *matHeaderCellDef>
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row">
-                        <mat-checkbox (change)="$event ? selectService(row,kengine.engine) : null" [checked]="checkSelected(row)">
+                        <mat-checkbox (change)="$event ? selectService(row,kengine.engine) : null" [checked]="selection.isSelected(row)">
                         </mat-checkbox>
                       </mat-cell>
                     </ng-container>
