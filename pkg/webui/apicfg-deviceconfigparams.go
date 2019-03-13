@@ -1,6 +1,8 @@
 package webui
 
 import (
+	"encoding/json"
+
 	"github.com/go-macaron/binding"
 	"github.com/toni-moreno/ipas-home/pkg/agent"
 	"github.com/toni-moreno/ipas-home/pkg/config"
@@ -27,6 +29,36 @@ func NewAPICfgDeviceConfigParams(m *macaron.Macaron) error {
 	return nil
 }
 
+// DeviceConfigParams parameters for each
+type DeviceParamsTranx struct {
+	ProductID string
+	DeviceID  string
+	EngineID  string
+	ConfigID  string
+	Key       string
+	Value     interface{}
+}
+
+func transformArrayParams(array []*config.DeviceConfigParams) []*DeviceParamsTranx {
+	var out []*DeviceParamsTranx
+	for _, el := range array {
+		dt := DeviceParamsTranx{
+			ProductID: el.ProductID,
+			DeviceID:  el.DeviceID,
+			EngineID:  el.EngineID,
+			ConfigID:  el.ConfigID,
+			Key:       el.Key,
+		}
+		err := json.Unmarshal([]byte(el.Value), &dt.Value)
+		if err != nil {
+			log.Warnf("Can not Unmarshall for key %s value %s: Error: %s", el.Key, el.Value, err)
+			continue
+		}
+		out = append(out, &dt)
+	}
+	return out
+}
+
 // GetDeviceConfigParams Return Service Array
 func GetDeviceConfigParams(ctx *Context) {
 	cfgarray, err := agent.MainConfig.Database.GetDeviceConfigParamsArray("")
@@ -35,8 +67,9 @@ func GetDeviceConfigParams(ctx *Context) {
 		log.Errorf("Error on get DeviceConfigParams :%+s", err)
 		return
 	}
-	ctx.JSON(200, &cfgarray)
-	log.Debugf("Getting DEVICEs %+v", &cfgarray)
+	tp := transformArrayParams(cfgarray)
+	ctx.JSON(200, &tp)
+	log.Debugf("Getting DEVICEs %+v", &tp)
 }
 
 func GetDeviceConfigParamsByProduct(ctx *Context) {
@@ -47,8 +80,9 @@ func GetDeviceConfigParamsByProduct(ctx *Context) {
 		log.Errorf("Error on get DeviceConfigParams by product %s Error :%+s", productid, err)
 		return
 	}
-	ctx.JSON(200, &cfgarray)
-	log.Debugf("Getting DEVICEs %+v", &cfgarray)
+	tp := transformArrayParams(cfgarray)
+	ctx.JSON(200, &tp)
+	log.Debugf("Getting DEVICEs %+v", &tp)
 }
 
 func GetDeviceConfigParamsByDevice(ctx *Context) {
@@ -57,11 +91,12 @@ func GetDeviceConfigParamsByDevice(ctx *Context) {
 	cfgarray, err := agent.MainConfig.Database.GetDeviceConfigParamsArray("productid == '" + productid + "' and deviceid == '" + deviceid + "'")
 	if err != nil {
 		ctx.JSON(404, err.Error())
-		log.Errorf("Error on get DeviceConfigParams by device %s/%s %s Error :%+s", productid, deviceid, err)
+		log.Errorf("Error on get DeviceConfigParams by device %s/%s Error :%+s", productid, deviceid, err)
 		return
 	}
-	ctx.JSON(200, &cfgarray)
-	log.Debugf("Getting DEVICEs %+v", &cfgarray)
+	tp := transformArrayParams(cfgarray)
+	ctx.JSON(200, &tp)
+	log.Debugf("Getting DEVICEs %+v", &tp)
 }
 
 // AddDeviceConfigParams Insert new service to the internal BBDD --pending--
