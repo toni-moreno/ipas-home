@@ -116,6 +116,7 @@ type DeviceConfigParams struct {
 	ProductID string `xorm:"'productid' not null unique(devkey)" binding:"Required"`
 	DeviceID  string `xorm:"'deviceid'  unique(devkey)" binding:"Required"`
 	EngineID  string `xorm:"'engineid'  unique(devkey)" binding:"Required"`
+	ConfigID  string `xorm:"'configid'  unique(devkey)" binding:"Required"`
 	Key       string `xorm:"'key' not  null unique(devkey)"`
 	Value     string `xorm:"'value'"`
 }

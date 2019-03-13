@@ -317,6 +317,7 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 					ProductID: jobdt.Platform.ProductID,
 					DeviceID:  d.ID,
 					EngineID:  e.Name,
+					ConfigID:  e.Config,
 					Key:       p.Key,
 					//Value:     p.Value,
 					Value: string(jsvalue),
