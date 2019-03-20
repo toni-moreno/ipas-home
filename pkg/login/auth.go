@@ -64,12 +64,12 @@ func loginUsingLdap(ctx *Context, user UserLogin) (bool, error) {
 		author := NewLdapAuthenticator(server)
 		euser, err := author.Login(ctx, user)
 		if err != nil {
-			log.Warnf("LDAP USER: %s Log ERROR : %s", user.UserName, err)
-			return false, err
+			log.Warnf("LDAP USER: %s : on Server:[ldap://%s:%d] Log ERROR : %s", user.UserName, server.Host, server.Port, err)
+			continue
 		}
 		if euser == nil {
 			log.Warnf("LDAN USER: %s UnkNown ERROR", user.UserName)
-			return false, errors.New("Unknown Error")
+			continue
 		}
 
 		log.Infof("LDAP USER: %s  Log in  as %s OK", user.UserName, euser.Login)

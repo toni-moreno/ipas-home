@@ -228,7 +228,7 @@ func (a *ldapAuther) GetIpasUserFor(ctx *Context, ldapUser *LdapUserInfo) (*Exte
 func (a *ldapAuther) serverBind() error {
 	// bind_dn and bind_password to bind
 	if err := a.conn.Bind(a.server.BindDN, a.server.BindPassword); err != nil {
-		log.Info("LDAP initial bind failed, %v", err)
+		log.Infof("LDAP initial bind failed, %v", err)
 
 		if ldapErr, ok := err.(*ldap.Error); ok {
 			if ldapErr.ResultCode == 49 {
