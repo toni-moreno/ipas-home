@@ -7,7 +7,7 @@
     <mat-divider></mat-divider>
     <br>
     <mat-card>
-      <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="retrieveAllDeviceList()">
+      <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="finishAction()">
         <mat-icon>playlist_play</mat-icon> List Devices
       </button>
       <button mat-raised-button [color]="viewMode === 'new' ? 'accent' : 'primary'" (click)="viewMode = 'new'">
@@ -91,7 +91,7 @@
       </ng-container>
     </ng-template>
     <ng-template ngSwitchDefault>
-      <device-wizard [editData]="editData" [viewMode]="viewMode" (finishedAction)="retrieveAllDeviceList()"></device-wizard>
+      <device-wizard [editData]="editData" [viewMode]="viewMode" (finishedAction)="finishAction()"></device-wizard>
     </ng-template>
   </ng-container>
 </div>
