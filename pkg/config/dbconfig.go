@@ -98,6 +98,7 @@ type PlatformDevices struct {
 	ProductID       string                `xorm:"'productid' not null unique(devid)" binding:"Required"`
 	DeviceID        string                `xorm:"'deviceid' not null unique(devid)" binding:"Required"`
 	LastState       string                `xorm:"last_state"` //SUCCESS,FAILURE,PENDING
+	LastAction      string                `xorm:"last_action` //add,delete,update
 	TaskStat        map[int64]*TaskStatus `xorm:"task_stat"`
 	PlatformEngines []PlatformEngAux      `xorm: "platform_engines"`
 }

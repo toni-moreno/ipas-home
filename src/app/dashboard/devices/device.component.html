@@ -54,7 +54,14 @@
               </mat-cell>
               {{element | json}}
             </ng-container>
-
+            <ng-container matColumnDef="DeviceID">
+              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>DeviceID</mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.DeviceID}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="ProductID">
+              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>ProductID</mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.ProductID}} </mat-cell>
+            </ng-container>
             <ng-container matColumnDef="PlatformID">
               <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>PlatformID</mat-header-cell>
               <mat-cell *matCellDef="let element">
@@ -63,13 +70,11 @@
                 </ng-container>
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="ProductID">
-              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>ProductID</mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.ProductID}} </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="DeviceID">
-              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>DeviceID</mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.DeviceID}} </mat-cell>
+            <ng-container matColumnDef="LastAction">
+              <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>LastAction</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span style="color:primary">{{element.LastAction | uppercase}}</span>
+                </mat-cell>
             </ng-container>
             <ng-container matColumnDef="LastState">
               <mat-header-cell *matHeaderCellDef class="cell-header text-test" mat-sort-header>LastState</mat-header-cell>

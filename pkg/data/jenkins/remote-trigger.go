@@ -296,6 +296,7 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 			ProductID:       jobdt.Platform.ProductID,
 			DeviceID:        d.ID,
 			PlatformEngines: jobdt.Platform.Engine,
+			LastAction:      action,
 			LastState:       "PENDING",
 			TaskStat:        taskmap,
 		}

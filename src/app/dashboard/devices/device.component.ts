@@ -25,7 +25,7 @@ export class DeviceComponent {
 
   dataSource: MatTableDataSource<any> = new MatTableDataSource();
   listMode: Array<any> = [
-    { id: 'all', desc: 'All', displayedColumns: ['actions', 'PlatformID', 'ProductID', 'DeviceID', 'LastState'], selected: true },
+    { id: 'all', desc: 'All', displayedColumns: ['actions', 'DeviceID', 'ProductID', 'PlatformID','LastAction', 'LastState'], selected: true },
     { id: 'byproduct', desc: 'By Product', data: '', displayedColumns: ['actions', 'PlatformID', 'DeviceID', 'LastState'], selected: false }
   ]
 
