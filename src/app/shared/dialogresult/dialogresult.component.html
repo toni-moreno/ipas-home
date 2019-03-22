@@ -1,24 +1,40 @@
 <h1 mat-dialog-title>Device Results</h1>
 <div mat-dialog-content>
-  <h2> {{data.DeviceID}}</h2>
-  <h3> {{data.ProductID}} |
-      <span *ngIf="data.LastState === 'SUCCESS'" style="color:green">{{data.LastState}}</span>
-      <span *ngIf="data.LastState === 'PENDING'" style="color:orange">{{data.LastState}}</span>
-      <span *ngIf="data.LastState === 'FAILURE'" style="color:red">{{data.LastState}}</span>
-  </h3>
-  <hr>
-  <h5>Job: {{resultStat.JobName}}</h5>
-  <h5>Is Finished: {{resultStat.IsFinished}}</h5>
-  <h5>Result: 
-      <span *ngIf="data.LastState === 'SUCCESS'" style="color:green">{{resultStat.Result}}</span>
-      <span *ngIf="data.LastState === 'PENDING'" style="color:orange">{{resultStat.Result}}</span>
-      <span *ngIf="data.LastState === 'FAILURE'" style="color:red">{{resultStat.Result}}</span>
-  </h5>
-  <hr>
-  <h5>Launched: {{resultStat.Launched}}</h5>
-  <h5>LastUpdate: {{resultStat.LastUpdate}}</h5>
-  <hr>
-  <h5>ExecURL <a [href]="resultStat.ExecURL">{{resultStat.ExecURL}}</a></h5>
+  <div class="col-md-6">
+    <h2> {{resultData.DeviceID}}</h2>
+    <h3> {{resultData.ProductID}} |
+      <span *ngIf="resultData.LastState === 'SUCCESS'" style="color:green">{{resultData.LastState}}</span>
+      <span *ngIf="resultData.LastState === 'PENDING'" style="color:orange">{{resultData.LastState}}</span>
+      <span *ngIf="resultData.LastState === 'FAILURE'" style="color:red">{{resultData.LastState}}</span>
+    </h3>
+    <hr>
+    <h5>Job: {{resultStat.JobName}}</h5>
+    <h5>Is Finished: {{resultStat.IsFinished}}</h5>
+    <h5>Result:
+      <span *ngIf="resultData.LastState === 'SUCCESS'" style="color:green">{{resultStat.Result}}</span>
+      <span *ngIf="resultData.LastState === 'PENDING'" style="color:orange">{{resultStat.Result}}</span>
+      <span *ngIf="resultData.LastState === 'FAILURE'" style="color:red">{{resultStat.Result}}</span>
+    </h5>
+    <hr>
+    <h5>Launched: {{resultStat.Launched}}</h5>
+    <h5>LastUpdate: {{resultStat.LastUpdate}}</h5>
+    <hr>
+    <h5>ExecURL <a [href]="resultStat.ExecURL">{{resultStat.ExecURL}}</a></h5>
+    <hr>
+    <h3> Params </h3>
+    <hr>
+    <ng-container *ngFor="let pengine of resultParams">
+      <h5>Config: {{pengine.ConfigID}}</h5>
+      <h5>Engine: {{pengine.EngineID}}</h5>
+      <h5>Params: </h5>
+      <ng-container *ngFor="let param of pengine.Params">
+        <div>
+          <span>{{param.Key}}</span>
+          <span> = {{param.Value ? param.Value : 'null'}}</span>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
 </div>
 <div mat-dialog-actions>
   <button mat-button color="primary" [mat-dialog-close]="'true'" cdkFocusInitial>Ok</button>

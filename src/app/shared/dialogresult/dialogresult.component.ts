@@ -6,16 +6,22 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
   templateUrl: './dialogresult.component.html'
 })
 export class DialogResultComponent {
-  resultStat : any;
+  resultStat: any;
+  resultData : any;
+  resultParams: any;
+
   constructor(
     public dialogRef: MatDialogRef<DialogResultComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) { 
-      for (let i in data.TaskStat) {
-        this.resultStat = data.TaskStat[i];
-      }
-      console.log(this.resultStat);
-      }
-     
+    @Inject(MAT_DIALOG_DATA) public importedData: any) {
+      this.resultData = importedData.data
+      this.resultParams = importedData.params
+
+    for (let i in importedData.data.TaskStat) {
+      this.resultStat = importedData.data.TaskStat[i];
+    }
+    console.log(this.resultStat);
+  }
+
 
   onNoClick(): void {
     this.dialogRef.close();

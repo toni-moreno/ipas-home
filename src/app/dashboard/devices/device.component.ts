@@ -103,7 +103,7 @@ export class DeviceComponent {
   }
 
   /* *********************  */
-  /* CUSTOM PARAMS SECTION  */
+  /* DIALOG SECTION  */
   /* *********************  */
 
   openDialog(imode): void {
@@ -111,7 +111,7 @@ export class DeviceComponent {
       .subscribe(
         (data) => {
           let dialogRef = this.dialog.open(DialogListComponent, {
-            width: '500px',
+            width: '600px',
             disableClose: true,
             data: data,
           });
@@ -129,13 +129,21 @@ export class DeviceComponent {
       )
   }
 
-
   openResultDialog(data): void {
-    let dialogRef = this.dialog.open(DialogResultComponent, {
-      width: '500px',
-      disableClose: true,
-      data: data,
-    });
+    this.deviceService.getDeviceConfigParams('/api/cfg/deviceconfigparams/bydevice/' + data.ProductID + '/' + data.DeviceID)
+    .subscribe(
+      (params) => {
+        let pp = this.prepareEditData(params);
+        console.log(params);
+        let dialogRef = this.dialog.open(DialogResultComponent, {
+          width: '600px',
+          disableClose: true,
+          data: {'data': data, 'params': pp},
+        });
+      },
+      (err) => console.log(err),
+      () => console.log("DONE")
+    )
   }
 
   prepareEditData(data) {
