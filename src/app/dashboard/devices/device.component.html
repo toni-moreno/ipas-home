@@ -13,6 +13,10 @@
       <button mat-raised-button [color]="viewMode === 'new' ? 'accent' : 'primary'" (click)="viewMode = 'new'">
         <mat-icon>playlist_add</mat-icon> New Device
       </button>
+
+      <button mat-raised-button [color]="viewMode === 'new from' ? 'accent' : 'primary'" (click)="copyFrom()">
+          <mat-icon>playlist_add</mat-icon> New Device from
+        </button>
     </mat-card>
   </div>
 

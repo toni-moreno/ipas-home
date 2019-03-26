@@ -4,6 +4,7 @@ import { FormControl } from '@angular/forms';
 import { DeviceService } from './device.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { DialogListComponent } from '../../shared/dialoglist/dialoglist.component'
+import { DialogCopyComponent } from '../../shared/dialogcopy/dialogcopy.component'
 import { ProductService } from '..//products/product.service'
 import { DialogResultComponent } from 'app/shared/dialogresult/dialogresult.component';
 import { BlockUIService } from '../../shared/blockui/blockui-service';
@@ -146,12 +147,40 @@ export class DeviceComponent {
     )
   }
 
+  openCopyFromDialog(): void {
+    this.deviceService.getDeviceList('/api/cfg/platformdevices')
+      .subscribe(
+        (data) => {
+          let dialogRef = this.dialog.open(DialogCopyComponent, {
+            width: '600px',
+            disableClose: true,
+            data: data,
+          });
+          dialogRef.afterClosed().subscribe(result => {
+              console.log(result);
+              this.editDevice(result,'copy');
+            }
+          );
+        },
+        (err) => console.log(err),
+        () => console.log("DONE")
+      )
+  }
+
+
+  copyFrom() {
+    this.openCopyFromDialog();
+  }
+
   prepareEditData(data) {
     let lengine = {};
 
     //Extract all engines, we don't need ProductID or DeviceID a
-    for (let engine of data) {
-      lengine[engine.EngineID] = engine.EngineID
+
+    if (data) {
+      for (let engine of data) {
+        lengine[engine.EngineID] = engine.EngineID
+     }
     }
 
     //Initialize emtpy object in order to being filled by each engine
@@ -181,9 +210,13 @@ export class DeviceComponent {
             ProductID: element.ProductID,
             DeviceID: element.DeviceID,
             Engines: [],
+            paramsLoaded : true,
             Platform: element.PlatformEngines
           };
           deviceData.Engines = this.prepareEditData(data);
+          if (deviceData.Engines.length > 0 ) {
+            deviceData.paramsLoaded = false;
+          }
           this.editData = deviceData,
             this.viewMode = devAction
         },
