@@ -4,7 +4,7 @@ import { FormControl } from '@angular/forms';
 import { DeviceService } from './device.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { DialogListComponent } from '../../shared/dialoglist/dialoglist.component'
-import { DialogCopyComponent } from '../../shared/dialogcopy/dialogcopy.component'
+import { DialogNewItemComponent } from '../../shared/dialognewitem/dialognewitem.component'
 import { ProductService } from '..//products/product.service'
 import { DialogResultComponent } from 'app/shared/dialogresult/dialogresult.component';
 import { BlockUIService } from '../../shared/blockui/blockui-service';
@@ -27,7 +27,7 @@ export class DeviceComponent {
   dataSource: MatTableDataSource<any> = new MatTableDataSource();
   listMode: Array<any> = [
     { id: 'all', desc: 'All', displayedColumns: ['actions', 'DeviceID', 'ProductID', 'PlatformID','LastAction', 'LastState'], selected: true },
-    { id: 'byproduct', desc: 'By Product', data: '', displayedColumns: ['actions', 'PlatformID', 'DeviceID', 'LastState'], selected: false }
+    { id: 'byproduct', desc: 'By Product', data: '', displayedColumns: ['actions', 'PlatformID', 'DeviceID', 'LastAction', 'LastState'], selected: false }
   ]
 
   selectedListMode: any;
@@ -147,18 +147,22 @@ export class DeviceComponent {
     )
   }
 
-  openCopyFromDialog(): void {
+  openNewDeviceFromDialog(): void {
     this.deviceService.getDeviceList('/api/cfg/platformdevices')
       .subscribe(
         (data) => {
-          let dialogRef = this.dialog.open(DialogCopyComponent, {
+          let dialogRef = this.dialog.open(DialogNewItemComponent, {
             width: '600px',
             disableClose: true,
             data: data,
           });
           dialogRef.afterClosed().subscribe(result => {
               console.log(result);
-              this.editDevice(result,'copy');
+              if (result) {
+                this.editDevice(result,'new from');
+              } else {
+                this.viewMode = 'new'
+              }
             }
           );
         },
@@ -168,8 +172,8 @@ export class DeviceComponent {
   }
 
 
-  copyFrom() {
-    this.openCopyFromDialog();
+  newDeviceDialog() {
+    this.openNewDeviceFromDialog();
   }
 
   prepareEditData(data) {
@@ -208,17 +212,17 @@ export class DeviceComponent {
           console.log(data);
           let deviceData = {
             ProductID: element.ProductID,
-            DeviceID: element.DeviceID,
+            DeviceID: action !== 'edit' ? '' : element.DeviceID,
             Engines: [],
             paramsLoaded : true,
             Platform: element.PlatformEngines
           };
           deviceData.Engines = this.prepareEditData(data);
-          if (deviceData.Engines.length > 0 ) {
+          if (deviceData.Engines.length === 0 ) {
             deviceData.paramsLoaded = false;
           }
           this.editData = deviceData,
-            this.viewMode = devAction
+          this.viewMode = devAction
         },
 
         (err) => console.log(err),

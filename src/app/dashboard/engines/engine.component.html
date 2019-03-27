@@ -1,13 +1,11 @@
 <div class="container">
     <app-navbar title="Engines Management > {{viewMode | uppercase}}"> 
     </app-navbar>
-    <div class="row">
     <br><mat-divider></mat-divider><br>
     <mat-card>
         <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="viewMode = 'list'"> <mat-icon>playlist_play</mat-icon> List Engines</button>
         <!--button mat-raised-button [color]="viewMode === 'new' ? 'accent' : 'primary'" (click)="viewMode = 'new'"> <mat-icon>playlist_add</mat-icon> New Product</button-->
     </mat-card>
-    </div>
   <ng-container [ngSwitch]="viewMode">
     <ng-template ngSwitchCase="list">
       <div class="container">

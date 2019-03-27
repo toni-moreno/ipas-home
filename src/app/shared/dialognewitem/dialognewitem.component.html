@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>New Device</h1>
+<div mat-dialog-content>
+    <mat-form-field>
+        <mat-label>Select device: </mat-label>
+        <mat-select placeholder="devices" [(ngModel)]="selected">
+          <mat-option *ngFor="let device of data" [value]="device">
+            {{ device.DeviceID}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+</div>
+  <div mat-dialog-actions>
+    <button mat-button color="warn" (click)="onNoClick()">Cancel</button>
+    <button mat-button color="accent" [mat-dialog-close]="selected" cdkFocusInitial [disabled]="!selected.DeviceID">New from {{selected.DeviceID ? ' '+selected.DeviceID : '' }}</button>
+    <button mat-button color="primary" [mat-dialog-close]="null" cdkFocusInitial>New device</button>
+
+  </div>

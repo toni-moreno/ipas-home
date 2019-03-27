@@ -2,13 +2,13 @@ import { Component, OnInit, Inject, Input } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
-  selector: 'dialog-device-copy',
-  templateUrl: './dialogcopy.component.html'
+  selector: 'dialog-new-item-copy',
+  templateUrl: './dialognewitem.component.html'
 })
-export class DialogCopyComponent {
-  selected : any =  null
+export class DialogNewItemComponent {
+  selected : any =  {}
   constructor(
-    public dialogRef: MatDialogRef<DialogCopyComponent>,
+    public dialogRef: MatDialogRef<DialogNewItemComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
       console.log("PAASED DATAAA", data);
      }

@@ -49,7 +49,7 @@ import { DialogParamsComponent } from './shared/dialogparams/dialogparams.compon
 import { DialogListComponent } from './shared/dialoglist/dialoglist.component'
 import { DialogStepsComponent } from './shared/dialogstep/dialogsteps.component'
 import { DialogResultComponent } from './shared/dialogresult/dialogresult.component'
-import { DialogCopyComponent } from './shared/dialogcopy/dialogcopy.component'
+import { DialogNewItemComponent } from './shared/dialognewitem/dialognewitem.component'
 
 import { AppComponent } from './app.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
@@ -94,7 +94,7 @@ import { BlockUIComponent } from './shared/blockui/blockui-component'
     DialogListComponent,
     DialogStepsComponent,
     DialogResultComponent,
-    DialogCopyComponent,
+    DialogNewItemComponent,
     SidebarComponent,
     HomeComponent,
     ProfileComponent,
@@ -164,7 +164,7 @@ import { BlockUIComponent } from './shared/blockui/blockui-component'
     ReactiveFormsModule,
     CustomPipesModule
   ],
-  entryComponents: [DialogParamsComponent, DialogListComponent, DialogStepsComponent, DialogResultComponent, DialogCopyComponent, BlockUIComponent],
+  entryComponents: [DialogParamsComponent, DialogListComponent, DialogStepsComponent, DialogResultComponent, DialogNewItemComponent, BlockUIComponent],
   providers: [DefaultRequestOptions, SettingsService, WizardService, DeviceWizardService ],
   bootstrap: [AppComponent]
 })

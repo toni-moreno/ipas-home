@@ -61,7 +61,7 @@ export class DeviceWizardComponent implements OnInit {
   //Set core config vars as formarrays, it will be easier to go over them
   get product(): FormGroup { return this.deviceFormGroup.get('engine') as FormGroup; }
 
-  ngOnInit() {
+  reloadData() {
     //Retrive all Products:
     this.productService.getProducts('/api/rt/gitrepo/product')
       .subscribe(
@@ -97,7 +97,10 @@ export class DeviceWizardComponent implements OnInit {
         //productid: "",
       })
     }
+  }
 
+  ngOnInit() {
+    this.reloadData();
   }
 
   /* *****************/

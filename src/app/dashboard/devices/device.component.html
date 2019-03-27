@@ -2,23 +2,15 @@
 <div class="container">
   <app-navbar title="Device Management > {{viewMode | uppercase}}">
   </app-navbar>
-  <div class="row">
-    <br>
-    <mat-divider></mat-divider>
-    <br>
+    <br><mat-divider></mat-divider><br>
     <mat-card>
       <button mat-raised-button [color]="viewMode === 'list' ? 'accent' : 'primary'" (click)="finishAction()">
         <mat-icon>playlist_play</mat-icon> List Devices
       </button>
-      <button mat-raised-button [color]="viewMode === 'new' ? 'accent' : 'primary'" (click)="viewMode = 'new'">
+      <button mat-raised-button [color]="viewMode === 'new' || viewMode === 'new from' ? 'accent' : 'primary'" (click)="newDeviceDialog()" [disabled]="viewMode !== 'list'">
         <mat-icon>playlist_add</mat-icon> New Device
       </button>
-
-      <button mat-raised-button [color]="viewMode === 'new from' ? 'accent' : 'primary'" (click)="copyFrom()">
-          <mat-icon>playlist_add</mat-icon> New Device from
-        </button>
     </mat-card>
-  </div>
 
   <ng-container [ngSwitch]="viewMode">
     <ng-template ngSwitchCase="list">
@@ -26,7 +18,6 @@
 
       <ng-container *ngIf="dataSource">
         <div class="container">
-
           <mat-toolbar style="background-color: #e9e9e9;">
             <mat-toolbar-row>
               <mat-form-field style="font-size: 14px">
@@ -100,7 +91,7 @@
       </ng-container>
     </ng-template>
     <ng-template ngSwitchDefault>
-      <device-wizard [editData]="editData" [viewMode]="viewMode" (finishedAction)="finishAction()"></device-wizard>
+      <device-wizard #wizard [editData]="editData" [viewMode]="viewMode" (finishedAction)="finishAction()"></device-wizard>
     </ng-template>
   </ng-container>
 </div>
