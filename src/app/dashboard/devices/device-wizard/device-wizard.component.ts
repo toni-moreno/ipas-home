@@ -149,6 +149,9 @@ export class DeviceWizardComponent implements OnInit {
 
           //Needs the real config index provided by the product
           let iconfig = this.product_info.gather[iengine].config.findIndex(element => element.name === sengine.ConfigID);
+          if (iconfig < 0) {
+            this.editData.paramsLoaded = false;
+          } else {
           this.selectedConfig = iconfig;
 
           for (let pengine of sengine.Params) {
@@ -163,8 +166,9 @@ export class DeviceWizardComponent implements OnInit {
             }
           }
 
-          //Load Config params
-          this.loadEngineConfigParams(iengine, sengine.ConfigID, this.product_info.gather[iengine].config[iconfig].params, sengine.EngineID);
+            //Load Config params
+            this.loadEngineConfigParams(iengine, sengine.ConfigID, this.product_info.gather[iengine].config[iconfig].params, sengine.EngineID);
+          }
         }
 
         //Need to add to platform for each engine!

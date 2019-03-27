@@ -159,9 +159,8 @@ export class DeviceComponent {
           dialogRef.afterClosed().subscribe(result => {
               console.log(result);
               if (result) {
-                this.editDevice(result,'new from');
-              } else {
-                this.viewMode = 'new'
+                if (result.DeviceID) this.editDevice(result,'new from');
+                else this.viewMode = 'new';
               }
             }
           );
@@ -212,7 +211,7 @@ export class DeviceComponent {
           console.log(data);
           let deviceData = {
             ProductID: element.ProductID,
-            DeviceID: action !== 'edit' ? '' : element.DeviceID,
+            DeviceID: (devAction !== 'edit' && devAction !== 'delete') ? '' : element.DeviceID,
             Engines: [],
             paramsLoaded : true,
             Platform: element.PlatformEngines

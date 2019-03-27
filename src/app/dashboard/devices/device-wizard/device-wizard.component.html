@@ -82,12 +82,9 @@
               <span>
                 {{kengine.engine}}
               </span>
-              <ng-container *ngIf="editData">
-
-                <span class="text text-danger" *ngIf="editData.paramsLoaded === false">
+                <span class="text text-danger" *ngIf="editData ? editData.paramsLoaded === false : false">
                   <mat-icon matTooltip="No params have been retrived">warning</mat-icon>
                 </span>
-              </ng-container>
             </ng-template>
             <mat-horizontal-stepper [linear]="isLinear" #stepper *ngIf="product_info">
               <br>
@@ -95,7 +92,7 @@
                 <form [formGroup]="deviceFormGroup">
                   <mat-form-field>
                     <mat-select #config_selection placeholder="Available configs" name="config"
-                      [disabled]="editData ? editData.paramsLoaded : false">
+                      [disabled]="(editData ? editData.paramsLoaded : false) && viewMode == 'edit'" >
                       <mat-option *ngFor="let config of kengine.config; index as iconfig" [value]="iconfig">
                         <span [matTooltip]="config.description">
                           {{config.name}}
