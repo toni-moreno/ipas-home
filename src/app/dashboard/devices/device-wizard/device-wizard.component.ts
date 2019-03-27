@@ -153,13 +153,14 @@ export class DeviceWizardComponent implements OnInit {
             this.editData.paramsLoaded = false;
           } else {
           this.selectedConfig = iconfig;
+          console.log(iconfig, iengine, sengine.Params)
 
           for (let pengine of sengine.Params) {
             if (this.product_info.gather[iengine].config[iconfig].params.product_params) {
-              this.product_info.gather[iengine].config[iconfig].params.device_params.map((element => { if (element['key'] === pengine.Key) element['value'] = pengine.Value }))
+              this.product_info.gather[iengine].config[iconfig].params.product_params.map((element => { if (element['key'] === pengine.Key) element['value'] = pengine.Value }))
             }
             if (this.product_info.gather[iengine].config[iconfig].params.platform_params) {
-              this.product_info.gather[iengine].config[iconfig].params.device_params.map((element => { if (element['key'] === pengine.Key) element['value'] = pengine.Value }))
+              this.product_info.gather[iengine].config[iconfig].params.platform_params.map((element => { if (element['key'] === pengine.Key) element['value'] = pengine.Value }))
             }
             if (this.product_info.gather[iengine].config[iconfig].params.device_params) {
               this.product_info.gather[iengine].config[iconfig].params.device_params.map((element => { if (element['key'] === pengine.Key) element['value'] = pengine.Value }))
