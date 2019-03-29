@@ -141,7 +141,7 @@
                                       </mat-label>
                                       <input matInput
                                         *ngIf="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key === 'DEVICE_ID'"
-                                        [value]="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key === 'DEVICE_ID' ? this.deviceFormGroup.controls.id.value : ''"
+                                        [value]="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key === 'DEVICE_ID' ? this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].controls.value.setValue(this.deviceFormGroup.controls.id.value) : ''"
                                         readonly formControlName="value">
                                       <input matInput
                                         *ngIf="this.deviceFormGroup.controls.engine.controls[iengine].controls.params.controls[l].value.key !== 'DEVICE_ID'"
