@@ -7,11 +7,18 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 })
 export class DialogNewItemComponent {
   selected : any =  {}
+  selectedDevice : string;
+  filteredData: any  =  []
   constructor(
     public dialogRef: MatDialogRef<DialogNewItemComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
       console.log("PAASED DATAAA", data);
      }
+
+     selectDevice(dev) {
+      this.filteredData = this.data.filter((element) => element.DeviceID === dev);
+      this.selected =  {}
+    }
 
   onNoClick(): void {
     this.dialogRef.close();

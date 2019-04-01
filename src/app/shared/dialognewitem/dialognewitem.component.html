@@ -1,13 +1,24 @@
 <h1 mat-dialog-title>New Device</h1>
 <div mat-dialog-content>
     <mat-form-field>
-        <mat-label>Select device: </mat-label>
-        <mat-select placeholder="devices" [(ngModel)]="selected">
-          <mat-option *ngFor="let device of data" [value]="device">
+        <mat-label>Select Device: </mat-label>
+        <mat-select placeholder="devices" [(ngModel)]="selectedDevice" (ngModelChange)="selectDevice($event)">
+          <mat-option *ngFor="let device of data | unique 'DeviceID'" [value]="device.DeviceID">
             {{ device.DeviceID}}
           </mat-option>
         </mat-select>
       </mat-form-field>
+
+      <ng-container *ngIf="selectedDevice">
+      <mat-form-field >
+        <mat-label >Select Product: </mat-label>
+        <mat-select placeholder="devices" [(ngModel)]="selected">
+          <mat-option *ngFor="let device of filteredData" [value]="device">
+            {{ device.ProductID}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
 </div>
   <div mat-dialog-actions>
     <button mat-button color="warn" (click)="onNoClick()">Cancel</button>
