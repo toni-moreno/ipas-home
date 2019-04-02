@@ -95,13 +95,13 @@
                       [disabled]="(editData ? editData.paramsLoaded : false) && viewMode == 'edit'" >
                       <mat-option *ngFor="let config of kengine.config; index as iconfig" [value]="iconfig">
                         <span [matTooltip]="config.description">
-                          {{config.name}}
+                          {{config.label}}
                         </span>
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
                   <button mat-mini-fab color="primary" [disabled]="config_selection.value == null"
-                    (click)="loadEngineConfigParams(iengine, kengine.config[config_selection.value].name,kengine.config[config_selection.value].params,kengine.engine)">
+                    (click)="loadEngineConfigParams(iengine, kengine.config[config_selection.value].id,kengine.config[config_selection.value].params,kengine.engine)">
                     <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
                   </button>
 

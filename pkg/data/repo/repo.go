@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/toni-moreno/ipas-home/pkg/config"
 	"github.com/Sirupsen/logrus"
+	"github.com/toni-moreno/ipas-home/pkg/config"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
@@ -225,7 +225,8 @@ type ProductStat struct {
 
 // EngineConfig get MainConfig this engine
 type EngineConfig struct {
-	Name        string      `yaml:"name" json:"name"`
+	ID          string      `yaml:"id" json:"id"`
+	Label       string      `yaml:"label" json:"label"`
 	Models      string      `yaml:"models" json:"models"`
 	Description string      `yaml:"description" json:"description"`
 	Dir         string      `yaml:"dir" json:"dir"`

@@ -148,7 +148,7 @@ export class DeviceWizardComponent implements OnInit {
           let iengine = engines.findIndex(element => element === sengine.EngineID);
 
           //Needs the real config index provided by the product
-          let iconfig = this.product_info.gather[iengine].config.findIndex(element => element.name === sengine.ConfigID);
+          let iconfig = this.product_info.gather[iengine].config.findIndex(element => element.id === sengine.ConfigID);
           if (iconfig < 0) {
             this.editData.paramsLoaded = false;
           } else {

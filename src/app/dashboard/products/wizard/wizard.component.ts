@@ -252,7 +252,8 @@ export class WizardComponent implements OnInit {
   //Creates a for for each configuration with params coming from the engine
   createConfigFromEngine(engine: string): AbstractControl {
     return this._formBuilder.group({
-      name: ['', Validators.required],
+      id: ['', Validators.required],
+      label: ['', Validators.required],
       models: ['', Validators.required],
       description: ['', Validators.required],
       dir: ['gather', Validators.required],

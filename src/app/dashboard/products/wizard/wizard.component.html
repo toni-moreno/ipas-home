@@ -167,7 +167,7 @@
             <p>Create new {{lengine.id}} configs</p>
           </ng-template>
           <!--INIT - Start the generation of the XXX section. Each engine can have multiple configs-->
-          <div class="col-md-9" *ngIf="engine_selection !== 'external'">
+          <div class="col-md-12" *ngIf="engine_selection !== 'external'">
             <mat-tab-group #tabGroup style="background-color:white" (selectedTabChange)="changeEngine($event)">
               <mat-tab label="Engines">
                 <div class="container">
@@ -209,7 +209,7 @@
                                   <mat-expansion-panel [expanded]=false>
                                     <mat-expansion-panel-header>
                                       <mat-panel-title>
-                                        <h3>{{iconfig}} - {{sgatherconfig.value.name || 'Name'}}</h3>
+                                        <h3>{{iconfig}} - {{sgatherconfig.value.label || 'Name'}}</h3>
                                       </mat-panel-title>
                                     </mat-expansion-panel-header>
                                     <mat-divider></mat-divider>
@@ -218,8 +218,12 @@
                                     <br>
                                     <h4>Product configuration:</h4>
                                     <mat-form-field appearance="outline">
-                                      <mat-label>Name:</mat-label>
-                                      <input matInput formControlName="name">
+                                      <mat-label>ID:</mat-label>
+                                      <input matInput formControlName="id">
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline">
+                                      <mat-label>Label:</mat-label>
+                                      <input matInput formControlName="label">
                                     </mat-form-field>
                                     <mat-form-field appearance="outline">
                                       <mat-label>Models:</mat-label>
