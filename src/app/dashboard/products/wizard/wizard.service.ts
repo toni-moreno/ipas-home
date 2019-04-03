@@ -31,22 +31,42 @@ export class WizardService {
     var blob = new Blob([JSON.stringify(finalForm)], { type: 'application/octet-stream' });
     const formData: any = new FormData()
 
-    formData.append('Msg', '|AUTOMATED|HOME|mynewproduct|ADD|STEP');
+    formData.append('Msg', '|AUTOMATED|HOME|'+platform.productid+'|REQUEST|ALL');
     formData.append("CommitFile", blob);
     return this.httpAPI.postFile('/api/rt/jenkins/build/product/add', formData)
     .map((responseData) => { console.log(responseData); return responseData.json() }
     )
-
 }
 
 
+  requestNewProduct(formGroup: any) {
+    const formData: any = new FormData();
+    formData.append('Msg', '|AUTOMATED|HOME|' + formGroup.product + '|REQUEST|ALL');
+    let rootDir = '/products/'
+    let product = formGroup.product + '/'
+    let yamlString = _yaml.stringify(formGroup, 999)
+    console.log(yamlString);
+    var blob = new Blob([yamlString], { type: 'application/octet-stream' });
+    formData.append("CommitFile", blob, rootDir + product + 'product.yaml');
+    return this.httpAPI.post('/api/rt/gitrepo/commitfile', formData)
 
-  uploadFiles(url, formGroup: any, files: any, step? : any) {
+  }
+
+
+
+  uploadFiles(url, formGroup: any, files: any, step : any) {
 
     //Creates upload files:
 
+    console.log("UPLOAD FILES: ",formGroup);
+    console.log("UPLOAD FILES2 : ",files);
+
     const formData: any = new FormData();
-    formData.append('Msg', '|AUTOMATED|HOME|' + formGroup.product + '|ADD' + '|'+step ? step : 'STEP');
+    formData.append('Msg', '|AUTOMATED|HOME|' + formGroup.product + '|ADD' + '|' + step);
+
+    //formData.append('Msg', '|AUTOMATED|HOME|' + formGroup.product + '|REQUEST|ALL');
+
+
     let rootDir = '/products/'
     let product = formGroup.product + '/'
     //All engines
@@ -62,6 +82,8 @@ export class WizardService {
         }
       }
     }
+
+    console.log("formDATA", formData);
 
     //Creates product YAML from formGroup:
     console.log(formGroup)

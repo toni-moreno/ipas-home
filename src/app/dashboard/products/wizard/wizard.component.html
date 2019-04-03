@@ -1,6 +1,7 @@
+<div #blocker></div>
 <div class="container">
   <!--INIT - stepper-->
-  <mat-horizontal-stepper [linear]="isLinear" #stepper>
+  <mat-vertical-stepper [linear]="isLinear" #stepper>
     <!--INIT - stepper - firstStep -->
     <ng-container *ngIf="stepInfo.productStatus?.hasDB === false">
       <mat-step [stepControl]="productFormGroup">
@@ -31,7 +32,7 @@
             <ng-template matStepLabel>
               <h4>Gather engines</h4>
             </ng-template>
-            <div class="col-md-3">
+            <div class="col-md-5">
               <mat-form-field>
                 <mat-select #gather_selection placeholder="Available engines" name="engine">
                   <mat-option *ngFor="let engine of gather_engines" [value]="engine.type">
@@ -42,8 +43,11 @@
               <button mat-mini-fab color="primary" [disabled]="gather_selection.value == null" (click)="addPlatformEngine('gather',gather_selection.value)">
                 <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
               </button>
+              <div>
+                <button mat-raised-button color="accent" matStepperNext type="button">Next</button>
+              </div>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-7">
               <ng-container>
                 <mat-chip-list #chipList>
                   <h5 style="padding-right: 10px;">Selected Engines </h5>
@@ -68,7 +72,7 @@
             <ng-template matStepLabel>
               <h4>Visual engines</h4>
             </ng-template>
-            <div class="col-md-3">
+            <div class="col-md-5">
               <mat-form-field>
                 <mat-select #visual_selection placeholder="Available engines" name="engine">
                   <mat-option *ngFor="let engine of visual_engines" [value]="engine.type">
@@ -79,8 +83,11 @@
               <button mat-mini-fab color="primary" [disabled]="visual_selection.value == null" (click)="addPlatformEngine('visual',visual_selection.value)">
                 <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
               </button>
+              <div>
+                <button mat-raised-button color="accent" matStepperNext type="button">Next</button>
+              </div>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-7">
               <ng-container>
                 <mat-chip-list #chipList>
                   <h5 style="padding-right: 10px;">Selected Engines </h5>
@@ -96,6 +103,7 @@
               </ng-container>
             </div>
           </ng-container>
+
         </form>
       </mat-step>
 
@@ -105,7 +113,7 @@
             <ng-template matStepLabel>
               <h4>Alert engines</h4>
             </ng-template>
-            <div class="col-md-3">
+            <div class="col-md-5">
               <mat-form-field>
                 <mat-select #alert_selection placeholder="Available engines" name="engine">
                   <mat-option *ngFor="let engine of alert_engines" [value]="engine.type">
@@ -116,8 +124,11 @@
               <button mat-mini-fab color="primary" [disabled]="alert_selection.value == null" (click)="addPlatformEngine('alert',alert_selection.value)">
                 <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
               </button>
+              <div>
+                <button mat-raised-button color="accent" matStepperNext type="button">Next</button>
+              </div>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-7">
               <ng-container>
                 <mat-chip-list #chipList>
                   <h5 style="padding-right: 10px;">Selected Engines </h5>
@@ -139,7 +150,6 @@
     </ng-container>
 
     <ng-container *ngIf="stepInfo.productStatus?.hasDB === true && platformEngines">
-
       <mat-step [stepControl]="productFormGroup">
         <form [formGroup]="productFormGroup">
           <ng-template matStepLabel>
@@ -443,6 +453,7 @@
         </form>
       </mat-step>
     </ng-container>
+
     <mat-step>
       <ng-template matStepLabel *ngIf="stepInfo.productStatus?.hasDB === true">
         <h4>Finish configuration</h4>
@@ -456,10 +467,10 @@
       <div>
         <button mat-raised-button color="accent" matStepperPrevious>Back</button>
         <button mat-raised-button color="accent">Cancel</button>
-        <button mat-raised-button color="accent" (click)="createNewProduct()">Finish</button>
+        <button mat-raised-button color="accent" (click)="(stepInfo.productStatus?.hasDB  && platformEngines) ? createNewConfigForProduct() : requestNewProduct()">Finish</button>
       </div>
     </mat-step>
-  </mat-horizontal-stepper>
+  </mat-vertical-stepper>
   <br>
   <mat-divider></mat-divider>
   <br>

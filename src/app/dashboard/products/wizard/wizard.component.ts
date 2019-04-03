@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Inject, Input, Output, EventEmitter, ViewChild, ViewContainerRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { EngineSNMPParams } from './wizard.data';
 import { WizardService } from './wizard.service';
@@ -6,6 +6,8 @@ import { DialogParamsComponent } from '../../../shared/dialogparams/dialogparams
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { MatTableDataSource, MatTabGroup } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
+import { BlockUIService } from '../../../shared/blockui/blockui-service';
+
 
 import * as _ from 'yamljs';
 import * as _lodash from 'lodash';
@@ -13,11 +15,13 @@ import * as _lodash from 'lodash';
 @Component({
   selector: 'app-wizard',
   templateUrl: './wizard.component.html',
-  providers: [WizardService],
+  providers: [WizardService, BlockUIService],
   styleUrls: ['./wizard.component.css']
 })
 
 export class WizardComponent implements OnInit {
+
+  @ViewChild('blocker', { read: ViewContainerRef }) container: ViewContainerRef;
 
   @Input() mode: boolean = true
   @Input() editData: any;
@@ -72,7 +76,7 @@ export class WizardComponent implements OnInit {
 
 
 
-  constructor(private _formBuilder: FormBuilder, public wizardService: WizardService, public dialog: MatDialog) {
+  constructor(private _formBuilder: FormBuilder, public wizardService: WizardService, public dialog: MatDialog, public _blocker: BlockUIService) {
     //Retrive all Platform Engines to have all my devices
 
   }
@@ -86,6 +90,7 @@ export class WizardComponent implements OnInit {
 
   ngOnInit() {
     console.log(this.stepInfo.step)
+    console.log("STEPINFOOO",this.stepInfo);
 
     //Need to retrieve all available services...   
 
@@ -102,6 +107,7 @@ export class WizardComponent implements OnInit {
       description: this.stepInfo.productData ? this.stepInfo.productData.description : ''
     })
 
+    console.log("EDIT DATA:", this.editData);
 
     this.wizardService.getPlatformEngines('/api/cfg/platformengines')
       .subscribe(
@@ -139,11 +145,7 @@ export class WizardComponent implements OnInit {
           }
 
           console.log(this.lengine)
-
           console.log(this.stepInfo.productData);
-          //this.productFormGroup = this.stepInfo.productData
-
-
         },
         (err) => console.log(err),
         () => console.log("DONE")
@@ -288,7 +290,31 @@ export class WizardComponent implements OnInit {
     return test
   }
 
-  createNewProduct() {
+  requestNewProduct() {
+    this.stepInfo.productData = this.productFormGroup.value
+    console.log(this.stepInfo.productData)
+    this._blocker.start(this.container, "Sending request for new product...");
+    this.wizardService.requestNewProduct(this.stepInfo.productData)
+    .subscribe(
+      data => {
+        console.log(data),
+          this.wizardService.newProduct(this.platformFormGroup.value, this.productFormGroup.value)
+            .subscribe(
+              data => {
+                console.log(data)
+              },
+              err => console.log(err),
+              () => console.log("DONE")
+            )
+        this.finishedAction.emit(data)
+      },
+      err => console.error(err),
+      () => console.log("OK, DONE")
+    )
+
+  }
+
+  createNewConfigForProduct() {
     //Merge data from productFormGroup from product:
     if (this.stepInfo.productData) {
       this.stepInfo.productData[this.stepInfo.step] = this.productFormGroup.value[this.stepInfo.step]
@@ -296,9 +322,15 @@ export class WizardComponent implements OnInit {
       this.stepInfo.productData = this.productFormGroup.value
     }
     console.log(this.stepInfo.productData)
+    this._blocker.start(this.container, "Sending request for new product...");
+
+    //Upload files to GIT
+    console.log("INFOOO:",this.stepInfo.productData, this.fileArray, this.stepInfo.step)
+    console.log("TTTTTT", this.stepInfo.step)
     this.wizardService.uploadFiles('/api/rt/gitrepo/commitfile', this.stepInfo.productData, this.fileArray, this.stepInfo.step)
       .subscribe(
         data => {
+          //If success, send request to jenkins
           console.log(data),
             this.wizardService.newProduct(this.platformFormGroup.value, this.productFormGroup.value)
               .subscribe(
