@@ -7,6 +7,8 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 })
 export class DialogParamsComponent {
 
+  data_types = ['array','boolean','string','integer']
+
   constructor(
     public dialogRef: MatDialogRef<DialogParamsComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }

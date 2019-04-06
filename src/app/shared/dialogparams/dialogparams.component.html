@@ -1,28 +1,38 @@
 <h1 mat-dialog-title>New parameter</h1>
 <div mat-dialog-content>
 
-  <mat-form-field appearance="outline">
+  <mat-form-field appearance="outline" style="width:  80%">
     <mat-label>Key</mat-label>
     <input matInput [(ngModel)]="data.key">
-    <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
+    <mat-icon matSuffix mat-mini-fab [matTooltip]="'Configuration key name'">help</mat-icon>
   </mat-form-field>
 
-  <mat-form-field appearance="outline">
+  <mat-form-field appearance="outline" style="width:  80%">
+      <mat-label>Label</mat-label>
+      <input matInput [(ngModel)]="data.label">
+      <mat-icon matSuffix mat-mini-fab [matTooltip]="'Friendly configuration key name to be displayed on deployment configuration'">help</mat-icon>
+    </mat-form-field>
+
+  <mat-form-field appearance="outline" style="width:  80%">
     <mat-label>Description</mat-label>
     <input matInput [(ngModel)]="data.description">
-    <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
+    <mat-icon matSuffix mat-mini-fab [matTooltip]="'Long description to be provided in parameters tooltip on deployment configuration'">help</mat-icon>
   </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Type</mat-label>
-    <input matInput [(ngModel)]="data.type">
-    <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
+  <mat-form-field appearance="outline" style="width:  80%">
+      <mat-select placeholder="Type" [(ngModel)]="data.type">
+          <mat-option *ngFor="let type of data_types" [value]="type">
+            {{ type }}
+          </mat-option>
+        </mat-select>
+    <mat-icon matSuffix mat-mini-fab [matTooltip]="'Parameter value type'">help</mat-icon>
   </mat-form-field>
 
-  <mat-form-field appearance="outline">
+  <mat-form-field appearance="outline" style="width:  80%">
     <mat-label>Default Value</mat-label>
+    
     <input matInput [(ngModel)]="data.value">
-    <mat-icon matSuffix mat-mini-fab [matTooltip]="'ll'">help</mat-icon>
+    <mat-icon matSuffix mat-mini-fab [matTooltip]="'Default value to be used on '+ data?.key">help</mat-icon>
   </mat-form-field>
 
 </div>
