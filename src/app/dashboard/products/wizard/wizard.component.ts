@@ -3,14 +3,19 @@ import { FormBuilder, FormGroup, FormArray, FormControl, Validators, AbstractCon
 import { EngineSNMPParams } from './wizard.data';
 import { WizardService } from './wizard.service';
 import { DialogParamsComponent } from '../../../shared/dialogparams/dialogparams.component'
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { MatTableDataSource, MatTabGroup } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { BlockUIService } from '../../../shared/blockui/blockui-service';
 
+import { Observable } from 'rxjs'
 
 import * as _ from 'yamljs';
 import * as _lodash from 'lodash';
+
+export interface ExampleTab {
+  label: string;
+  content: string;
+}
 
 @Component({
   selector: 'app-wizard',
@@ -35,9 +40,12 @@ export class WizardComponent implements OnInit {
     'productData': null,
     'step': null
   }
+
   @Output() public finishedAction: EventEmitter<any> = new EventEmitter();
 
   selection = new SelectionModel<Element>(true, []);
+
+  finished: boolean = false;
 
   lengine = null;
 
@@ -47,13 +55,22 @@ export class WizardComponent implements OnInit {
     alert: []
   }
 
+  fileRemovedArray = {
+    gather: [],
+    visual: [],
+    alert: []
+  }
+
+  asyncTabs: Observable<ExampleTab[]>;
+  prefTabs: any;
+
+
   isLinear: boolean = false;
   allowCustomParams: boolean = false;
   showDebug: boolean = false
   productFormGroup: any;
   platformFormGroup: any;
-  displayedColumns: string[] = ['select', 'ID', 'EngineID'];
-  public servicesList: any;
+  platformEngines: any
 
   gather_engines: EngineElement[] = [
     { name: 'SNMP', type: 'snmpcollector' },
@@ -69,16 +86,8 @@ export class WizardComponent implements OnInit {
   ];
 
   bool_params = [true, false]
-
-  platformEngines: any;
-
-  filteredServices: any = [];
-
-
-
   constructor(private _formBuilder: FormBuilder, public wizardService: WizardService, public dialog: MatDialog, public _blocker: BlockUIService) {
     //Retrive all Platform Engines to have all my devices
-
   }
 
   //Set core config vars as formarrays, it will be easier to go over them
@@ -89,14 +98,11 @@ export class WizardComponent implements OnInit {
 
 
   ngOnInit() {
-    console.log(this.stepInfo.step)
-    console.log("STEPINFOOO",this.stepInfo);
 
     //Need to retrieve all available services...   
 
     this.platformFormGroup = this._formBuilder.group({
       productid: "",
-      tags: [],
       engine: new FormArray([]),
     })
 
@@ -107,56 +113,49 @@ export class WizardComponent implements OnInit {
       description: this.stepInfo.productData ? this.stepInfo.productData.description : ''
     })
 
-    console.log("EDIT DATA:", this.editData);
 
-    this.wizardService.getPlatformEngines('/api/cfg/platformengines')
-      .subscribe(
-        (data) => {
-        this.platformEngines = data
-          switch (this.stepInfo.step) {
-            case 'gather':
-              this.lengine = { 'id': 'gather', 'desc': 'Gather', 'data': this.gather_engines };
-              this.productFormGroup.setControl('gather', new FormArray([]))
-              for (let i of this.stepInfo.productStatus.g_engines) {
-                let test = this.platformEngines.filter((element => element.ID === i)).map((element) => element.EngineID)
-                this.addEngine('gather', test[0])
-              }
-              break;
-            case 'visual':
-              this.lengine = { 'id': 'visual', 'desc': 'Visual', 'data': this.visual_engines };
-              this.productFormGroup.setControl('visual', new FormArray([]))
-              for (let i of this.stepInfo.productStatus.v_engines) {
-                let test = this.platformEngines.filter((element => element.ID === i)).map((element) => element.EngineID)
-                this.addEngine('visual', test[0])
-              }
-              break;
-            case 'alert':
-              this.lengine = { 'id': 'alert', 'desc': 'Alert', 'data': this.alert_engines };
-              this.productFormGroup.setControl('alert', new FormArray([]))
-              for (let i of this.stepInfo.productStatus.a_engines) {
-                let test = this.platformEngines.filter((element => element.ID === i)).map((element) => element.EngineID)
-                this.addEngine('alert', test[0])
-              }
-            default:
-              this.productFormGroup.setControl('gather', new FormArray([]))
-              this.productFormGroup.setControl('visual', new FormArray([]))
-              this.productFormGroup.setControl('alert', new FormArray([]))
-              break
-          }
+    //Load data!
+    switch (this.stepInfo.step) {
+      case 'gather':
+        this.lengine = { 'id': 'gather', 'desc': 'Gather', 'data': this.gather_engines };
+        //Creates the gather formArray...
+        this.productFormGroup.setControl('gather', new FormArray([]))
+        console.log("MODE", this.mode)
+        this.loadPlatformParams('g_engines', 'gather');
 
-          console.log(this.lengine)
-          console.log(this.stepInfo.productData);
-        },
-        (err) => console.log(err),
-        () => console.log("DONE")
-      )
-
-
+        //For each engine available, add it!
+        for (let i of this.stepInfo.productData.gather) {
+          //let test = this.platformEngines.filter((element => element.ID === i)).map((element) => element.EngineID)
+          this.addEngine('gather', i.engine)
+        }
+        this.finished = true;
+        break;
+      case 'visual':
+        this.lengine = { 'id': 'visual', 'desc': 'Visual', 'data': this.visual_engines };
+        this.productFormGroup.setControl('visual', new FormArray([]))
+        for (let i of this.stepInfo.productData.visual) {
+          //let test = this.platformEngines.filter((element => element.ID === i)).map((element) => element.EngineID)
+          this.addEngine('visual', i.engine)
+        }
+        break;
+      case 'alert':
+        this.lengine = { 'id': 'alert', 'desc': 'Alert', 'data': this.alert_engines };
+        this.productFormGroup.setControl('alert', new FormArray([]))
+        for (let i of this.stepInfo.productData.alert) {
+          //let test = this.platformEngines.filter((element => element.ID === i)).map((element) => element.EngineID)
+          this.addEngine('alert', i.engine)
+        }
+        break;
+      default:
+        //Request resources case
+        this.productFormGroup.setControl('gather', new FormArray([]))
+        this.productFormGroup.setControl('visual', new FormArray([]))
+        this.productFormGroup.setControl('alert', new FormArray([]))
+        break
+    }
 
     //check if its an edit by property mode
     if (this.mode === true) {
-      console.log("EDIT")
-      console.log("DATA")
       //Load core params:
       this.productFormGroup.controls.product.setValue(this.editData.product)
       this.productFormGroup.models = this.editData.models
@@ -164,6 +163,24 @@ export class WizardComponent implements OnInit {
 
   }
 
+  loadPlatformParams(tengines, step) {
+    for (let i of this.stepInfo.productStatus[tengines]) {
+      //retrieve data from each engine:
+      this.wizardService.getPlatformEnginesByID(i)
+        .subscribe(
+          (data) => {
+            let n = this._formBuilder.group({
+              'name': data.EngineID,
+              'type': step,
+              'platform': new FormControl(data)
+            })
+            this.platformFormGroup.controls.engine.push(n)
+          },
+          (err) => console.log(err),
+          () => console.log("DONE")
+        )
+    }
+  }
 
   /* *****************/
   /* PLATFORM SECTION  */
@@ -192,15 +209,16 @@ export class WizardComponent implements OnInit {
     if (engine != 'external') {
       if (!this.productFormGroup.controls[step].value.find((element) => { console.log(element); return element.engine === engine })) {
         this.fileArray[step].push({ config: [[]] })
+        this.fileRemovedArray[step].push({ config: [[]] })
         switch (step) {
           case 'gather':
-            this.gather.push(this.createEngineFormGroup(engine));
+            this.gather.push(this.createEngineFormGroup(engine, step));
             break;
           case 'visual':
-            this.visual.push(this.createEngineFormGroup(engine));
+            this.visual.push(this.createEngineFormGroup(engine, step));
             break;
           case 'alert':
-            this.alert.push(this.createEngineFormGroup(engine));
+            this.alert.push(this.createEngineFormGroup(engine, step));
             break;
         }
       }
@@ -215,19 +233,43 @@ export class WizardComponent implements OnInit {
   }
 
   //Creates a form for each selected engine and creates an initialize the engine
-  createEngineFormGroup(t: string): AbstractControl {
+  createEngineFormGroup(engine_name: string, step: string): AbstractControl {
+
+    //Find if it already exist and extract if there are already cofigs on it!
+    let iengine = this.stepInfo.productData[step].findIndex((element) => { return element.engine === engine_name })
+
+    let configs = [];
+
+    //Check if it exist
+    if (iengine > -1) {
+      if (this.stepInfo.productData[step][iengine].config.length > 0) {
+        //Initialize emtpy file arrays
+        this.fileArray[step][iengine].config.push([])
+        this.fileRemovedArray[step][iengine].config.push([])
+
+        //Go over all config to load as forms
+        for (let kk in this.stepInfo.productData[step][iengine].config) {
+          configs.push(this.createConfigFromEngine(engine_name, step, this.stepInfo.productData[step][iengine].config[kk]))
+
+          //Load fileArray with existent files
+          for (let pp of this.stepInfo.productData[step][iengine].config[kk].config) {
+            this.fileArray[step][iengine].config[kk].push({ type: 'old', name: pp.source, status: 'ok' })
+          }
+        }
+      } else {
+        //It doens't exist any configuration on this product, creating a new one
+        configs.push(this.createConfigFromEngine(engine_name, step))
+      }
+    }
     return this._formBuilder.group({
-      engine: [t, Validators.required],
-      config: new FormArray([
-        //initialize the engine with empty configuration
-        this.createConfigFromEngine(t)
-      ])
+      engine: [engine_name, Validators.required],
+      config: new FormArray(configs)
     });
   }
 
   //This is just called on the HTML part. This creates a new config for the selected engine
   addConfigEngine(step: string, iengine: number, engine: string) {
-    this.productFormGroup.controls[step].controls[iengine].get('config').push(this.createConfigFromEngine(engine))
+    this.productFormGroup.controls[step].controls[iengine].get('config').push(this.createConfigFromEngine(engine, step))
     this.fileArray[step][iengine].config.push([])
 
   }
@@ -235,99 +277,208 @@ export class WizardComponent implements OnInit {
   //Deletes a config engine based on step, i, and  p
   deleteConfigEngine(step: string, iengine: number, iconfig: number) {
     console.log(step, iengine, iconfig);
+
     this.productFormGroup.controls[step].controls[iengine].controls.config.removeAt(iconfig)
+    //Need to delte all upload files... so needs to move all!
+
+    for (let ifile in this.fileArray[step][iengine].config[iconfig]) {
+      if (this.fileArray[step][iengine].config[iconfig][ifile].type === 'old') {
+        this.fileArray[step][iengine].config[iconfig][ifile].status = 'removed';
+        this.fileRemovedArray[step][iengine].config[iconfig].push(this.fileArray[step][iengine].config[iconfig][ifile]);
+      }
+    }
     this.fileArray[step][iengine].config.splice(iconfig, 1)
   }
 
-
-  changeEngine(event) {
-    //filterAvailableServices based on selected engine
-    //engine is retrieved by event.tab.textLabel
-    this.filteredServices = new MatTableDataSource(this.platformEngines.filter((element) => event.tab.textLabel === element.EngineID))
+  loadconfigFiles(config): AbstractControl {
+    let file_config = new FormArray([]);
+    //Go over all configs
+    for (let i of config.config) {
+      file_config.push(this._formBuilder.group({
+        source: [i.source, Validators.required],
+        dest: [i.dest, Validators.required],
+      }))
+    }
+    return file_config
   }
-
 
   /* *********************** */
   /* ENGINE CONFIG SECTION   */
   /* *********************** */
 
   //Creates a for for each configuration with params coming from the engine
-  createConfigFromEngine(engine: string): AbstractControl {
+  createConfigFromEngine(engine: string, step: string, config?: any): AbstractControl {
+
+    //Add logic to  load data in order it exists
+
     return this._formBuilder.group({
-      id: ['', Validators.required],
-      label: ['', Validators.required],
-      models: ['', Validators.required],
-      description: ['', Validators.required],
-      dir: ['gather', Validators.required],
-      config: new FormArray([]),
+      id: [config ? config.id : '', Validators.required],
+      label: [config ? config.label : '', Validators.required],
+      models: [config ? config.models : '', Validators.required],
+      description: [config ? config.description : '', Validators.required],
+      dir: [step, Validators.required],
+      config: config ? this.loadconfigFiles(config) : new FormArray([]),
       params: new FormGroup(
         {
-          'product_params': this.createParamsFromEngine(engine, 'product_params'),
-          'platform_params': this.createParamsFromEngine(engine, 'platform_params'),
-          'device_params': this.createParamsFromEngine(engine, 'device_params')
+          'product_params': this.createParamsFromEngine(engine, 'product_params', config ? config.params : null),
+          'platform_params': this.createParamsFromEngine(engine, 'platform_params', config ? config.params : null),
+          'device_params': this.createParamsFromEngine(engine, 'device_params', config ? config.params : null)
         })
     });
   }
 
   //Creates the specific param section in order to play with params (maybe a product can not have device params)
-  createParamsFromEngine(engine: string, sel_params: string): AbstractControl {
-    let test = this._formBuilder.array([])
-    let myArray = [] || {};
+  createParamsFromEngine(engine: string, sel_params: string, loaded_params?): AbstractControl {
+    let paramArray = this._formBuilder.array([])
+    let tempArray = [] || {};
+
     if (engine === 'snmpcollector') {
-      myArray = EngineSNMPParams
-    } else {
+      tempArray = EngineSNMPParams
+    } else if (engine === 'telegraf') {
       this.allowCustomParams = true;
-      return new FormArray([]);
     }
-    console.log(myArray);
-    for (let i of myArray[sel_params]) {
-      let p = this._formBuilder.group({})
-      for (let k in i) {
-        p.addControl(k, new FormControl(i[k]))
+    if (loaded_params) {
+      tempArray = loaded_params;
+    }
+
+    if (tempArray[sel_params]) {
+      for (let param of tempArray[sel_params]) {
+        let tempParam = this._formBuilder.group({})
+        for (let entry in param) {
+          tempParam.addControl(entry, new FormControl(param[entry]))
+        }
+        paramArray.push(tempParam);
       }
-      test.push(p);
     }
-    return test
+    return paramArray
   }
+
+  /* ********************  */
+  /* CONFIG FILES SECTION  */
+  /* ********************  */
+
+  addConfig(step: string, iengine: number, iconfig: number) {
+    this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.config.push(
+      this._formBuilder.group({
+        source: [null, Validators.required],
+        dest: [''],
+      }))
+
+    this.fileArray[step][iengine].config[iconfig].push([])
+    this.fileRemovedArray[step][iengine].config[iconfig].push([])
+  }
+
+  removeConfig(step: string, iengine: number, iconfig: number, ifile: number) {
+    //Ensure that on final product.yml the entry won't exist
+    //this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.config.controls[ifile].result = 'removed'
+    this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.config.removeAt(ifile)
+    //Check logic depending on type and status
+    if (this.fileArray[step][iengine].config[iconfig][ifile].type === 'old') {
+      this.fileArray[step][iengine].config[iconfig][ifile].status = 'removed';
+      this.fileRemovedArray[step][iengine].config[iconfig].push(this.fileArray[step][iengine].config[iconfig][ifile]);
+    }
+    this.fileArray[step][iengine].config[iconfig].splice(ifile, 1)
+  }
+
+  selectFile(event, step, iengine, iconfig, ifile) {
+    if (event.target.files.length > 0) {
+      if (this.fileArray[step][iengine].config[iconfig][ifile].type === 'old') {
+        this.fileArray[step][iengine].config[iconfig][ifile] = event.target.files
+        console.log("Changing old filename for the new one...")
+        this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.config.controls[ifile].controls.source.setValue(event.target.files[0].name)
+        this.fileArray[step][iengine].config[iconfig][ifile].type = 'old';
+        this.fileArray[step][iengine].config[iconfig][ifile].status = 'moved';
+        this.fileArray[step][iengine].config[iconfig][ifile].name = event.target.files[0].name;
+      } else {
+        this.fileArray[step][iengine].config[iconfig][ifile] = event.target.files
+        this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.config.controls[ifile].controls.source.setValue(event.target.files[0].name)
+        this.fileArray[step][iengine].config[iconfig][ifile].type = 'new';
+        this.fileArray[step][iengine].config[iconfig][ifile].name = event.target.files[0].name;
+        this.fileArray[step][iengine].config[iconfig][ifile].status = 'ok';
+
+      }
+
+    } else {
+      this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.config.controls[ifile].controls.source.setValue('')
+    }
+  }
+
+
+  /* *********************  */
+  /* CUSTOM PARAMS SECTION  */
+  /* *********************  */
+
+  openDialog(step: string, iengine: string, iconfig: string, sel_params: string, pdata?: any, idata?: number): void {
+
+    console.log("PARAMS", step, iengine, iconfig, sel_params, pdata, idata)
+    let dialogRef = this.dialog.open(DialogParamsComponent, {
+      width: '500px',
+      disableClose: true,
+      data: pdata ? pdata : {},
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('The dialog was closed', result);
+        console.log(this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.params)
+        let p = this._formBuilder.group({})
+        for (let o in result) {
+          p.addControl(o, new FormControl(result[o]))
+        }
+        if (idata) {
+          this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.params.controls[sel_params].controls.splice(idata, 1, p)
+        } else {
+          this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.params.controls[sel_params].push(p)
+        }
+
+      }
+    });
+  }
+
+  removeParameter(step: string, iengine: string, iconfig: string, sel_params: string, pdata?: any, idata?: number) {
+    //Removing paramter from controls
+    this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.params.controls[sel_params].controls.removeAt(idata)
+  }
+
+  /* *********************** */
+  /* FINISH ACTIONS SECTION  */
+  /* *********************** */
 
   requestNewProduct() {
     this.stepInfo.productData = this.productFormGroup.value
+
+    //Map all platformengines into product yaml
+
     console.log(this.stepInfo.productData)
     this._blocker.start(this.container, "Sending request for new product...");
-    this.wizardService.requestNewProduct(this.stepInfo.productData)
-    .subscribe(
-      data => {
-        console.log(data),
-          this.wizardService.newProduct(this.platformFormGroup.value, this.productFormGroup.value)
-            .subscribe(
-              data => {
-                console.log(data)
-              },
-              err => console.log(err),
-              () => console.log("DONE")
-            )
-        this.finishedAction.emit(data)
-      },
-      err => console.error(err),
-      () => console.log("OK, DONE")
-    )
-
+    this.wizardService.requestNewProduct(this.platformFormGroup.value, this.productFormGroup.value)
+      .subscribe(
+        data => {
+          console.log(data),
+            this.wizardService.newProduct(this.platformFormGroup.value, this.productFormGroup.value)
+              .subscribe(
+                data => {
+                  console.log(data)
+                },
+                err => console.log(err),
+                () => console.log("DONE")
+              )
+          this.finishedAction.emit(data)
+        },
+        err => console.error(err),
+        () => console.log("OK, DONE")
+      )
   }
 
-  createNewConfigForProduct() {
+  modifyProduct() {
     //Merge data from productFormGroup from product:
-    if (this.stepInfo.productData) {
-      this.stepInfo.productData[this.stepInfo.step] = this.productFormGroup.value[this.stepInfo.step]
-    } else {
-      this.stepInfo.productData = this.productFormGroup.value
-    }
+    this.stepInfo.productData[this.stepInfo.step] = this.productFormGroup.value[this.stepInfo.step]
+
     console.log(this.stepInfo.productData)
-    this._blocker.start(this.container, "Sending request for new product...");
+    this._blocker.start(this.container, "Modify product...");
 
     //Upload files to GIT
-    console.log("INFOOO:",this.stepInfo.productData, this.fileArray, this.stepInfo.step)
-    console.log("TTTTTT", this.stepInfo.step)
-    this.wizardService.uploadFiles('/api/rt/gitrepo/commitfile', this.stepInfo.productData, this.fileArray, this.stepInfo.step)
+    this.wizardService.uploadFiles(this.stepInfo.productData, this.fileArray, this.stepInfo.step)
       .subscribe(
         data => {
           //If success, send request to jenkins
@@ -346,97 +497,5 @@ export class WizardComponent implements OnInit {
         () => console.log("OK, DONE")
       )
   }
-
-  /* ********************  */
-  /* CONFIG FILES SECTION  */
-  /* ********************  */
-
-  addConfig(step: string, iengine: number, iconfig: number) {
-    this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.config.push(
-      this._formBuilder.group({
-        source: [null, Validators.required],
-        dest: ['', Validators.required],
-      }))
-
-    this.fileArray[step][iengine].config[iconfig].push([])
-  }
-
-  removeConfig(step: string, iengine: number, iconfig: number, ifile: number) {
-    this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.config.removeAt(ifile)
-    this.fileArray[step][iengine].config[iconfig].splice(ifile, 1)
-  }
-
-  selectFile(event, step, iengine, iconfig, ifile) {
-    this.fileArray[step][iengine].config[iconfig][ifile] = event.target.files
-  }
-
-
-  /* **************************  */
-  /* SERVICES SELECTION SECTION  */
-  /* **************************  */
-
-
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.filteredServices.data.length;
-    return numSelected === numRows;
-  }
-
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    this.isAllSelected() ?
-      this.selection.clear() :
-      this.filteredServices.data.forEach(row => this.selection.select(row));
-  }
-
-
-  selectService(event, engine) {
-
-    this.selection.toggle(event)
-    console.log(this.platformFormGroup.controls.engine.controls);
-    let n = this._formBuilder.group({
-      'name': engine,
-      'type': 'gather',
-      'platform': new FormControl(event)
-    })
-    let t = this.platformFormGroup.controls.engine.controls.findIndex((element) => { console.log(element.value.name, engine, element.value.name === engine); return element.value.platform.ID === event.ID })
-    if (t > -1) this.platformFormGroup.controls.engine.removeAt(t);
-    //remove if the  engine already exist and push it again!
-    if (this.selection.isSelected(event)) this.platformFormGroup.controls.engine.push(n)
-  }
-
-  applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-    this.servicesList.filter = filterValue;
-  }
-
-
-
-
-  /* *********************  */
-  /* CUSTOM PARAMS SECTION  */
-  /* *********************  */
-
-  openDialog(step: string, iengine: string, iconfig: string, sel_params: string): void {
-    let dialogRef = this.dialog.open(DialogParamsComponent, {
-      width: '500px',
-      disableClose: true,
-      data: {},
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        console.log('The dialog was closed', result);
-        console.log(this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.params)
-        let p = this._formBuilder.group({})
-        for (let o in result) {
-          p.addControl(o, new FormControl(result[o]))
-        }
-        this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.params.controls[sel_params].push(p)
-      }
-    });
-  }
-
 }
 

@@ -25,7 +25,7 @@ interface ProductList {
   hasDB: boolean,
   hasG: boolean,
   hasV: boolean,
-  hasA: boolean,
+  hasA: boolean
 }
 
 interface StatusCard {
@@ -35,29 +35,29 @@ interface StatusCard {
 }
 
 interface ProductElement {
-  name: string;
-  engine: string; 
-  gather: boolean;
-  visual: boolean;
-  alert: boolean;
+  name: string,
+  engine: string,
+  gather: boolean,
+  visual: boolean,
+  alert: boolean
 }
 
 interface EngineElement {
-  name: string;
-  type: string;
+  name: string,
+  type: string
 }
 
 interface SnmpCollectorElement {
-  PRODUCT_DEVICE_PORT: number;
-  PRODUCT_SYSTEMOID: string;
+  PRODUCT_DEVICE_PORT: number,
+  PRODUCT_SYSTEMOID: string
 }
 
 interface ProductFull {
-  product: string;
-  description: string;
-  models: string;
-  gather: Array<any>
-  visual: Array<any>
+  product: string,
+  description: string,
+  models: string,
+  gather: Array<any>,
+  visual: Array<any>,
   alert: Array<any>
 }
 
@@ -68,3 +68,10 @@ interface DeviceList {
   tags: any,
   products: any
 }
+
+interface BaseParameter {
+  key: string,
+  label: string,
+  type: string,
+  value: any
+} 

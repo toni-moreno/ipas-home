@@ -40,7 +40,8 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-              <button mat-mini-fab color="primary" [disabled]="gather_selection.value == null" (click)="addPlatformEngine('gather',gather_selection.value)">
+              <button mat-mini-fab color="primary" [disabled]="gather_selection.value == null"
+                (click)="addPlatformEngine('gather',gather_selection.value)">
                 <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
               </button>
               <div>
@@ -80,7 +81,8 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-              <button mat-mini-fab color="primary" [disabled]="visual_selection.value == null" (click)="addPlatformEngine('visual',visual_selection.value)">
+              <button mat-mini-fab color="primary" [disabled]="visual_selection.value == null"
+                (click)="addPlatformEngine('visual',visual_selection.value)">
                 <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
               </button>
               <div>
@@ -121,7 +123,8 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-              <button mat-mini-fab color="primary" [disabled]="alert_selection.value == null" (click)="addPlatformEngine('alert',alert_selection.value)">
+              <button mat-mini-fab color="primary" [disabled]="alert_selection.value == null"
+                (click)="addPlatformEngine('alert',alert_selection.value)">
                 <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
               </button>
               <div>
@@ -149,7 +152,7 @@
 
     </ng-container>
 
-    <ng-container *ngIf="stepInfo.productStatus?.hasDB === true && platformEngines">
+    <ng-container *ngIf="stepInfo.productStatus?.hasDB === true">
       <mat-step [stepControl]="productFormGroup">
         <form [formGroup]="productFormGroup">
           <ng-template matStepLabel>
@@ -178,7 +181,7 @@
           </ng-template>
           <!--INIT - Start the generation of the XXX section. Each engine can have multiple configs-->
           <div class="col-md-12" *ngIf="engine_selection !== 'external'">
-            <mat-tab-group #tabGroup style="background-color:white" (selectedTabChange)="changeEngine($event)">
+            <mat-tab-group #tabGroup style="background-color:white">
               <mat-tab label="Engines">
                 <div class="container">
                   <h3>Help</h3>
@@ -192,263 +195,283 @@
                 <ng-container *ngFor="let sgather of productFormGroup.controls[lengine.id].controls; index as iengine">
                   <mat-tab [label]="productFormGroup.controls[lengine.id].controls[iengine].value.engine"
                     [formArrayName]="lengine.id">
-                    <mat-horizontal-stepper [linear]="isLinear" #stepper>
-                      <br>
-                      <mat-step>
-                        <ng-template matStepLabel>
-                          <h4> {{productFormGroup.controls[lengine.id].controls[iengine].value.engine}} config</h4>
-                          <p>Create new {{productFormGroup.controls[lengine.id].controls[iengine].value.engine}}
-                            configs</p>
-                        </ng-template>
-                        <h4 style="display:inline">
-                          {{productFormGroup.controls[lengine.id].controls[iengine].value.engine}} - configuration</h4>
-                        <button mat-mini-fab color="primary" (click)="addConfigEngine(lengine.id,iengine, productFormGroup.controls[lengine.id].controls[iengine].value.engine)"
-                          style="display:inline">
-                          <mat-icon aria-label="Example icon-button with a heart icon">note_add</mat-icon>
-                        </button>
-                        <mat-accordion>
-                          <!-- Enter on the engine form using iengine -->
-                          <div [formArrayName]="iengine" class="row custom_row">
-                            <!-- Enter on the config form for config control-->
-                            <div formArrayName="config">
-                              <!-- Iterates over each  configuration. Declares iconfig as index-->
-                              <div *ngFor="let sgatherconfig of productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls; index as iconfig">
-                                <!-- Enter on each config using iconfig"-->
-                                <div class="col-md-9" [formArrayName]="iconfig">
-                                  <!--Form to complete 'Config Parameters' -->
-                                  <mat-expansion-panel [expanded]=false>
-                                    <mat-expansion-panel-header>
-                                      <mat-panel-title>
-                                        <h3>{{iconfig}} - {{sgatherconfig.value.label || 'Name'}}</h3>
-                                      </mat-panel-title>
-                                    </mat-expansion-panel-header>
-                                    <mat-divider></mat-divider>
-                                    <br>
-                                    <h3>Config</h3>
-                                    <br>
-                                    <h4>Product configuration:</h4>
-                                    <mat-form-field appearance="outline">
-                                      <mat-label>ID:</mat-label>
-                                      <input matInput formControlName="id">
-                                    </mat-form-field>
-                                    <mat-form-field appearance="outline">
-                                      <mat-label>Label:</mat-label>
-                                      <input matInput formControlName="label">
-                                    </mat-form-field>
-                                    <mat-form-field appearance="outline">
-                                      <mat-label>Models:</mat-label>
-                                      <input matInput formControlName="models">
-                                    </mat-form-field>
-                                    <mat-form-field appearance="outline">
-                                      <mat-label>Description:</mat-label>
-                                      <input matInput formControlName="description">
-                                    </mat-form-field>
-                                    <div formGroupName="config" class="row custom_row">
-                                      <h5>Files:
-                                        <button mat-mini-fab color="primary" (click)="addConfig(lengine.id, iengine, iconfig)">
-                                          <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
-                                        </button>
-                                      </h5>
-                                      <ng-container *ngFor="let kk of productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.config.controls; index as n">
-                                        <div [formArrayName]="n" class="col-md-12">
-                                          <div style="margin-bottom: 20px" class="config-card">
-                                            <button class="close-x" mat-icon-button (click)="removeConfig(lengine.id, iengine, iconfig, n)">
-                                              <mat-icon aria-label="Example icon-button with a heart icon">delete</mat-icon>
-                                            </button>
-                                            <mat-form-field appearance="outline">
-                                              <mat-label>Filename:</mat-label>
-                                              <input #source matInput formControlName="source">
-                                            </mat-form-field>
-                                            <input id="singleFile" type="file" (change)="selectFile($event,lengine.id, iengine, iconfig, n)" />
-                                          </div>
+                    <br>
+                    <ng-template matStepLabel>
+                      <h4> {{productFormGroup.controls[lengine.id].controls[iengine].value.engine}} config</h4>
+                      <p>Create new {{productFormGroup.controls[lengine.id].controls[iengine].value.engine}}
+                        configs</p>
+                    </ng-template>
+                    <h5 style="display:inline">
+                      {{productFormGroup.controls[lengine.id].controls[iengine].value.engine}} - configuration</h5>
+                    <button mat-icon-button color="primary"
+                      (click)="addConfigEngine(lengine.id,iengine, productFormGroup.controls[lengine.id].controls[iengine].value.engine)"
+                      style="display:inline">
+                      <mat-icon aria-label="Example icon-button with a heart icon">note_add</mat-icon>
+                    </button>
+                    <mat-accordion>
+                      <!-- Enter on the engine form using iengine -->
+                      <div [formArrayName]="iengine" class="row custom_row">
+                        <!-- Enter on the config form for config control-->
+                        <div formArrayName="config">
+                          <!-- Iterates over each  configuration. Declares iconfig as index-->
+                          <div
+                            *ngFor="let sgatherconfig of productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls; index as iconfig">
+                            <!-- Enter on each config using iconfig"-->
+                            <div class="col-md-11" [formArrayName]="iconfig">
+                              <!--Form to complete 'Config Parameters' -->
+                              <mat-expansion-panel [expanded]=false>
+                                <mat-expansion-panel-header>
+                                  <mat-panel-title>
+                                    <h5>{{iconfig}} - {{sgatherconfig.value.label || 'Name'}}</h5>
+                                  </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <mat-divider></mat-divider>
+                                <br>
+                                <h5>Product configuration:</h5>
+                                <br>
+                                <mat-form-field appearance="outline">
+                                  <mat-label>ID:</mat-label>
+                                  <input matInput formControlName="id">
+                                </mat-form-field>
+                                <mat-form-field appearance="outline">
+                                  <mat-label>Label:</mat-label>
+                                  <input matInput formControlName="label">
+                                </mat-form-field>
+                                <mat-form-field appearance="outline">
+                                  <mat-label>Models:</mat-label>
+                                  <input matInput formControlName="models">
+                                </mat-form-field>
+                                <mat-form-field appearance="outline">
+                                  <mat-label>Description:</mat-label>
+                                  <input matInput formControlName="description">
+                                </mat-form-field>
+                                <div formGroupName="config" class="row custom_row">
+                                  <h5>Configuration files:
+                                    <button mat-icon-button color="primary"
+                                      (click)="addConfig(lengine.id, iengine, iconfig)">
+                                      <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
+                                    </button>
+                                  </h5>
+                                  <ng-container
+                                    *ngFor="let kk of productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.config.controls; index as n">
+                                    <div [formArrayName]="n" class="col-md-12">
+                                      <div class="col-md-11">
+                                        <div style="margin-bottom: 20px" class="config-card">
+
+                                          <mat-form-field appearance="outline" style="width:100%">
+                                            <mat-label>Filename:</mat-label>
+                                            <input #source matInput formControlName="source" readonly>
+                                          </mat-form-field>
+                                          <mat-form-field appearance="outline" style="width:80%">
+                                            <mat-label>Dest:</mat-label>
+                                            <input #dest matInput formControlName="dest">
+                                          </mat-form-field>
+                                          <input id="singleFile" type="file"
+                                            (change)="selectFile($event,lengine.id, iengine, iconfig, n)" />
                                         </div>
+                                      </div>
+                                      <div class="col-md-1">
+                                        <button class="close-x" mat-icon-button
+                                          (click)="removeConfig(lengine.id, iengine, iconfig, n)">
+
+                                          <mat-icon aria-label="Example icon-button with a heart icon">delete</mat-icon>
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </ng-container>
+                                </div>
+                                <br>
+                                <mat-divider></mat-divider>
+                                <br>
+                                <!--Form to complete 'Params' -->
+                                <div formGroupName="params" class="row custom_row">
+                                  <h3> Params:</h3>
+                                  <br>
+                                  <!--Form to complete 'Product Params' -->
+                                  <div formArrayName="product_params"
+                                    *ngIf="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params">
+                                    <h5> Product Params:
+                                      <button mat-icon-button *ngIf="allowCustomParams === true" color="accent"
+                                        (click)="openDialog(lengine.id,iengine,iconfig,'product_params')">
+                                        <mat-icon>add</mat-icon>
+                                      </button>
+                                    </h5>
+                                    <br>
+                                    <!-- Iterates over each param. Declares ipp as index-->
+                                    <!-- If its empty, the use can create them -->
+                                    <ng-container
+                                      *ngFor="let kk of productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params.controls; index as l">
+                                      <!-- Enter on each product_params using ipp"-->
+                                      <ng-container [formArrayName]="l">
+                                        <ng-container *ngIf="kk.value.type === 'boolean'">
+                                          <mat-form-field [color]="'accent'" appearance="outline" style="width: 80%">
+                                            <mat-label>
+                                              {{productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params.controls[l].value.label}}
+                                            </mat-label>
+                                            <mat-select formControlName="value">
+                                              <mat-option *ngFor="let bool_param of bool_params" [value]="bool_param">
+                                                {{bool_param}}
+                                              </mat-option>
+                                            </mat-select>
+                                            <mat-icon matSuffix mat-mini-fab
+                                              [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params.controls[l].value.description">
+                                              help</mat-icon>
+                                          </mat-form-field>
+                                        </ng-container>
+                                        <ng-container *ngIf="kk.value.type !== 'boolean'">
+                                          <mat-form-field [color]="'accent'" appearance="outline" style="width: 80%">
+                                            <mat-label>
+                                              {{productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params.controls[l].value.label}}
+                                            </mat-label>
+                                            <input matInput [type]="kk.value.type === 'integer' ? 'number' : 'text'"
+                                              formControlName="value">
+                                            <mat-icon matSuffix mat-mini-fab
+                                              [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params.controls[l].value.description">
+                                              help</mat-icon>
+                                          </mat-form-field>
+                                        </ng-container>
+                                        <ng-container *ngIf="allowCustomParams === true">
+                                          <button mat-icon-button color="accent"
+                                            (click)="openDialog(lengine.id,iengine,iconfig,'device_params',productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value,l)">
+                                            <mat-icon>edit</mat-icon>
+                                          </button>
+                                          <button mat-icon-button color="accent"
+                                            (click)="removeParameter(lengine.id,iengine,iconfig,'device_params',l)">
+                                            <mat-icon>delete</mat-icon>
+                                          </button>
+                                        </ng-container>
                                       </ng-container>
-                                    </div>
+                                    </ng-container>
+                                  </div>
+                                  <mat-divider></mat-divider>
+                                  <br>
+                                  <!--Form to complete 'Platform Params' -->
+                                  <div formArrayName="platform_params"
+                                    *ngIf="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params">
+                                    <h5> Platform Params:
+                                      <button mat-icon-button *ngIf="allowCustomParams === true" color="accent"
+                                        (click)="openDialog(lengine.id,iengine,iconfig,'platform_params')">
+                                        <mat-icon>add</mat-icon>
+                                      </button>
+                                    </h5>
                                     <br>
-                                    <mat-divider></mat-divider>
+                                    <ng-container
+                                      *ngFor="let kk of productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params.controls; index as l">
+                                      <ng-container [formArrayName]="l">
+                                        <ng-container *ngIf="kk.value.type === 'boolean'">
+                                          <mat-form-field [color]="'accent'" appearance="outline" style="width: 80%">
+                                            <mat-label>
+                                              {{productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params.controls[l].value.label}}
+                                            </mat-label>
+                                            <mat-select formControlName="value">
+                                              <mat-option *ngFor="let bool_param of bool_params" [value]="bool_param">
+                                                {{bool_param}}
+                                              </mat-option>
+                                            </mat-select>
+                                            <mat-icon matSuffix mat-mini-fab
+                                              [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params.controls[l].value.description">
+                                              help</mat-icon>
+                                          </mat-form-field>
+                                        </ng-container>
+                                        <ng-container *ngIf="kk.value.type !== 'boolean'">
+                                          <mat-form-field [color]="'accent'" appearance="outline"
+                                            style="padding-right: 30px !important;" style="width: 80%">
+                                            <mat-label>
+                                              {{productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params.controls[l].value.label}}
+                                            </mat-label>
+                                            <input matInput [type]="kk.value.type === 'integer' ? 'number' : 'text'"
+                                              formControlName="value">
+                                            <mat-icon matSuffix mat-mini-fab
+                                              [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params.controls[l].value.description">
+                                              help</mat-icon>
+                                          </mat-form-field>
+                                        </ng-container>
+                                        <ng-container *ngIf="allowCustomParams === true">
+                                          <button mat-icon-button color="accent"
+                                            (click)="openDialog(lengine.id,iengine,iconfig,'device_params',productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value,l)">
+                                            <mat-icon>edit</mat-icon>
+                                          </button>
+                                          <button mat-icon-button color="accent"
+                                            (click)="removeParameter(lengine.id,iengine,iconfig,'device_params',l)">
+                                            <mat-icon>delete</mat-icon>
+                                          </button>
+                                        </ng-container>
+                                      </ng-container>
+                                    </ng-container>
+                                  </div>
+                                  <mat-divider></mat-divider>
+                                  <br>
+                                  <div formArrayName="device_params"
+                                    *ngIf="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params">
+                                    <h5> Device Params:
+                                      <button mat-icon-button *ngIf="allowCustomParams === true" color="accent"
+                                        (click)="openDialog(lengine.id,iengine,iconfig,'device_params')">
+                                        <mat-icon>add</mat-icon>
+                                      </button>
+                                    </h5>
                                     <br>
-                                    <!--Form to complete 'Params' -->
-                                    <div formGroupName="params" class="row custom_row">
-                                      <h3> Params:</h3>
-                                      <br>
-                                      <!--Form to complete 'Product Params' -->
-                                      <div formArrayName="product_params" *ngIf="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params">
-                                        <h5> Product Params:
-                                          <button mat-mini-fab *ngIf="allowCustomParams === true" color="accent"
-                                            (click)="openDialog(lengine.id,iengine,iconfig,'product_params')">
-                                            <mat-icon>add</mat-icon>
-                                          </button>
-                                        </h5>
-                                        <br>
-                                        <!-- Iterates over each param. Declares ipp as index-->
-                                        <!-- If its empty, the use can create them -->
-                                        <ng-container *ngFor="let kk of productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params.controls; index as l">
-                                          <!-- Enter on each product_params using ipp"-->
-                                          <ng-container [formArrayName]="l">
-                                            <ng-container *ngIf="kk.value.type === 'boolean'">
-                                              <mat-form-field [color]="'accent'" appearance="outline">
-                                                <mat-label>{{productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params.controls[l].value.key}}
-                                                </mat-label>
-                                                <mat-select formControlName="value">
-                                                  <mat-option *ngFor="let bool_param of bool_params" [value]="bool_param">
-                                                    {{bool_param}}
-                                                  </mat-option>
-                                                </mat-select>
-                                                <mat-icon matSuffix mat-mini-fab [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params.controls[l].value.description">help</mat-icon>
-                                              </mat-form-field>
-                                            </ng-container>
-                                            <ng-container *ngIf="kk.value.type !== 'boolean'">
-                                              <mat-form-field [color]="'accent'" appearance="outline">
-                                                <mat-label>{{productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params.controls[l].value.key}}
-                                                </mat-label>
-                                                <input matInput [type]="kk.value.type === 'integer' ? 'number' : 'text'"
-                                                  formControlName="value">
-                                                <mat-icon matSuffix mat-mini-fab [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params.controls[l].value.description">help</mat-icon>
-                                              </mat-form-field>
-                                            </ng-container>
-                                          </ng-container>
+                                    <ng-container
+                                      *ngFor="let kk of productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls; index as l">
+                                      <ng-container [formArrayName]="l">
+                                        <ng-container *ngIf="kk.value.type === 'boolean'">
+                                          <mat-form-field [color]="'accent'" appearance="outline" style="width: 80%">
+                                            <mat-label>
+                                              {{productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value.label}}
+                                            </mat-label>
+                                            <mat-select formControlName="value">
+                                              <mat-option *ngFor="let bool_param of bool_params" [value]="bool_param">
+                                                {{bool_param}}
+                                              </mat-option>
+                                            </mat-select>
+                                            <mat-icon matSuffix mat-mini-fab
+                                              [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value.description">
+                                              help</mat-icon>
+
+                                          </mat-form-field>
                                         </ng-container>
-                                      </div>
-                                      <mat-divider></mat-divider>
-                                      <br>
-                                      <!--Form to complete 'Platform Params' -->
-                                      <div formArrayName="platform_params" *ngIf="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params">
-                                        <h5> Platform Params:
-                                          <button mat-mini-fab *ngIf="allowCustomParams === true" color="accent"
-                                            (click)="openDialog(lengine.id,iengine,iconfig,'platform_params')">
-                                            <mat-icon>add</mat-icon>
-                                          </button>
-                                        </h5>
-                                        <br>
-                                        <ng-container *ngFor="let kk of productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params.controls; index as l">
-                                          <ng-container [formArrayName]="l">
-                                            <ng-container *ngIf="kk.value.type === 'boolean'">
-                                              <mat-form-field [color]="'accent'" appearance="outline">
-                                                <mat-label>{{productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params.controls[l].value.key}}
-                                                </mat-label>
-                                                <mat-select formControlName="value">
-                                                  <mat-option *ngFor="let bool_param of bool_params" [value]="bool_param">
-                                                    {{bool_param}}
-                                                  </mat-option>
-                                                </mat-select>
-                                                <mat-icon matSuffix mat-mini-fab [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params.controls[l].value.description">help</mat-icon>
-                                              </mat-form-field>
-                                            </ng-container>
-                                            <ng-container *ngIf="kk.value.type !== 'boolean'">
-                                              <mat-form-field [color]="'accent'" appearance="outline" style="padding-right: 30px !important;">
-                                                <mat-label>{{productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params.controls[l].value.key}}
-                                                </mat-label>
-                                                <input matInput [type]="kk.value.type === 'integer' ? 'number' : 'text'"
-                                                  formControlName="value">
-                                                <mat-icon matSuffix mat-mini-fab [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.platform_params.controls[l].value.description">help</mat-icon>
-                                              </mat-form-field>
-                                            </ng-container>
-                                          </ng-container>
+                                        <ng-container *ngIf="kk.value.type !== 'boolean'">
+                                          <mat-form-field [color]="'accent'" appearance="outline" style="width: 80%">
+                                            <mat-label>
+                                              {{productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value.label}}
+                                            </mat-label>
+                                            <input matInput [type]="kk.value.type === 'integer' ? 'number' : 'text'"
+                                              formControlName="value">
+                                            <mat-icon matSuffix mat-mini-fab
+                                              [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value.description">
+                                              help</mat-icon>
+                                          </mat-form-field>
                                         </ng-container>
-                                      </div>
-                                      <mat-divider></mat-divider>
-                                      <br>
-                                      <div formArrayName="device_params" *ngIf="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params">
-                                        <h5> Device Params:
-                                          <button mat-mini-fab *ngIf="allowCustomParams === true" color="accent"
-                                            (click)="openDialog(lengine.id,iengine,iconfig,'device_params')">
-                                            <mat-icon>add</mat-icon>
+                                        <ng-container *ngIf="allowCustomParams === true">
+                                          <button mat-icon-button color="accent"
+                                            (click)="openDialog(lengine.id,iengine,iconfig,'device_params',productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value,l)">
+                                            <mat-icon>edit</mat-icon>
                                           </button>
-                                        </h5>
-                                        <br>
-                                        <ng-container *ngFor="let kk of productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls; index as l">
-                                          <ng-container [formArrayName]="l">
-                                            <ng-container *ngIf="kk.value.type === 'boolean'">
-                                              <mat-form-field [color]="'accent'" appearance="outline">
-                                                <mat-label>{{productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value.key}}
-                                                </mat-label>
-                                                <mat-select formControlName="value">
-                                                  <mat-option *ngFor="let bool_param of bool_params" [value]="bool_param">
-                                                    {{bool_param}}
-                                                  </mat-option>
-                                                </mat-select>
-                                                <mat-icon matSuffix mat-mini-fab [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value.description">help</mat-icon>
-                                              </mat-form-field>
-                                            </ng-container>
-                                            <ng-container *ngIf="kk.value.type !== 'boolean'">
-                                              <mat-form-field [color]="'accent'" appearance="outline">
-                                                <mat-label>{{productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value.key}}
-                                                </mat-label>
-                                                <input matInput [type]="kk.value.type === 'integer' ? 'number' : 'text'"
-                                                  formControlName="value">
-                                                <mat-icon matSuffix mat-mini-fab [matTooltip]="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value.description">help</mat-icon>
-                                              </mat-form-field>
-                                            </ng-container>
-                                          </ng-container>
+                                          <button mat-icon-button color="accent"
+                                            (click)="removeParameter(lengine.id,iengine,iconfig,'device_params',l)">
+                                            <mat-icon>delete</mat-icon>
+                                          </button>
                                         </ng-container>
-                                      </div>
-                                    </div>
-                                    <!-- end of Params Part-->
-                                  </mat-expansion-panel>
+                                      </ng-container>
+                                    </ng-container>
+                                  </div>
                                 </div>
-                                <div class="col-md-3">
-                                  <button mat-mini-fab (click)="deleteConfigEngine(lengine.id,iengine, iconfig)">
-                                    <mat-icon aria-label="Example icon-button with a heart icon">delete</mat-icon>
-                                  </button>
-                                </div>
-                              </div>
+                                <!-- end of Params Part-->
+                              </mat-expansion-panel>
+                            </div>
+                            <div class="col-md-1">
+                              <button mat-icon-button (click)="deleteConfigEngine(lengine.id,iengine, iconfig)"
+                                color="warn">
+                                <mat-icon aria-label="Example icon-button with a heart icon">delete</mat-icon>
+                              </button>
                             </div>
                           </div>
-                        </mat-accordion>
-                      </mat-step>
-                      <mat-step>
-                        <ng-template matStepLabel>
-                          <h4>Service config</h4>
-                          <p>Fill service configs</p>
-                        </ng-template>
-                        <ng-container>
-                          <mat-table #table [dataSource]="filteredServices">
-                            <div class="example-header">
-                              <mat-form-field>
-                                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter Device">
-                              </mat-form-field>
-                            </div>
-                            {{selection | json}}
-                            <ng-container matColumnDef="select">
-                              <mat-header-cell *matHeaderCellDef>
-                              </mat-header-cell>
-                              <mat-cell *matCellDef="let row">
-                                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selectService(row,productFormGroup.controls[lengine.id].controls[iengine].value.engine) : null"
-                                  [checked]="selection.isSelected(row)">
-                                </mat-checkbox>
-                              </mat-cell>
-                            </ng-container>
-                            <ng-container matColumnDef="ID">
-                              <mat-header-cell *matHeaderCellDef class="cell-header text-test"> ID</mat-header-cell>
-                              <mat-cell *matCellDef="let element"> {{element.ID}} </mat-cell>
-                            </ng-container>
-                            <ng-container matColumnDef="EngineID">
-                              <mat-header-cell *matHeaderCellDef class="cell-header text-test">EngineID</mat-header-cell>
-                              <mat-cell *matCellDef="let element"> {{element.EngineID}}</mat-cell>
-                            </ng-container>
-                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-                          </mat-table>
-                        </ng-container>
-                        <ng-template #noValue>
-                          <h1>
-                            <p class="text-center">No services related with</p>
-                          </h1>
-                        </ng-template>
-                      </mat-step>
-                    </mat-horizontal-stepper>
+                        </div>
+                      </div>
+                    </mat-accordion>
                   </mat-tab>
                 </ng-container>
               </ng-container>
             </mat-tab-group>
-          </div>
-          <div class="col-md-12">
-            <button mat-raised-button color="accent" matStepperNext *ngIf="productFormGroup.controls[lengine.id].controls.length > 0">Finish
-              {{lengine.desc}}
-            </button>
-            <button mat-raised-button color="accent" matStepperNext *ngIf="productFormGroup.controls[lengine.id].length == 0">Skip
-              {{lengine.desc}}
-            </button>
           </div>
         </form>
       </mat-step>
@@ -467,7 +490,8 @@
       <div>
         <button mat-raised-button color="accent" matStepperPrevious>Back</button>
         <button mat-raised-button color="accent">Cancel</button>
-        <button mat-raised-button color="accent" (click)="(stepInfo.productStatus?.hasDB  && platformEngines) ? createNewConfigForProduct() : requestNewProduct()">Finish</button>
+        <button mat-raised-button color="accent"
+          (click)="(stepInfo.productStatus?.hasDB) ? modifyProduct() : requestNewProduct()">Finish</button>
       </div>
     </mat-step>
   </mat-vertical-stepper>
@@ -482,7 +506,8 @@
     <pre>{{platformFormGroup.value | json}}</pre>
     <h4>Debug - Preview</h4>
     <pre>{{productFormGroup.value | json}}</pre>
-    <h4>Files - Preview</h4>
+    <h4>Debug Files - Preview</h4>
     <pre>{{fileArray | json}}</pre>
+    <pre>{{fileRemovedArray | json}}</pre>
   </ng-container>
 </div>
