@@ -120,7 +120,6 @@ export class WizardComponent implements OnInit {
         this.lengine = { 'id': 'gather', 'desc': 'Gather', 'data': this.gather_engines };
         //Creates the gather formArray...
         this.productFormGroup.setControl('gather', new FormArray([]))
-        console.log("MODE", this.mode)
         this.loadPlatformParams('g_engines', 'gather');
 
         //For each engine available, add it!
@@ -208,8 +207,8 @@ export class WizardComponent implements OnInit {
   addEngine(step: string, engine: string) {
     if (engine != 'external') {
       if (!this.productFormGroup.controls[step].value.find((element) => { console.log(element); return element.engine === engine })) {
-        this.fileArray[step].push({ config: [[]] })
-        this.fileRemovedArray[step].push({ config: [[]] })
+        this.fileArray[step].push({ config: [] })
+        this.fileRemovedArray[step].push({ config: [] })
         switch (step) {
           case 'gather':
             this.gather.push(this.createEngineFormGroup(engine, step));
@@ -244,16 +243,16 @@ export class WizardComponent implements OnInit {
     if (iengine > -1) {
       if (this.stepInfo.productData[step][iengine].config.length > 0) {
         //Initialize emtpy file arrays
-        this.fileArray[step][iengine].config.push([])
-        this.fileRemovedArray[step][iengine].config.push([])
 
         //Go over all config to load as forms
         for (let kk in this.stepInfo.productData[step][iengine].config) {
+          this.fileRemovedArray[step][iengine].config.push([])
+          this.fileArray[step][iengine].config.push([])
           configs.push(this.createConfigFromEngine(engine_name, step, this.stepInfo.productData[step][iengine].config[kk]))
 
           //Load fileArray with existent files
           for (let pp of this.stepInfo.productData[step][iengine].config[kk].config) {
-            this.fileArray[step][iengine].config[kk].push({ type: 'old', name: pp.source, status: 'ok' })
+            this.fileArray[step][iengine].config[kk].push({ file: null, type: 'old', name: pp.source, old_name : null, status: 'ok' })
           }
         }
       } else {
@@ -271,7 +270,6 @@ export class WizardComponent implements OnInit {
   addConfigEngine(step: string, iengine: number, engine: string) {
     this.productFormGroup.controls[step].controls[iengine].get('config').push(this.createConfigFromEngine(engine, step))
     this.fileArray[step][iengine].config.push([])
-
   }
 
   //Deletes a config engine based on step, i, and  p
@@ -284,6 +282,11 @@ export class WizardComponent implements OnInit {
     for (let ifile in this.fileArray[step][iengine].config[iconfig]) {
       if (this.fileArray[step][iengine].config[iconfig][ifile].type === 'old') {
         this.fileArray[step][iengine].config[iconfig][ifile].status = 'removed';
+        //If has been changed, recover its original name:
+        if (this.fileArray[step][iengine].config[iconfig][ifile].old_name) {
+          this.fileArray[step][iengine].config[iconfig][ifile].name = this.fileArray[step][iengine].config[iconfig][ifile].old_name;
+        }
+        this.fileArray[step][iengine].config[iconfig][ifile].file = null;
         this.fileRemovedArray[step][iengine].config[iconfig].push(this.fileArray[step][iengine].config[iconfig][ifile]);
       }
     }
@@ -364,8 +367,7 @@ export class WizardComponent implements OnInit {
         dest: [''],
       }))
 
-    this.fileArray[step][iengine].config[iconfig].push([])
-    this.fileRemovedArray[step][iengine].config[iconfig].push([])
+    this.fileArray[step][iengine].config[iconfig].push({file: null, type: 'new', name: null, old_name : null, status: 'ok' })
   }
 
   removeConfig(step: string, iengine: number, iconfig: number, ifile: number) {
@@ -375,6 +377,11 @@ export class WizardComponent implements OnInit {
     //Check logic depending on type and status
     if (this.fileArray[step][iengine].config[iconfig][ifile].type === 'old') {
       this.fileArray[step][iengine].config[iconfig][ifile].status = 'removed';
+      //If has been changed, recover its original name:
+      if (this.fileArray[step][iengine].config[iconfig][ifile].old_name) {
+        this.fileArray[step][iengine].config[iconfig][ifile].name = this.fileArray[step][iengine].config[iconfig][ifile].old_name;
+      }
+      this.fileArray[step][iengine].config[iconfig][ifile].file = null;
       this.fileRemovedArray[step][iengine].config[iconfig].push(this.fileArray[step][iengine].config[iconfig][ifile]);
     }
     this.fileArray[step][iengine].config[iconfig].splice(ifile, 1)
@@ -383,21 +390,20 @@ export class WizardComponent implements OnInit {
   selectFile(event, step, iengine, iconfig, ifile) {
     if (event.target.files.length > 0) {
       if (this.fileArray[step][iengine].config[iconfig][ifile].type === 'old') {
-        this.fileArray[step][iengine].config[iconfig][ifile] = event.target.files
+        this.fileArray[step][iengine].config[iconfig][ifile].file = event.target.files
         console.log("Changing old filename for the new one...")
         this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.config.controls[ifile].controls.source.setValue(event.target.files[0].name)
         this.fileArray[step][iengine].config[iconfig][ifile].type = 'old';
+        if (!this.fileArray[step][iengine].config[iconfig][ifile].old_name) {
+          this.fileArray[step][iengine].config[iconfig][ifile].old_name = this.fileArray[step][iengine].config[iconfig][ifile].name
+        }
         this.fileArray[step][iengine].config[iconfig][ifile].status = 'moved';
         this.fileArray[step][iengine].config[iconfig][ifile].name = event.target.files[0].name;
       } else {
-        this.fileArray[step][iengine].config[iconfig][ifile] = event.target.files
+        this.fileArray[step][iengine].config[iconfig][ifile].file = event.target.files
         this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.config.controls[ifile].controls.source.setValue(event.target.files[0].name)
-        this.fileArray[step][iengine].config[iconfig][ifile].type = 'new';
         this.fileArray[step][iengine].config[iconfig][ifile].name = event.target.files[0].name;
-        this.fileArray[step][iengine].config[iconfig][ifile].status = 'ok';
-
       }
-
     } else {
       this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.config.controls[ifile].controls.source.setValue('')
     }
@@ -478,7 +484,7 @@ export class WizardComponent implements OnInit {
     this._blocker.start(this.container, "Modify product...");
 
     //Upload files to GIT
-    this.wizardService.uploadFiles(this.stepInfo.productData, this.fileArray, this.stepInfo.step)
+    this.wizardService.uploadFiles(this.stepInfo.productData, this.fileArray, this.fileRemovedArray, this.stepInfo.step)
       .subscribe(
         data => {
           //If success, send request to jenkins

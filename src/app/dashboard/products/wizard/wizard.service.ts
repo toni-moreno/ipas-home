@@ -32,7 +32,7 @@ export class WizardService {
     var blob = new Blob([JSON.stringify(finalForm)], { type: 'application/octet-stream' });
     const formData: any = new FormData()
 
-    formData.append('Msg', '|AUTOMATED|HOME|' + platform.productid + '|REQUEST|ALL');
+    formData.append('Msg', '|AUTOMATED|HOME|' + platform.productid + '|REQUEST|all');
     formData.append("CommitFile", blob);
     return this.httpAPI.postFile(url, formData)
       .map((responseData) => { console.log(responseData); return responseData.json() }
@@ -45,7 +45,7 @@ export class WizardService {
       product[i.type].push({ 'engine': i.name, 'config': [] });
     }
     const formData: any = new FormData();
-    formData.append('Msg', '|AUTOMATED|HOME|' + product.product + '|REQUEST|ALL');
+    formData.append('Msg', '|AUTOMATED|HOME|' + product.product + '|REQUEST|all');
     let rootDir = '/products/'
     let productName = product.product + '/'
     let yamlString = _yaml.stringify(product, 999)
@@ -55,7 +55,7 @@ export class WizardService {
     return this.httpAPI.post(url, formData)
   }
 
-  uploadFiles(formGroup: any, files: any, step: any) {
+  uploadFiles(formGroup: any, files: any, removedFiles: any, step: any) {
     const url = '/api/rt/gitrepo/commitfile'
     //Set up arrays
     for (let iengine in formGroup[step]) {
@@ -91,16 +91,17 @@ export class WizardService {
     for (let i in files[step]) {
       //All config of iengine
       for (let j in files[step][i].config) {
+        
         //All available configs...
         for (let p in files[step][i].config[j]) {
-          if (!files[step][i].config[j][p][0]) {
+          if (!files[step][i].config[j][p].file) {
             console.log("skipping for file upload")
             continue
           }
           //Generate output dir: /products/<PRODUCT_NAME>/<DIR>/<SOURCE>
           let dir = formGroup[step][i].config[j].dir + '/'
           let source = formGroup[step][i].config[j].config[p].source
-          formData.append("CommitFile", files[step][i].config[j][p][0], rootDir + product + dir + source);
+          formData.append("CommitFile", files[step][i].config[j][p].file[0], rootDir + product + dir + source);
         }
       }
     }
