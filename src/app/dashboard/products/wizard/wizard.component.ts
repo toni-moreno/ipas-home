@@ -443,7 +443,7 @@ export class WizardComponent implements OnInit {
 
   removeParameter(step: string, iengine: string, iconfig: string, sel_params: string, pdata?: any, idata?: number) {
     //Removing paramter from controls
-    this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.params.controls[sel_params].controls.removeAt(idata)
+    this.productFormGroup.controls[step].controls[iengine].controls.config.controls[iconfig].controls.params.controls[sel_params].removeAt(idata)
   }
 
   /* *********************** */
@@ -457,11 +457,11 @@ export class WizardComponent implements OnInit {
 
     console.log(this.stepInfo.productData)
     this._blocker.start(this.container, "Sending request for new product...");
-    this.wizardService.requestNewProduct(this.platformFormGroup.value, this.productFormGroup.value)
+    this.wizardService.uploadFiles(this.productFormGroup.value, this.fileArray, this.fileRemovedArray, 'all', 'request')
       .subscribe(
         data => {
           console.log(data),
-            this.wizardService.newProduct(this.platformFormGroup.value, this.productFormGroup.value)
+            this.wizardService.requestProduct(this.platformFormGroup.value, this.productFormGroup.value, 'all')
               .subscribe(
                 data => {
                   console.log(data)
@@ -480,16 +480,15 @@ export class WizardComponent implements OnInit {
     //Merge data from productFormGroup from product:
     this.stepInfo.productData[this.stepInfo.step] = this.productFormGroup.value[this.stepInfo.step]
 
-    console.log(this.stepInfo.productData)
     this._blocker.start(this.container, "Modify product...");
 
     //Upload files to GIT
-    this.wizardService.uploadFiles(this.stepInfo.productData, this.fileArray, this.fileRemovedArray, this.stepInfo.step)
+    this.wizardService.uploadFiles(this.stepInfo.productData, this.fileArray, this.fileRemovedArray, this.stepInfo.step, 'add')
       .subscribe(
         data => {
           //If success, send request to jenkins
           console.log(data),
-            this.wizardService.newProduct(this.platformFormGroup.value, this.productFormGroup.value)
+            this.wizardService.modifyProduct(this.platformFormGroup.value, this.productFormGroup.value, this.stepInfo.step)
               .subscribe(
                 data => {
                   console.log(data)

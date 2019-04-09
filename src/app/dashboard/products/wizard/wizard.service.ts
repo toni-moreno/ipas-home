@@ -20,9 +20,12 @@ export class WizardService {
       .map((responseData) => { console.log(responseData); return responseData.json() })
   };
 
-  newProduct(platform: any, product: any): any {
-    const url = 'api/rt/jenkins/build/product/add'
+  requestProduct(platform: any, product: any, step: any): any {
+    //Jenkins URL
+    const url = 'api/rt/jenkins/build/product/request'
     platform.productid = product['product']
+    console.log("PLATFORM", platform)
+    console.log("PRODUCT", product)
 
     //Prepare structure to be sent:
     let finalForm = { 'platform': platform, 'products': [product] }
@@ -32,30 +35,38 @@ export class WizardService {
     var blob = new Blob([JSON.stringify(finalForm)], { type: 'application/octet-stream' });
     const formData: any = new FormData()
 
-    formData.append('Msg', '|AUTOMATED|HOME|' + platform.productid + '|REQUEST|all');
+    formData.append('Msg', 'AUTOMATED|HOME|' + platform.productid + '|request|'+step);
     formData.append("CommitFile", blob);
     return this.httpAPI.postFile(url, formData)
       .map((responseData) => { console.log(responseData); return responseData.json() }
       )
   }
 
-  requestNewProduct(platform: any, product: any) {
-    const url = '/api/rt/gitrepo/commitfile'
-    for (let i of platform.engine) {
-      product[i.type].push({ 'engine': i.name, 'config': [] });
-    }
-    const formData: any = new FormData();
-    formData.append('Msg', '|AUTOMATED|HOME|' + product.product + '|REQUEST|all');
-    let rootDir = '/products/'
-    let productName = product.product + '/'
-    let yamlString = _yaml.stringify(product, 999)
-    console.log(yamlString);
-    var blob = new Blob([yamlString], { type: 'application/octet-stream' });
-    formData.append("CommitFile", blob, rootDir + productName + 'product.yaml');
-    return this.httpAPI.post(url, formData)
+
+  modifyProduct(platform: any, product: any, step: any): any {
+    //Jenkins URL
+    const url = 'api/rt/jenkins/build/product/add'
+    platform.productid = product['product']
+    console.log("PLATFORM", platform)
+    console.log("PRODUCT", product)
+
+    //Prepare structure to be sent:
+    let finalForm = { 'platform': platform, 'products': [product] }
+    console.log("FinalForm", finalForm);
+
+    //Create file form:
+    var blob = new Blob([JSON.stringify(finalForm)], { type: 'application/octet-stream' });
+    const formData: any = new FormData()
+
+    formData.append('Msg', '|AUTOMATED|HOME|' + platform.productid + '|add|'+step);
+    formData.append("CommitFile", blob);
+    return this.httpAPI.postFile(url, formData)
+      .map((responseData) => { console.log(responseData); return responseData.json() }
+      )
   }
 
-  uploadFiles(formGroup: any, files: any, removedFiles: any, step: any) {
+
+  uploadFiles(formGroup: any, files: any, removedFiles: any, step: any, action: any) {
     const url = '/api/rt/gitrepo/commitfile'
     //Set up arrays
     for (let iengine in formGroup[step]) {
@@ -81,12 +92,14 @@ export class WizardService {
       }
     }
 
-    //Creates upload files:
+    
     const formData: any = new FormData();
-    formData.append('Msg', '|AUTOMATED|HOME|' + formGroup.product + '|ADD' + '|' + step);
-
+    formData.append('Msg', 'AUTOMATED|HOME|' + formGroup.product + '|' + action + '|' + step);
+    
     let rootDir = '/products/'
     let product = formGroup.product + '/'
+    
+    //Creates the commit file and check if some file must be renamed
     //All engines
     for (let i in files[step]) {
       //All config of iengine
@@ -95,13 +108,28 @@ export class WizardService {
         //All available configs...
         for (let p in files[step][i].config[j]) {
           if (!files[step][i].config[j][p].file) {
-            console.log("skipping for file upload")
+            //check if a file  has been removed...
+            console.log("Empty file, skipping for file upload")
             continue
+          }
+          if (files[step][i].config[j][p].status === 'moved') {
+            formData.append("CtrlDelete", rootDir + product + 'gather/'+files[step][i].config[j][p].old_name);
           }
           //Generate output dir: /products/<PRODUCT_NAME>/<DIR>/<SOURCE>
           let dir = formGroup[step][i].config[j].dir + '/'
           let source = formGroup[step][i].config[j].config[p].source
           formData.append("CommitFile", files[step][i].config[j][p].file[0], rootDir + product + dir + source);
+        }
+      }
+    }
+
+    //Creates the array of filenames that must be deleted
+    for (let i in removedFiles[step]) {
+      //All config of iengine
+      for (let j in removedFiles[step][i].config) {  
+        //All available configs...
+        for (let p in removedFiles[step][i].config[j]) {
+          formData.append("CtrlDelete", rootDir + product + step +'/'+removedFiles[step][i].config[j][p].name);
         }
       }
     }

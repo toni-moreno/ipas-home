@@ -161,11 +161,11 @@
           </ng-template>
           <h5>{{productFormGroup.value.product}}</h5>
           <br>
-          <mat-form-field>
+          <mat-form-field style="width: 100%">
             <input matInput placeholder="Models" formControlName="models" required>
           </mat-form-field>
-          <mat-form-field>
-            <textarea matInput placeholder="Description" formControlName="description" required> </textarea>
+          <mat-form-field style="width: 100%">
+            <textarea matInput placeholder="Description" formControlName="description" required rows="1"> </textarea>
           </mat-form-field>
           <div>
             <button mat-raised-button color="accent" matStepperNext type="button">Next</button>
@@ -181,8 +181,8 @@
           </ng-template>
           <!--INIT - Start the generation of the XXX section. Each engine can have multiple configs-->
           <div class="col-md-12" *ngIf="engine_selection !== 'external'">
-            <mat-tab-group #tabGroup style="background-color:white">
-              <mat-tab label="Engines">
+            <mat-tab-group #tabGroup style="background-color:white" (selectedTabChange)="showConfigs = true">
+              <mat-tab label="Engines" (click)="finish=true">
                 <div class="container">
                   <h3>Help</h3>
                   <p>Navigate for each tab and follow the steps:</p>
@@ -201,14 +201,16 @@
                       <p>Create new {{productFormGroup.controls[lengine.id].controls[iengine].value.engine}}
                         configs</p>
                     </ng-template>
-                    <h5 style="display:inline">
-                      {{productFormGroup.controls[lengine.id].controls[iengine].value.engine}} - configuration</h5>
                     <button mat-icon-button color="primary"
-                      (click)="addConfigEngine(lengine.id,iengine, productFormGroup.controls[lengine.id].controls[iengine].value.engine)"
-                      style="display:inline">
-                      <mat-icon aria-label="Example icon-button with a heart icon">note_add</mat-icon>
-                    </button>
-                    <mat-accordion>
+                    (click)="addConfigEngine(lengine.id,iengine, productFormGroup.controls[lengine.id].controls[iengine].value.engine)"
+                    style="display:inline; top: -3px"
+                    matTooltip="Add new configuration">
+                    <mat-icon aria-label="Add new configuration">note_add</mat-icon>
+                  </button>
+                    <h5 style="display:inline">
+                      - Configurations:</h5>
+
+                    <mat-accordion *ngIf="showConfigs === true">
                       <!-- Enter on the engine form using iengine -->
                       <div [formArrayName]="iengine" class="row custom_row">
                         <!-- Enter on the config form for config control-->
@@ -246,11 +248,13 @@
                                   <input matInput formControlName="description">
                                 </mat-form-field>
                                 <div formGroupName="config" class="row custom_row">
-                                  <h5>Configuration files:
+                                  <h5>
                                     <button mat-icon-button color="primary"
-                                      (click)="addConfig(lengine.id, iengine, iconfig)">
+                                      (click)="addConfig(lengine.id, iengine, iconfig)" style="top: -3px"
+                                      matTooltip='Add configuration files'>
                                       <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
                                     </button>
+                                    - Configuration files:
                                   </h5>
                                   <ng-container
                                     *ngFor="let kk of productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.config.controls; index as n">
@@ -258,11 +262,11 @@
                                       <div class="col-md-11">
                                         <div style="margin-bottom: 20px" class="config-card">
 
-                                          <mat-form-field appearance="outline" style="width:100%">
+                                          <mat-form-field appearance="outline" style="width:90%">
                                             <mat-label>Filename:</mat-label>
                                             <input #source matInput formControlName="source" readonly>
                                           </mat-form-field>
-                                          <mat-form-field appearance="outline" style="width:80%">
+                                          <mat-form-field appearance="outline" style="width:90%">
                                             <mat-label>Dest:</mat-label>
                                             <input #dest matInput formControlName="dest">
                                           </mat-form-field>
@@ -272,9 +276,9 @@
                                       </div>
                                       <div class="col-md-1">
                                         <button class="close-x" mat-icon-button
-                                          (click)="removeConfig(lengine.id, iengine, iconfig, n)">
-
-                                          <mat-icon aria-label="Example icon-button with a heart icon">delete</mat-icon>
+                                          (click)="removeConfig(lengine.id, iengine, iconfig, n)"
+                                          matTooltip='Remove configuration and files attached on it'>
+                                          <mat-icon aria-label="Remove config" color="warn">delete</mat-icon>
                                         </button>
                                       </div>
                                     </div>
@@ -285,8 +289,6 @@
                                 <br>
                                 <!--Form to complete 'Params' -->
                                 <div formGroupName="params" class="row custom_row">
-                                  <h3> Params:</h3>
-                                  <br>
                                   <!--Form to complete 'Product Params' -->
                                   <div formArrayName="product_params"
                                     *ngIf="productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.product_params">
@@ -331,12 +333,12 @@
                                           </mat-form-field>
                                         </ng-container>
                                         <ng-container *ngIf="allowCustomParams === true">
-                                          <button mat-icon-button color="accent"
+                                          <button mat-icon-button color="primary"
                                             (click)="openDialog(lengine.id,iengine,iconfig,'device_params',productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value,l)">
                                             <mat-icon>edit</mat-icon>
                                           </button>
-                                          <button mat-icon-button color="accent"
-                                            (click)="removeParameter(lengine.id,iengine,iconfig,'device_params',l)">
+                                          <button mat-icon-button color="warn"
+                                            (click)="removeParameter(lengine.id,iengine,iconfig,'device_params',null,l)">
                                             <mat-icon>delete</mat-icon>
                                           </button>
                                         </ng-container>
@@ -387,12 +389,12 @@
                                           </mat-form-field>
                                         </ng-container>
                                         <ng-container *ngIf="allowCustomParams === true">
-                                          <button mat-icon-button color="accent"
+                                          <button mat-icon-button color="primary"
                                             (click)="openDialog(lengine.id,iengine,iconfig,'device_params',productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value,l)">
                                             <mat-icon>edit</mat-icon>
                                           </button>
-                                          <button mat-icon-button color="accent"
-                                            (click)="removeParameter(lengine.id,iengine,iconfig,'device_params',l)">
+                                          <button mat-icon-button color="warn"
+                                            (click)="removeParameter(lengine.id,iengine,iconfig,'device_params',null,l)">
                                             <mat-icon>delete</mat-icon>
                                           </button>
                                         </ng-container>
@@ -442,12 +444,12 @@
                                           </mat-form-field>
                                         </ng-container>
                                         <ng-container *ngIf="allowCustomParams === true">
-                                          <button mat-icon-button color="accent"
+                                          <button mat-icon-button color="primary"
                                             (click)="openDialog(lengine.id,iengine,iconfig,'device_params',productFormGroup.controls[lengine.id].controls[iengine].controls.config.controls[iconfig].controls.params.controls.device_params.controls[l].value,l)">
                                             <mat-icon>edit</mat-icon>
                                           </button>
-                                          <button mat-icon-button color="accent"
-                                            (click)="removeParameter(lengine.id,iengine,iconfig,'device_params',l)">
+                                          <button mat-icon-button color="warn"
+                                            (click)="removeParameter(lengine.id,iengine,iconfig,'device_params',null,l)">
                                             <mat-icon>delete</mat-icon>
                                           </button>
                                         </ng-container>

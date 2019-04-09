@@ -385,6 +385,28 @@ func AddFile(filename string, content *bytes.Buffer) error {
 	return nil
 }
 
+// AddFile , add File to repo
+func RemoveFile(filename string) error {
+
+	var err error
+
+	//path := clonePath + filename
+	path := filepath.Join(clonePath, filename)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		log.Infof("File %s does not exist.. creating...", path)
+		return err
+	}
+
+	relative_filename := trimSlash(filename)
+	h, err := wtree.Remove(relative_filename)
+	if err != nil {
+		log.Errorf("Can not Remove Filename: Err: %s", err)
+		return err
+	}
+	log.Infof("Removed filename %s in repo with hash: %+v", relative_filename, h)
+	return nil
+}
+
 func PrintStatus() {
 	status, err := wtree.Status()
 	if err != nil {

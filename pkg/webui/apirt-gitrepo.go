@@ -19,6 +19,7 @@ import (
 // UploadForm form struct
 type CommitFileForm struct {
 	Msg        string                  `form:"Msg"`
+	CtrlDelete []string                `form:"CtrlDelete"`
 	CommitFile []*multipart.FileHeader `form:"CommitFile" binding:"Required"`
 }
 
@@ -64,11 +65,23 @@ func GitRepoGetProductByID(ctx *Context) {
 func GitRepoCommitFile(ctx *Context, cf CommitFileForm) {
 
 	log.Debugf("Uploaded data :%+v", cf)
-	if cf.CommitFile == nil {
+	if cf.CommitFile == nil && cf.CtrlDelete == nil {
 		ctx.JSON(404, "Error no file uploaded struct")
 		return
 	}
 
+	//Remove files
+	for _, f := range cf.CtrlDelete {
+		log.Infof("Removing File %s", f)
+		err := repo.RemoveFile(f)
+		if err != nil {
+			log.Errorf("Error on remove %s : %s", f, err)
+			ctx.JSON(404, err.Error())
+			return
+		}
+	}
+
+	//Add files
 	log.Debugf("Uploaded File : %+v", cf)
 	for _, f := range cf.CommitFile {
 
@@ -84,9 +97,9 @@ func GitRepoCommitFile(ctx *Context, cf CommitFileForm) {
 		s := buf.String()
 		log.Debugf("FILE DATA: %s", s)
 		repo.AddFile(f.Filename, buf)
-
 	}
-	cookedmsg := fmt.Sprintf("[%s]- %s", ctx.SignedInUser, cf.Msg)
+
+	cookedmsg := fmt.Sprintf("[%s]-%s", ctx.SignedInUser, cf.Msg)
 	err := repo.Commit(cookedmsg)
 	if err != nil {
 		log.Errorf("Error con Git Repo Update: Msg %s : %s", cookedmsg, err)
