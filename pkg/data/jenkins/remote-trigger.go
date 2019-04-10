@@ -3,6 +3,7 @@ package jenkins
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -57,19 +58,19 @@ type JobProductData struct {
 	Product  repo.Product `json:"product"`
 }
 
-func GetGlobalVarKeysByEngine(data *JobDeviceData, engine string, svc config.ServiceCfg) map[string]interface{} {
+func GetGlobalVarKeysByEngine(data *PlatformData, engine string, svc config.ServiceCfg) map[string]interface{} {
 	switch engine {
 	case "snmpcollector":
 		return map[string]interface{}{
 			"snmpcollector_user":   svc.AdmUser,
 			"snmpcollector_pass":   svc.AdmPasswd,
 			"snmpcollector_server": svc.Link,
-			"product_name":         data.Platform.ProductID,
+			"product_name":         data.ProductID,
 		}
 	case "telegraf":
-		dbmap, err := dbc.GetProductDBMapByID(data.Platform.ProductID)
+		dbmap, err := dbc.GetProductDBMapByID(data.ProductID)
 		if err != nil {
-			log.Warnf("There is no database MAP defined for Product: %s ERR: %s", data.Platform.ProductID, err)
+			log.Warnf("There is no database MAP defined for Product: %s ERR: %s", data.ProductID, err)
 			return nil
 		}
 		return map[string]interface{}{
@@ -77,7 +78,7 @@ func GetGlobalVarKeysByEngine(data *JobDeviceData, engine string, svc config.Ser
 			"influx_rw_passwd":  svc.AdmPasswd,
 			"influx_server_url": svc.Link,
 			"influx_database":   dbmap.Database,
-			"product_name":      data.Platform.ProductID,
+			"product_name":      data.ProductID,
 		}
 	default:
 		log.Warnf("There is no global keys definitions for engine %s", engine)
@@ -98,9 +99,9 @@ type JobEngineConfig struct {
 	PRO map[string]interface{} `json:"pro"`
 }
 
-func CreateJobEngineConfig(data *JobDeviceData, engine string) *JobEngineConfig {
+func CreateJobEngineConfig(data *PlatformData, engine string) *JobEngineConfig {
 	var jecfg JobEngineConfig
-	for _, eng := range data.Platform.Engine {
+	for _, eng := range data.Engine {
 		if eng.Name == engine {
 			//LAB
 			labQid := eng.Platform.LabSvcID
@@ -173,10 +174,10 @@ func CreateAnsibleInventory(data *JobDeviceData, engine string) *AnsibleInventor
 	return inv
 }
 
-func SaveConfigFiles(data *JobDeviceData, engine string) (string, string) {
+func SaveDeviceConfigFiles(data *JobDeviceData, engine string) (string, string) {
 
 	invData := CreateAnsibleInventory(data, engine)
-	jecData := CreateJobEngineConfig(data, engine)
+	jecData := CreateJobEngineConfig(&data.Platform, engine)
 
 	pfmData, err := json.MarshalIndent(jecData, "", "  ")
 	if err != nil {
@@ -228,7 +229,7 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 
 		log.Infof("Triggering Jenkins job %s", id)
 
-		purl, durl := SaveConfigFiles(&jobdt, engine.Name)
+		purl, durl := SaveDeviceConfigFiles(&jobdt, engine.Name)
 
 		var params = map[string]string{
 			"PLATFORM_CONFIG_URL": purl,
@@ -335,15 +336,204 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 	return nil
 }
 
+func SaveProductConfigFiles(data *JobProductData, engine string) string {
+
+	jecData := CreateJobEngineConfig(&data.Platform, engine)
+
+	pfmData, err := json.MarshalIndent(jecData, "", "  ")
+	if err != nil {
+		log.Warnf("Error on Marshall Platform data %s", err)
+	}
+
+	t := time.Now()
+
+	purlFilename := t.Format("20060102150405") + "_platform_config.json"
+	//devFilename := t.Format("20060102150405") + "_device_config.json"
+
+	err = ioutil.WriteFile(filepath.Join(downloadDir, purlFilename), pfmData, 0644)
+	if err != nil {
+		log.Errorf("Error on Write Platform Config File  %s", filepath.Join(downloadDir, purlFilename))
+	}
+	/*err = ioutil.WriteFile(filepath.Join(downloadDir, devFilename), devData, 0644)
+	if err != nil {
+		log.Errorf("Error on Write Device Config File  %s", filepath.Join(downloadDir, devFilename))
+	}*/
+
+	ip := GetOutboundIP()
+
+	plurl := "http://" + ip + ":5090/api/rt/agent/download/" + purlFilename
+	//durl := "http://" + ip + ":5090/api/rt/agent/download/" + devFilename
+
+	return plurl
+}
+
+func waitForJob(jid int64, jobname string) *config.TaskStatus {
+	for {
+		t, err := jnks.GetQueueItem(jid)
+		if err != nil {
+			log.Errorf("Some error triggered while invoking queue  %s  Error %s", jobname, err)
+			continue
+		}
+		time.Sleep(5 * time.Second)
+		log.Debugf("QUEUE  RAW %#+v", t.Raw)
+		if len(t.Raw.Why) > 0 {
+			log.Infof("Waiting while task in queue:%s", t.Raw.Why)
+			time.Sleep(5 * time.Second)
+		} else {
+			log.Debugf("QUEUE  RAW %#+v", t.Raw)
+			bid := t.Raw.Executable.Number
+
+			purl := t.Raw.Executable.URL
+			if len(publicURL) > 0 {
+				log.Infof("setting public URL to %s", publicURL)
+				purl = strings.Replace(t.Raw.Executable.URL, url, publicURL, -1)
+			}
+			log.Infof("Set Executable  %d : URL Orig %s | URL  Final %s", bid, t.Raw.Executable.URL, purl)
+			return &config.TaskStatus{
+				JobName:    jobname,
+				TaskID:     jid,
+				ExecID:     t.Raw.Executable.Number,
+				IsFinished: false,
+				ExecURL:    purl,
+				Launched:   time.Now(),
+				LastUpdate: time.Now(),
+			}
+			break
+		}
+	}
+	return &config.TaskStatus{}
+}
+
+func processProductRequest(jpd *JobProductData) error {
+
+	//First creation for the product
+
+	productid := jpd.Platform.ProductID
+	newproduct := config.ProductDBMap{
+		ID: productid,
+	}
+	_, err := dbc.AddProductDBMap(newproduct)
+	if err != nil {
+		log.Errorf("Error on request the new product %s : Err: %s", productid, err)
+		return fmt.Errorf("Error on request the new product %s : Err: %s", productid, err)
+	}
+	//Then executing job
+
+	id := "product_request_all"
+
+	log.Infof("Triggering Jenkins job %s", id)
+
+	plurl := SaveProductConfigFiles(jpd, "all")
+
+	var params = map[string]string{
+		"PLATFORM_CONFIG_URL": plurl,
+		"EMAIL_NOTIFICATION":  emailNotif,
+	}
+
+	job, err := jnks.GetJob(id)
+	if err != nil {
+		log.Errorf("Error on get Job. Error %s ", err)
+		return err
+	}
+
+	jid, err := job.InvokeSimple(params)
+	if err != nil {
+		log.Errorf("Some error triggered while invoking job  %s for engine %s Error %s", id, "all", err)
+		return err
+	}
+
+	log.Infof("Invoked job with number %d", jid)
+
+	//waiting for job info
+	ret := waitForJob(jid, id)
+	log.Debugf("Updated %#+v", ret)
+	return nil
+}
+
 func SendProductAction(subject string, action string, filename string, content *bytes.Buffer) error {
 	//Unmarshall file into Job Data
-	var jobdt JobProductData
+	var jobpd JobProductData
 
-	if err := json.Unmarshal(content.Bytes(), &jobdt); err != nil {
+	if err := json.Unmarshal(content.Bytes(), &jobpd); err != nil {
 		log.Errorf("error on unmarshall Job Product Data %s", err)
 		return err
 	}
-	log.Debugf("DATA PRODUCT %#+v", jobdt)
+	log.Debugf("SUBJECT %s ACTION %s ", subject, action)
+	log.Debugf("DATA PRODUCT %#+v", jobpd)
+
+	if action == "request" {
+		return processProductRequest(&jobpd)
+	}
+
+	taskmap := make(map[int64]*config.TaskStatus)
+
+	for _, engine := range jobpd.Platform.Engine {
+
+		id := subject + "_" + action + "_" + engine.Name
+
+		log.Infof("Triggering Jenkins job %s", id)
+
+		plurl := SaveProductConfigFiles(&jobpd, engine.Name)
+
+		var params = map[string]string{
+			"PLATFORM_CONFIG_URL": plurl,
+			"EMAIL_NOTIFICATION":  emailNotif,
+		}
+
+		job, err := jnks.GetJob(id)
+		if err != nil {
+			log.Errorf("Error on get Job. Error %s ", err)
+			return err
+		}
+
+		jid, err := job.InvokeSimple(params)
+		if err != nil {
+			log.Errorf("Some error triggered while invoking job  %s for engine %s Error %s", id, engine.Name, err)
+			continue
+		}
+
+		log.Infof("Invoked job with number %d", jid)
+
+		taskmap[jid] = waitForJob(jid, id)
+		//waiting for job info
+		/*for {
+			t, err := jnks.GetQueueItem(jid)
+			if err != nil {
+				log.Errorf("Some error triggered while invoking queue  %s for engine %s Error %s", id, engine.Name, err)
+				continue
+			}
+			time.Sleep(5 * time.Second)
+			log.Debugf("QUEUE  RAW %#+v", t.Raw)
+			if len(t.Raw.Why) > 0 {
+				log.Infof("Waiting while task in queue:%s", t.Raw.Why)
+				time.Sleep(5 * time.Second)
+			} else {
+				log.Debugf("QUEUE  RAW %#+v", t.Raw)
+				bid := t.Raw.Executable.Number
+
+				purl := t.Raw.Executable.URL
+				if len(publicURL) > 0 {
+					log.Infof("setting public URL to %s", publicURL)
+					purl = strings.Replace(t.Raw.Executable.URL, url, publicURL, -1)
+				}
+
+				taskmap[jid] = &config.TaskStatus{
+					JobName:    id,
+					TaskID:     jid,
+					ExecID:     t.Raw.Executable.Number,
+					IsFinished: false,
+					ExecURL:    purl,
+					Launched:   time.Now(),
+					LastUpdate: time.Now(),
+				}
+				log.Infof("Set Executable  %d : URL Orig %s | URL  Final %s", bid, t.Raw.Executable.URL, purl)
+				break
+			}
+		}*/
+
+		//Updating
+
+	}
 
 	/*taskmap := make(map[int64]*config.TaskStatus)
 

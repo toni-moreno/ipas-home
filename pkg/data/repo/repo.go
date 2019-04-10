@@ -90,8 +90,24 @@ func Init(cfgrepo *config.GitRepo) {
 	gitName = cfgrepo.Name
 	gitEmail = cfgrepo.Email
 
+	//if not exit creating the void dir
 	if _, err := os.Stat(cfgrepo.ClonePath); os.IsNotExist(err) {
 		err := os.Mkdir(cfgrepo.ClonePath, 0750)
+		if err != nil {
+			log.Errorf("Creating Repo Path [ %s ] : %s", cfgrepo.ClonePath, err)
+			return
+		}
+		log.Infof("Created Repo Path  dir[ %s ]", cfgrepo.ClonePath)
+	}
+
+	if _, err := os.Stat(cfgrepo.ClonePath); !os.IsNotExist(err) {
+		log.Info("Detected old repo , cleaning...")
+		err := os.RemoveAll(cfgrepo.ClonePath)
+		if err != nil {
+			log.Errorf("Error cleaning Repo Path [ %s ] : %s", cfgrepo.ClonePath, err)
+			return
+		}
+		err = os.Mkdir(cfgrepo.ClonePath, 0750)
 		if err != nil {
 			log.Errorf("Creating Repo Path [ %s ] : %s", cfgrepo.ClonePath, err)
 			return
@@ -108,7 +124,7 @@ func Init(cfgrepo *config.GitRepo) {
 		return
 	}
 	if URL.Scheme == "https" {
-		log.Info("Detected HTTPS scheme on repo %s ", cfgrepo.CloneSource)
+		log.Infof("Detected HTTPS scheme on repo %s ", cfgrepo.CloneSource)
 		// Clustom https
 		customClient := &http.Client{
 			// accept any certificate (might be useful for testing)
