@@ -216,8 +216,11 @@ type ProductStat struct {
 	Name     string   `json:"name"`
 	HasDB    bool     `json:"hasDB"`
 	HasG     bool     `json:"hasG"`
+	GConfigs int      `json:"g_config"`
 	HasV     bool     `json:"hasV"`
+	VConfigs int      `json:"v_config"`
 	HasA     bool     `json:"hasA"`
+	AConfigs int      `json:"a_config"`
 	GEngines []string `json:"g_engines"`
 	VEngines []string `json:"v_engines"`
 	AEngines []string `json:"a_engines"`
@@ -298,12 +301,27 @@ func GetProductStatus() ([]*ProductStat, error) {
 
 		if len(p.Gather) > 0 {
 			ps.HasG = true
+			n := 0
+			for _, eng := range p.Gather {
+				n += len(eng.Config)
+			}
+			ps.GConfigs = n
 		}
 		if len(p.Alert) > 0 {
 			ps.HasA = true
+			n := 0
+			for _, eng := range p.Alert {
+				n += len(eng.Config)
+			}
+			ps.AConfigs = n
 		}
 		if len(p.Visual) > 0 {
 			ps.HasV = true
+			n := 0
+			for _, eng := range p.Visual {
+				n += len(eng.Config)
+			}
+			ps.VConfigs = n
 		}
 
 		dbmap, err := dbc.GetProductDBMapByID(ps.Name)
