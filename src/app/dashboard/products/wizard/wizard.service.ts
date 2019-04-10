@@ -65,6 +65,22 @@ export class WizardService {
       )
   }
 
+  uploadRequestFiles(platform: any, product: any) {
+    const url = '/api/rt/gitrepo/commitfile'
+    for (let i of platform.engine) {
+      product[i.type].push({ 'engine': i.name, 'config': [] });
+    }
+    const formData: any = new FormData();
+    formData.append('Msg', '|AUTOMATED|HOME|' + product.product + '|request|all');
+    let rootDir = '/products/'
+    let productName = product.product + '/'
+    let yamlString = _yaml.stringify(product, 999,2)
+    console.log(yamlString);
+    var blob = new Blob([yamlString], { type: 'application/octet-stream' });
+    formData.append("CommitFile", blob, rootDir + productName + 'product.yaml');
+    return this.httpAPI.post(url, formData)
+  }
+
 
   uploadFiles(formGroup: any, files: any, removedFiles: any, step: any, action: any) {
     const url = '/api/rt/gitrepo/commitfile'
@@ -91,6 +107,7 @@ export class WizardService {
         });
       }
     }
+
 
     
     const formData: any = new FormData();

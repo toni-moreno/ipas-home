@@ -457,7 +457,7 @@ export class WizardComponent implements OnInit {
 
     console.log(this.stepInfo.productData)
     this._blocker.start(this.container, "Sending request for new product...");
-    this.wizardService.uploadFiles(this.productFormGroup.value, this.fileArray, this.fileRemovedArray, 'all', 'request')
+    this.wizardService.uploadRequestFiles(this.platformFormGroup.value, this.productFormGroup.value)
       .subscribe(
         data => {
           console.log(data),
