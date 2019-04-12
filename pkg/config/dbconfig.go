@@ -94,6 +94,8 @@ type TaskStatus struct {
 	LastUpdate time.Time
 }
 
+// PlatformDeviceDeploy ??
+
 type PlatformDevices struct {
 	ProductID       string                `xorm:"'productid' not null unique(devid)" binding:"Required"`
 	DeviceID        string                `xorm:"'deviceid' not null unique(devid)" binding:"Required"`

@@ -250,9 +250,9 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 		}
 
 		log.Infof("Invoked job with number %d", jid)
-
+		taskmap[jid] = waitForJob(jid, id)
 		//waiting for job info
-		for {
+		/*for {
 			t, err := jnks.GetQueueItem(jid)
 			if err != nil {
 				log.Errorf("Some error triggered while invoking queue  %s for engine %s Error %s", id, engine.Name, err)
@@ -285,9 +285,7 @@ func SendDeviceAction(subject string, action string, filename string, content *b
 				log.Infof("Set Executable  %d : URL Orig %s | URL  Final %s", bid, t.Raw.Executable.URL, purl)
 				break
 			}
-		}
-
-		//Updating
+		}*/
 
 	}
 
@@ -444,9 +442,22 @@ func processProductRequest(jpd *JobProductData) error {
 
 	log.Infof("Invoked job with number %d", jid)
 
-	//waiting for job info
-	ret := waitForJob(jid, id)
-	log.Debugf("Updated %#+v", ret)
+	taskmap := make(map[int64]*config.TaskStatus)
+	taskmap[jid] = waitForJob(jid, id)
+
+	PfmDevice := config.PlatformDevices{
+		ProductID:       jpd.Platform.ProductID,
+		DeviceID:        "__",
+		PlatformEngines: nil,
+		LastAction:      "request",
+		LastState:       "PENDING",
+		TaskStat:        taskmap,
+	}
+
+	_, err = dbc.AddOrUpdatePlatformDevices(PfmDevice)
+	if err != nil {
+		log.Errorf("While trying to insert data into PlatformDevices: %+v Error: %s", PfmDevice, err)
+	}
 	return nil
 }
 
@@ -478,6 +489,7 @@ func SendProductAction(subject string, action string, filename string, content *
 		var params = map[string]string{
 			"PLATFORM_CONFIG_URL": plurl,
 			"EMAIL_NOTIFICATION":  emailNotif,
+			"ACTION_MODE":         action,
 		}
 
 		job, err := jnks.GetJob(id)
@@ -495,108 +507,22 @@ func SendProductAction(subject string, action string, filename string, content *
 		log.Infof("Invoked job with number %d", jid)
 
 		taskmap[jid] = waitForJob(jid, id)
-		//waiting for job info
-		/*for {
-			t, err := jnks.GetQueueItem(jid)
-			if err != nil {
-				log.Errorf("Some error triggered while invoking queue  %s for engine %s Error %s", id, engine.Name, err)
-				continue
-			}
-			time.Sleep(5 * time.Second)
-			log.Debugf("QUEUE  RAW %#+v", t.Raw)
-			if len(t.Raw.Why) > 0 {
-				log.Infof("Waiting while task in queue:%s", t.Raw.Why)
-				time.Sleep(5 * time.Second)
-			} else {
-				log.Debugf("QUEUE  RAW %#+v", t.Raw)
-				bid := t.Raw.Executable.Number
 
-				purl := t.Raw.Executable.URL
-				if len(publicURL) > 0 {
-					log.Infof("setting public URL to %s", publicURL)
-					purl = strings.Replace(t.Raw.Executable.URL, url, publicURL, -1)
-				}
+		PfmDevice := config.PlatformDevices{
+			ProductID:       jobpd.Platform.ProductID,
+			DeviceID:        "__",
+			PlatformEngines: jobpd.Platform.Engine,
+			LastAction:      action,
+			LastState:       "PENDING",
+			TaskStat:        taskmap,
+		}
 
-				taskmap[jid] = &config.TaskStatus{
-					JobName:    id,
-					TaskID:     jid,
-					ExecID:     t.Raw.Executable.Number,
-					IsFinished: false,
-					ExecURL:    purl,
-					Launched:   time.Now(),
-					LastUpdate: time.Now(),
-				}
-				log.Infof("Set Executable  %d : URL Orig %s | URL  Final %s", bid, t.Raw.Executable.URL, purl)
-				break
-			}
-		}*/
-
-		//Updating
+		_, err = dbc.AddOrUpdatePlatformDevices(PfmDevice)
+		if err != nil {
+			log.Errorf("While trying to insert data into PlatformDevices: %+v Error: %s", PfmDevice, err)
+		}
 
 	}
-
-	/*taskmap := make(map[int64]*config.TaskStatus)
-
-	for _, engine := range jobdt.Platform.Engine {
-
-		id := subject + "_" + action + "_" + engine.Name
-
-		log.Infof("Triggering Jenkins job %s", id)
-
-		job, err := jnks.GetJob(id)
-		if err != nil {
-			log.Errorf("Error on get Job. Error %s ", err)
-			return err
-		}
-
-		purl, durl := SaveConfigFiles(&jobdt, engine.Name)
-
-		var params = map[string]string{
-			"PLATFORM_CONFIG_URL": purl,
-			"DEVICE_CONFIG_URL":   durl,
-		}
-
-		jid, err := job.InvokeSimple(params)
-		if err != nil {
-			log.Errorf("Some error triggered while invoking job  %s for engine %s Error %s", id, engine.Name, err)
-			continue
-		}
-
-		log.Infof("Invoked job with number %d", jid)
-
-		//waiting for job info
-		for {
-			t, err := jnks.GetQueueItem(jid)
-			if err != nil {
-				log.Errorf("Some error triggered while invoking queue  %s for engine %s Error %s", id, engine.Name, err)
-				continue
-			}
-			time.Sleep(5 * time.Second)
-			log.Debugf("QUEUE  RAW %#+v", t.Raw)
-			if len(t.Raw.Why) > 0 {
-				log.Infof("Waiting while task in queue:%s", t.Raw.Why)
-				time.Sleep(5 * time.Second)
-			} else {
-				log.Debugf("QUEUE  RAW %#+v", t.Raw)
-				bid := t.Raw.Executable.Number
-
-				taskmap[jid] = &config.TaskStatus{
-					JobName:    id,
-					TaskID:     jid,
-					ExecID:     t.Raw.Executable.Number,
-					IsFinished: false,
-					ExecURL:    t.Raw.Executable.URL,
-					Launched:   time.Now(),
-					LastUpdate: time.Now(),
-				}
-				log.Infof("Set Executable %d : %s", bid, t.Raw.Executable.URL)
-				break
-			}
-		}
-
-		//Updating
-
-	}*/
 
 	return nil
 }
